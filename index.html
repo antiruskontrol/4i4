@@ -66,10 +66,10 @@
             const loadingId = appendMessage('Аналізую вашу ідею, зачекайте...', 'bot');
 
             try {
-                const response = await fetch(BACKEND_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text, sessionId: sessionId })
+                const response = await fetch(`${BACKEND_URL}/api/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text, sessionId: sessionId })
                 });
                 const data = await response.json();
                 
