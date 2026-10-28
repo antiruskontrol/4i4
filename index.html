@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Студія розробки 4і4</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .hero { max-width: 600px; text-align: center; background: #1e293b; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #334155; }
+        h1 { color: #38bdf8; margin-bottom: 15px; font-size: 2.5rem; }
+        p { color: #94a3b8; font-size: 1.1rem; line-height: 1.6; }
+        
+        /* Стилі вікна чату Copilot */
+        #chat-widget { position: fixed; bottom: 25px; right: 25px; width: 380px; height: 500px; background: #1e293b; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); display: flex; flex-direction: column; overflow: hidden; border: 1px solid #334155; }
+        #chat-header { background: #0284c7; color: white; padding: 18px; font-weight: bold; font-size: 1.1rem; letter-spacing: 0.5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        #chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #0f172a; }
+        .msg { padding: 12px 16px; border-radius: 12px; max-width: 80%; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; }
+        .user { background: #0284c7; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .bot { background: #334155; color: #f8fafc; align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #475569; }
+        #chat-input-area { display: flex; background: #1e293b; border-top: 1px solid #334155; padding: 10px; }
+        #chat-input { flex: 1; padding: 12px; background: #334155; color: white; border: 1px solid #475569; border-radius: 8px; outline: none; font-size: 0.95rem; }
+        #chat-input::placeholder { color: #94a3b8; }
+        #chat-send { margin-left: 8px; padding: 0 20px; background: #0284c7; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        #chat-send:hover { background: #0369a1; }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <h1>Студія розробки «4і4»</h1>
+        <p>Ми створюємо сучасні вебсайти, корисні браузерні розширення та мобільні застосунки для суспільно важливих і соціальних ініціатив.</p>
+    </div>
+
+    <!-- Віджет Copilot -->
+    <div id="chat-widget">
+        <div id="chat-header">🤖 Copilot Студії 4і4</div>
+        <div id="chat-messages">
+            <div class="msg bot">Вітаю! Я — ШІ-асистент студії 4і4. Допоможу вам сформувати технічне завдання для вашого соціального проєкту. Яка у вас ідея і що саме ви плануєте створити?</div>
+        </div>
+        <div id="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Напишіть вашу ідею сюди..." autocomplete="off">
+            <button id="chat-send">🡪</button>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const chatSend = document.getElementById('chat-send');
+
+        // Посилання на ваш бекенд на Render
+        const BACKEND_URL = 'https://onrender.com'; 
+
+        chatSend.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            appendMessage(text, 'user');
+            chatInput.value = '';
+
+            const loadingId = appendMessage('Аналізую вашу ідею, зачекайте...', 'bot');
+
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await response.json();
+                
+                document.getElementById(loadingId).remove();
+                appendMessage(data.reply, 'bot');
+            } catch (error) {
+                document.getElementById(loadingId).innerText = 'Помилка зв\'язку. Бекенд прокидається, зачекайте 15 секунд і повторіть повідомлення.';
+            }
+        }
+
+        function appendMessage(text, sender) {
+            const msgDiv = document.createElement('div');
+            const id = 'msg-' + Date.now();
+            msgDiv.id = id;
+            msgDiv.classList.add('msg', sender);
+            msgDiv.innerText = text;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return id;
+        }
+    </script>
+</body>
+</html>
