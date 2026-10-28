@@ -50,7 +50,7 @@
 
         // Посилання на ваш бекенд на Render
         const BACKEND_URL = 'https://onrender.com'; 
-
+        chatSend.addEventListener('click', sendMessage);
         chatSend.addEventListener('click', sendMessage);
         chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
