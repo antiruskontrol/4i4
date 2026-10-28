@@ -46,7 +46,7 @@
         const chatSend = document.getElementById('chat-send');
 
         // Пряма правильна адреса вашого сервера з логів Render
-        const BACKEND_URL = 'https://onrender.com'; 
+        const BACKEND_URL = 'https://studio-copilot-backend.onrender.com'; 
 
         if (!localStorage.getItem('chat_session_id')) {
             localStorage.setItem('chat_session_id', 'session-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now());
