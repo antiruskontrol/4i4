@@ -9,13 +9,15 @@
         .hero { max-width: 600px; text-align: center; background: #1e293b; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #334155; }
         h1 { color: #38bdf8; margin-bottom: 15px; font-size: 2.5rem; }
         p { color: #94a3b8; font-size: 1.1rem; line-height: 1.6; }
+        
+        /* Виправлений CSS для чату */
         #chat-widget { position: fixed; bottom: 25px; right: 25px; width: 380px; height: 500px; background: #1e293b; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); display: flex; flex-direction: column; overflow: hidden; border: 1px solid #334155; }
         #chat-header { background: #0284c7; color: white; padding: 18px; font-weight: bold; font-size: 1.1rem; letter-spacing: 0.5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        #chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #0f172a; }
+        #chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #0f172a; min-height: 0; }
         .msg { padding: 12px 16px; border-radius: 12px; max-width: 80%; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; }
         .user { background: #0284c7; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
         .bot { background: #334155; color: #f8fafc; align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #475569; }
-        #chat-input-area { display: flex; background: #1e293b; border-top: 1px solid #334155; padding: 10px; }
+        #chat-input-area { display: flex; background: #1e293b; border-top: 1px solid #334155; padding: 10px; flex-shrink: 0; }
         #chat-input { flex: 1; padding: 12px; background: #334155; color: white; border: 1px solid #475569; border-radius: 8px; outline: none; font-size: 0.95rem; }
         #chat-input::placeholder { color: #94a3b8; }
         #chat-send { margin-left: 8px; padding: 0 20px; background: #0284c7; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
@@ -26,14 +28,14 @@
 
     <div class="hero">
         <h1>Студія розробки «4і4»</h1>
-<p>Ми створюємо сучасні вебсайти, корисні браузерні розширення та мобільні застосунки для вашого бізнесу та проєктів.</p>    </div>
+        <p>Ми створюємо сучасні вебсайти, корисні браузерні розширення та мобільні застосунки для вашого бізнесу та проєктів.</p>
+    </div>
 
     <div id="chat-widget">
         <div id="chat-header">🤖 Copilot Студії 4і4</div>
         <div id="chat-messages">
-            <div class="msg bot">Вітаю! Я — ШІ-асистент студії 4і4. Допоможу вам сформувати базове технічне завдання для вашого проєкту. Яка у вас ідея і що саме ви плануєте створити?
-            
-            </div>
+            <div class="msg bot">Вітаю! Я — ШІ-асистент студії 4і4. Допоможу вам сформувати базове технічне завдання для вашого проєкту. Яка у вас ідея і що саме ви плануєте створити?</div>
+        </div>
         <div id="chat-input-area">
             <input type="text" id="chat-input" placeholder="Напишіть вашу ідею сюди..." autocomplete="off">
             <button id="chat-send">🡪</button>
@@ -41,27 +43,10 @@
     </div>
 
     <script>
-       #chat-messages { 
-    flex: 1; 
-    padding: 20px; 
-    overflow-y: auto; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 12px; 
-    background: #0f172a; 
-    min-height: 0; /* ВАЖЛИВО: дозволяє контейнеру правильно стискатися */
-}
-
-#chat-input-area { 
-    display: flex; 
-    background: #1e293b; 
-    border-top: 1px solid #334155; 
-    padding: 10px; 
-    flex-shrink: 0; /* ВАЖЛИВО: забороняє полю вводу зменшуватися */
-}
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
         const chatSend = document.getElementById('chat-send');
 
-        // Пряма правильна адреса вашого сервера з логів Render
         const BACKEND_URL = 'https://studio-copilot-backend.onrender.com'; 
 
         if (!localStorage.getItem('chat_session_id')) {
@@ -70,18 +55,20 @@
         const sessionId = localStorage.getItem('chat_session_id');
 
         chatSend.addEventListener('click', sendMessage);
-        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+        chatInput.addEventListener('keypress', (e) => { 
+            if (e.key === 'Enter') {
+                e.preventDefault(); 
+                sendMessage(); 
+            } 
+        });
 
-               async function sendMessage() {
+        async function sendMessage() {
             const text = chatInput.value.trim();
             if (!text) return;
 
-            // 1. Додаємо повідомлення користувача і ОДРАЗУ прокручуємо
             appendMessage(text, 'user');
             chatInput.value = '';
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            // 2. Додаємо статус завантаження
+            
             const loadingId = appendMessage('Аналізую вашу ідею, зачекайте...', 'bot');
 
             try {
@@ -91,32 +78,38 @@
                     body: JSON.stringify({ message: text, sessionId: sessionId })
                 });
                 
-                if (!response.ok) throw new Error('Network response was not ok');
-                
+                if (!response.ok) throw new Error('Network error');
                 const data = await response.json();
                 
-                // 3. Видаляємо статус завантаження
                 const loadingElement = document.getElementById(loadingId);
                 if (loadingElement) loadingElement.remove();
                 
-                // 4. Додаємо відповідь бота
                 appendMessage(data.reply, 'bot');
             } catch (error) {
+                console.error('Помилка:', error);
                 const loadingElement = document.getElementById(loadingId);
                 if (loadingElement) {
-                    loadingElement.innerText = 'Помилка зв\'язку. Бекенд прокидається, зачекайте 15 секунд і повторіть повідомлення.';
+                    loadingElement.innerText = 'Помилка зв\'язку. Зачекайте 15 секунд і спробуйте знову.';
                 }
             }
         }
-                function appendMessage(text, sender) {
+
+        function appendMessage(text, sender) {
             const msgDiv = document.createElement('div');
-            // ДОДАНО Math.random(), щоб ID завжди був унікальним
             const id = 'msg-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
             msgDiv.id = id;
             msgDiv.classList.add('msg', sender);
-            msgDiv.innerText = text;
+            
+            if (sender === 'bot') {
+                let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); 
+                formattedText = formattedText.replace(/\n/g, '<br>'); 
+                msgDiv.innerHTML = formattedText;
+            } else {
+                msgDiv.innerText = text;
+            }
+            
             chatMessages.appendChild(msgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            chatMessages.scrollTop = chatMessages.scrollHeight; 
             return id;
         }
     </script>
