@@ -41,8 +41,24 @@
     </div>
 
     <script>
-        const chatMessages = document.getElementById('chat-messages');
-        const chatInput = document.getElementById('chat-input');
+       #chat-messages { 
+    flex: 1; 
+    padding: 20px; 
+    overflow-y: auto; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+    background: #0f172a; 
+    min-height: 0; /* ВАЖЛИВО: дозволяє контейнеру правильно стискатися */
+}
+
+#chat-input-area { 
+    display: flex; 
+    background: #1e293b; 
+    border-top: 1px solid #334155; 
+    padding: 10px; 
+    flex-shrink: 0; /* ВАЖЛИВО: забороняє полю вводу зменшуватися */
+}
         const chatSend = document.getElementById('chat-send');
 
         // Пряма правильна адреса вашого сервера з логів Render
