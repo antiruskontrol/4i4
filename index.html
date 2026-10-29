@@ -56,33 +56,46 @@
         chatSend.addEventListener('click', sendMessage);
         chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
-        async function sendMessage() {
+               async function sendMessage() {
             const text = chatInput.value.trim();
             if (!text) return;
 
+            // 1. Додаємо повідомлення користувача і ОДРАЗУ прокручуємо
             appendMessage(text, 'user');
             chatInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
 
+            // 2. Додаємо статус завантаження
             const loadingId = appendMessage('Аналізую вашу ідею, зачекайте...', 'bot');
 
             try {
                 const response = await fetch(`${BACKEND_URL}/api/chat`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text, sessionId: sessionId })
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, sessionId: sessionId })
                 });
+                
+                if (!response.ok) throw new Error('Network response was not ok');
+                
                 const data = await response.json();
                 
-                document.getElementById(loadingId).remove();
+                // 3. Видаляємо статус завантаження
+                const loadingElement = document.getElementById(loadingId);
+                if (loadingElement) loadingElement.remove();
+                
+                // 4. Додаємо відповідь бота
                 appendMessage(data.reply, 'bot');
             } catch (error) {
-                document.getElementById(loadingId).innerText = 'Помилка зв\'язку. Бекенд прокидається, зачекайте 15 секунд і повторіть повідомлення.';
+                const loadingElement = document.getElementById(loadingId);
+                if (loadingElement) {
+                    loadingElement.innerText = 'Помилка зв\'язку. Бекенд прокидається, зачекайте 15 секунд і повторіть повідомлення.';
+                }
             }
         }
-
-        function appendMessage(text, sender) {
+                function appendMessage(text, sender) {
             const msgDiv = document.createElement('div');
-            const id = 'msg-' + Date.now();
+            // ДОДАНО Math.random(), щоб ID завжди був унікальним
+            const id = 'msg-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
             msgDiv.id = id;
             msgDiv.classList.add('msg', sender);
             msgDiv.innerText = text;
