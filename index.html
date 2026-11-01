@@ -28,12 +28,10 @@
             overflow: hidden;
         }
 
-        /* Сама картинка постера */
         #poster-img {
             width: 100%; height: 100%;
             object-fit: cover; 
             transform-origin: center center;
-            /* Початковий масштаб задається в JS */
         }
 
         /* Контейнер для тексту */
@@ -47,22 +45,36 @@
             font-size: 4rem; font-weight: 700; letter-spacing: 2px; opacity: 0; 
             display: flex; justify-content: center; align-items: center; gap: 15px;
             position: relative; 
-            /* Прибираємо overflow: hidden, щоб не було видно рамок */
             padding: 10px;
         }
-        .art-text { color: #ff8c00; text-shadow: 0 0 10px rgba(255, 140, 0, 0.5); }
-        .web-text { color: #00bfff; text-shadow: 0 0 10px rgba(0, 191, 255, 0.5); }
         
-        /* ПРАВКА 2: Градієнт з м'якими краями (без видимого контейнера) */
-        .shine-global { 
-            position: absolute; top: 0; left: -100%; width: 100%; height: 100%; 
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%); 
-            transform: skewX(-25deg); 
-            /* Маска робить краї градієнта розмитими */
-            -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
-            mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
-            pointer-events: none; /* Щоб не заважав клікам */
+        /* ПРАВКА 1: Градієнт проходить крізь літери */
+        .art-text, .web-text {
+            position: relative;
         }
+        
+        .art-text {
+            color: transparent;
+            background-image: linear-gradient(to right, #ff8c00, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite; /* Це буде замінено GSAP для синхронізації */
+            text-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+        }
+
+        .web-text {
+            color: transparent;
+            background-image: linear-gradient(to right, #00bfff, #00ffff, #00bfff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+            text-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+        }
+
+        /* Ефект світла (буде запускатися через GSAP для синхронізації) */
+        .shine-global { display: none; /* Старий контейнер більше не потрібен */ }
 
         /* Рядок 2: © Studio */
         .line-2 { font-size: 1.5rem; color: #ccc; opacity: 0; display: flex; justify-content: center; align-items: center; gap: 10px; letter-spacing: 5px; height: 2rem; }
@@ -74,10 +86,9 @@
             color: #ffd700; text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); 
             opacity: 0; display: flex; justify-content: center; align-items: center; 
             min-height: 4rem; 
-            white-space: nowrap; /* Щоб текст не переносився на новий рядок */
+            white-space: nowrap; 
         }
         
-        /* Стилі для літер */
         .char { display: inline-block; }
 
         @media (max-width: 768px) {
@@ -91,15 +102,18 @@
 
     <div id="intro-container">
         <div id="poster-bg">
-            <!-- ВКАЖІТЬ ВАШУ НАЗВУ ФАЙЛУ ТУТ -->
             <img id="poster-img" src="4і4.jfif" alt="Poster">
         </div>
 
         <div id="text-block">
             <div class="line-1" id="row1">
-                <span class="art-text" id="artWord">Art</span>
-                <span class="web-text" id="webWord">Web</span>
-                <span class="shine-global"></span>
+                <!-- Обгортки для градієнта -->
+                <div style="overflow: hidden;">
+                    <span class="art-text" id="artWord">Art</span>
+                </div>
+                <div style="overflow: hidden;">
+                    <span class="web-text" id="webWord">Web</span>
+                </div>
             </div>
             
             <div class="line-2" id="row2">
@@ -107,7 +121,6 @@
                 <span id="studioWord" style="opacity:0;">Studio</span>
             </div>
             
-            <!-- ПРАВКА 3: Контейнер для ЧіЧ, який буде наповнюватися скриптом -->
             <div class="line-3" id="row3">
                 <span id="chichText"></span>
             </div>
@@ -119,33 +132,27 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             
-            // ПРАВКА 3: Динамічно створюємо структуру для розгортання
+            // ПРАВКА 2: Розліт літер для "ЧіЧ"
             const chichContainer = document.getElementById("chichText");
             
-            // Створюємо літеру "Ч" (початкову)
-            const firstChar = document.createElement("span");
-            firstChar.className = "char";
-            firstChar.textContent = "Ч";
-            firstChar.style.opacity = "0";
+            // Створюємо літери для "ЧіЧ"
+            const ch1 = document.createElement("span"); ch1.className = "char"; ch1.textContent = "Ч";
+            const i1 = document.createElement("span"); i1.className = "char"; i1.textContent = "і";
+            const ch2 = document.createElement("span"); ch2.className = "char"; ch2.textContent = "Ч";
             
-            // Створюємо контейнер для середини (який спочатку стиснутий)
-            const middlePart = document.createElement("span");
-            middlePart.className = "char";
-            middlePart.textContent = "агарники і Чорнобрив";
-            middlePart.style.display = "inline-block";
-            middlePart.style.opacity = "0";
-            middlePart.style.width = "0px"; // Початкова ширина 0
-            
-            // Створюємо літеру "ці" (кінцеву)
-            const lastChar = document.createElement("span");
-            lastChar.className = "char";
-            lastChar.textContent = "ці";
-            lastChar.style.opacity = "0";
+            // Літери, які будуть з'являтися в процесі (приховані)
+            const restLeft = document.createElement("span"); restLeft.className = "char"; restLeft.textContent = "агарники ";
+            const restRight = document.createElement("span"); restRight.className = "char"; restRight.textContent = "орнобривці";
 
-            // Збираємо все докупи
-            chichContainer.appendChild(firstChar);
-            chichContainer.appendChild(middlePart);
-            chichContainer.appendChild(lastChar);
+            // Збираємо початковий стан: Ч і Ч видимі, решта прихована
+            chichContainer.appendChild(ch1);
+            chichContainer.appendChild(restLeft);
+            chichContainer.appendChild(i1);
+            chichContainer.appendChild(restRight);
+            chichContainer.appendChild(ch2);
+
+            // Ховаємо нові літери
+            gsap.set([restLeft, restRight], { opacity: 0, width: 0, overflow: "hidden", display: "inline-block" });
 
             const tl = gsap.timeline({
                 onComplete: () => {
@@ -157,51 +164,49 @@
                 }
             });
 
-            // КРОК 1: Поява ArtWeb
-            tl.to(".line-1", { duration: 1.5, opacity: 1, ease: "power2.out" })
+            // КРОК 1: Поява ArtWeb (з кривою)
+            tl.to(".line-1", { duration: 1.5, opacity: 1, ease: "power4.out" })
             
-            // КРОК 2: ПОВІЛЬНИЙ суцільний градієнт (2 секунди)
-            .to(".shine-global", { duration: 2, left: "150%", ease: "power1.inOut" })
+            // КРОК 2: ПРАВКА 1: Градієнт (імітація пробігу по літерах)
+            // Використовуємо background-position для анімації
+            .fromTo(".art-text", { backgroundPosition: "200% center" }, { backgroundPosition: "-200% center", duration: 2, ease: "power2.inOut" }, "-=0.5")
+            .fromTo(".web-text", { backgroundPosition: "200% center" }, { backgroundPosition: "-200% center", duration: 2, ease: "power2.inOut" }, "<")
             
-            // КРОК 3: Підняття ArtWeb і поява ©
-            .to(".line-1", { duration: 0.5, y: -50, ease: "power2.inOut" }, "+=0.2")
+            // КРОК 3: Підняття ArtWeb і поява © (з кривою)
+            .to(".line-1", { duration: 0.5, y: -50, ease: "back.out(1.7)" }, "+=0.2")
             .to(".copyright-symbol", { duration: 0.8, opacity: 1, scale: 1, ease: "back.out(2)" }, "-=0.5")
             
             // КРОК 4: Поява Studio
             .to(".line-2", { duration: 0.1, opacity: 1 }, "+=0.3")
-            .to("#studioWord", { duration: 1, opacity: 1, ease: "power2.out" })
+            .to("#studioWord", { duration: 1, opacity: 1, ease: "power3.out" })
             
             // КРОК 5: Підняття рядка 2
-            .to(".line-2", { duration: 0.5, y: -30, ease: "power2.inOut" }, "+=0.5")
+            .to(".line-2", { duration: 0.5, y: -30, ease: "back.out(1.5)" }, "+=0.5")
             
-            // КРОК 6: Поява "ЧіЧ" (спочатку тільки перша літера, але контейнер стає видимим)
-            .to(".line-3", { duration: 0.5, opacity: 1 })
-            .to(firstChar, { duration: 0.5, opacity: 1, ease: "power2.out" })
+            // КРОК 6: Поява "ЧіЧ" (літери з'являються)
+            .to(".line-3", { duration: 0.1, opacity: 1 })
+            .from([ch1, i1, ch2], { duration: 0.8, opacity: 0, y: 20, stagger: 0.2, ease: "back.out(1.7)" })
             
-            // КРОК 7: Розгортання (літери розсуваються)
-            .to(middlePart, { 
-                duration: 1.5, 
-                width: "auto", // GSAP тепер знає, як рахувати це, бо батько має white-space: nowrap
-                opacity: 1, 
-                ease: "power2.inOut" 
-            }, "+=0.5")
-            .to(lastChar, { duration: 0.5, opacity: 1 }, "-=0.5")
+            // КРОК 7: ПРАВКА 2: Розліт (ЧіЧ розсувається, відкриваючи середину)
+            // Анімуємо ширину прихованих літер, щоб вони розсунули "Ч" і "Ч"
+            .to(restLeft, { width: "auto", opacity: 1, duration: 1.5, ease: "power4.inOut" }, "+=0.5")
+            .to(restRight, { width: "auto", opacity: 1, duration: 1.5, ease: "power4.inOut" }, "<")
 
             // КРОК 8: Підняття рядка 3
-            .to(".line-3", { duration: 0.5, y: -20, ease: "power2.inOut" }, "+=0.5")
+            .to(".line-3", { duration: 0.5, y: -20, ease: "back.out(1.5)" }, "+=0.5")
             
             // КРОК 9: ЗУМАУТ ПОСТЕРА
             .to("#poster-bg", { duration: 0.5, opacity: 1 })
             
-            // ПРАВКА 1: Початковий масштаб 2.5, плавне зменшення до 1
+            // ПРАВКА 3: Зміна масштабу 2.5 з нелінійною кривою (power4.inOut - дуже плавна)
             .fromTo("#poster-img", 
-                { scale: 2.5, objectFit: "cover" }, // Збільшено до 2.5!
-                { scale: 1, objectFit: "contain", duration: 4, ease: "power2.inOut" }, // Трохи збільшив тривалість для плавності
+                { scale: 2.5, objectFit: "cover" }, 
+                { scale: 1, objectFit: "contain", duration: 4, ease: "power4.inOut" }, 
                 "-=0.5"
             )
             
             // КРОК 10: Текст стає на свої місця
-            .to("#text-block", { duration: 1.5, scale: 0.7, y: -50, ease: "power2.inOut" }, "-=3.5");
+            .to("#text-block", { duration: 1.5, scale: 0.7, y: -50, ease: "power4.inOut" }, "-=3.5");
         });
     </script>
 </body>
