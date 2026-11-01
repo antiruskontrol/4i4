@@ -4,32 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ArtWeb Studio | Візитівка</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    
     <style>
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: #000; overflow: hidden;
             font-family: 'Montserrat', sans-serif;
         }
+
         #intro-container {
             position: relative; width: 100vw; height: 100vh;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
+
+        /* Фоновий постер (спочатку невидимий) */
         #poster-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('ПОСИЛАННЯ_НА_ВАШ_ПОСТЕР.jpg'); /* <--- ВАШ ПОСТЕР */
+            /* ВАШ ПОСТЕР - переконайтеся, що посилання правильне */
+            background-image: url('https://i.ibb.co/6PZ9Z9P/poster.jpg'); 
             background-size: cover; background-position: center;
             opacity: 0; z-index: 1;
         }
-        #text-block { position: relative; z-index: 10; text-align: center; display: flex; flex-direction: column; gap: 10px; }
+
+        /* Контейнер для тексту */
+        #text-block { position: relative; z-index: 10; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+        /* Рядок 1: ArtWeb */
         .line-1 { font-size: 3rem; font-weight: 700; letter-spacing: 2px; opacity: 0; display: flex; justify-content: center; align-items: center; gap: 10px; }
         .art-text { color: #ff8c00; text-shadow: 0 0 10px rgba(255, 140, 0, 0.5); position: relative; overflow: hidden; }
         .web-text { color: #00bfff; text-shadow: 0 0 10px rgba(0, 191, 255, 0.5); position: relative; overflow: hidden; }
+        
+        /* Ефект градієнта */
         .shine { position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.8), transparent); transform: skewX(-25deg); }
-        .line-2 { font-size: 1.5rem; color: #ccc; opacity: 0; display: flex; justify-content: center; align-items: center; gap: 10px; letter-spacing: 5px; }
+
+        /* Рядок 2: © Studio */
+        .line-2 { font-size: 1.5rem; color: #ccc; opacity: 0; display: flex; justify-content: center; align-items: center; gap: 10px; letter-spacing: 5px; height: 2rem; }
         .copyright-symbol { font-size: 2rem; display: inline-block; transform: scale(0); }
-        .line-3 { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-style: italic; color: #ffd700; text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); opacity: 0; display: flex; justify-content: center; }
+
+        /* Рядок 3: ЧіЧ -> Чагарники і Чорнобривці */
+        .line-3 { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-style: italic; color: #ffd700; text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); opacity: 0; display: flex; justify-content: center; min-height: 4rem; }
+        
+        /* Стилі для окремих літер */
         .letter { display: inline-block; opacity: 0; transform: translateY(20px); }
+
         @media (max-width: 768px) {
             .line-1 { font-size: 2rem; flex-direction: column; gap: 0; }
             .line-3 { font-size: 1.5rem; }
@@ -38,8 +57,10 @@
     </style>
 </head>
 <body>
+
     <div id="intro-container">
         <div id="poster-bg"></div>
+
         <div id="text-block">
             <div class="line-1" id="row1">
                 <span class="art-text" id="artWord">Art<span class="shine"></span></span>
@@ -47,7 +68,7 @@
             </div>
             <div class="line-2" id="row2">
                 <span class="copyright-symbol" id="copySymbol">©</span>
-                <span id="studioWord">Studio</span>
+                <span id="studioWord" style="opacity:0;">Studio</span>
             </div>
             <div class="line-3" id="row3">
                 <span id="chichText">ЧіЧ</span>
@@ -56,42 +77,73 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            
             const tl = gsap.timeline({
                 onComplete: () => {
+                    // Чекаємо 2.5 секунди на постері, і робимо перехід
                     setTimeout(() => {
                         gsap.to("body", { opacity: 0, duration: 1, onComplete: () => {
-                            window.location.href = 'copilot.html'; // <--- ТУТ ВАШ ЧАТ
+                            window.location.href = 'copilot.html'; // <--- ВАШ ЧАТ
                         }});
-                    }, 2000);
+                    }, 2500);
                 }
             });
 
-            tl.to(".line-1", { duration: 1.5, opacity: 1, y: -20, ease: "power2.out" })
+            // КРОК 1: Поява "ArtWeb" (1.5с)
+            tl.to(".line-1", { duration: 1.5, opacity: 1, ease: "power2.out" })
+            
+            // КРОК 2: Пробігаючий градієнт
             .to(".shine", { duration: 0.8, left: "150%", ease: "power1.inOut" })
+            
+            // КРОК 3: Підняття "ArtWeb" і поява ©
             .to(".line-1", { duration: 0.5, y: -50, ease: "power2.inOut" }, "+=0.2")
             .to(".copyright-symbol", { duration: 0.8, opacity: 1, scale: 1, ease: "back.out(2)" }, "-=0.5")
+            
+            // КРОК 4: Поява "Studio" (літери з'являються по одній)
             .to(".line-2", { duration: 0.1, opacity: 1 }, "+=0.3")
-            .from("#studioWord", { duration: 1, opacity: 0, y: 20, delay: 0.2, ease: "power2.out" })
+            .to("#studioWord", { duration: 1, opacity: 1, ease: "power2.out" })
+            
+            // КРОК 5: Підняття рядка 2
             .to(".line-2", { duration: 0.5, y: -30, ease: "power2.inOut" }, "+=0.5")
+            
+            // КРОК 6: Поява "ЧіЧ"
             .to(".line-3", { duration: 1, opacity: 1, scale: 1.2, ease: "power2.out" }, "-=0.5")
             .to(".line-3", { duration: 0.5, scale: 1, ease: "power2.inOut" })
+            
+            // КРОК 7: Трансформація "ЧіЧ" у "Чагарники і Чорнобривці" (найскладніша частина)
             .add(() => {
                 const chichElement = document.getElementById("chichText");
-                chichElement.innerHTML = ""; 
+                chichElement.innerHTML = ""; // Очищаємо
                 const fullText = "Чагарники і Чорнобривці";
+                
+                // Розбиваємо на літери і створюємо span для кожної
                 fullText.split("").forEach(char => {
                     const span = document.createElement("span");
-                    span.textContent = char === " " ? "\u00A0" : char;
+                    span.textContent = char === " " ? "\u00A0" : char; 
                     span.className = "letter";
                     chichElement.appendChild(span);
                 });
             })
-            .to(".letter", { duration: 1, opacity: 1, y: 0, stagger: 0.05, ease: "back.out(1.5)" })
+            // Анімація розльоту літер (ефект "вибуху")
+            .to(".letter", { 
+                duration: 1.5, 
+                opacity: 1, 
+                y: 0, 
+                stagger: 0.05, // Літери з'являються по черзі
+                ease: "back.out(1.5)" 
+            })
+            
+            // КРОК 8: Підняття рядка 3
             .to(".line-3", { duration: 0.5, y: -20, ease: "power2.inOut" }, "+=0.5")
+            
+            // КРОК 9: Поява постера (фон)
             .to("#poster-bg", { duration: 1.5, opacity: 1, ease: "power2.inOut" }, "-=1")
-            .to("#text-block", { duration: 1, scale: 0.8, y: -50, ease: "power2.inOut" }, "-=0.5");
+            
+            // КРОК 10: Фінальне позиціонування (текст зменшується і стає частиною постера)
+            .to("#text-block", { duration: 1.5, scale: 0.8, y: -50, ease: "power2.inOut" }, "-=0.5");
         });
     </script>
 </body>
