@@ -50,7 +50,7 @@
             background-clip: text;
             color: transparent;
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-            transform: scale(0.5); /* Початковий масштаб для ефекту "виринання" */
+            transform: scale(0.5); /* Для ефекту "виринання" */
         }
 
         .run-shine {
@@ -105,7 +105,7 @@
             
             <div class="line-2" id="row2">
                 <span class="copyright-symbol" id="copySymbol">©</span>
-                <span id="studioWord" style="opacity:0;">Studio</span>
+                <span id="studioWord" style="opacity:0; transform: translateY(20px);">Studio</span>
             </div>
             
             <div class="line-3" id="row3">
@@ -143,53 +143,45 @@
                 }
             });
 
-            // 1. Поява ArtWeb (виринання з далечини)
-            // Анімуємо opacity від 0 до 1 та scale від 0.5 до 1
-            tl.to(".line-1-wrapper", { 
-                duration: 1.8, 
-                opacity: 1, 
-                scale: 1, 
-                ease: "power2.out" 
-            })
+            // 1. Поява ArtWeb (плавне виринання)
+            tl.to(".line-1-wrapper", { duration: 1.8, opacity: 1, scale: 1, ease: "power3.out" })
             
-            // 2. Градієнт
-            .add(() => {
-                document.getElementById("row1").classList.add("run-shine");
-            })
-            .to({}, { duration: 3 })
+            // 2. Градієнт (починається до завершення появи)
+            .add(() => { document.getElementById("row1").classList.add("run-shine"); }, "-=0.8")
+            .to({}, { duration: 2.5 })
             
-            // 3. Підняття ArtWeb і поява ©
-            .to(".line-1-wrapper", { duration: 0.5, y: -50, ease: "back.out(1.7)" })
-            .to(".copyright-symbol", { duration: 0.8, opacity: 1, scale: 1, ease: "back.out(2)" }, "-=0.5")
+            // 3. Підняття ArtWeb + поява © (накладаються)
+            .to(".line-1-wrapper", { duration: 0.8, y: -50, ease: "power3.inOut" }, "-=0.5")
+            .to(".copyright-symbol", { duration: 0.8, opacity: 1, scale: 1, ease: "power3.out" }, "-=0.7")
             
             // 4. Поява Studio
-            .to(".line-2", { duration: 0.1, opacity: 1 }, "+=0.3")
-            .to("#studioWord", { duration: 1, opacity: 1, ease: "power3.out" })
+            .to(".line-2", { duration: 0.1, opacity: 1 }, "-=0.5")
+            .to("#studioWord", { duration: 1.2, opacity: 1, y: 0, ease: "power3.out" }, "-=0.8")
             
             // 5. Підняття рядка 2
-            .to(".line-2", { duration: 0.5, y: -30, ease: "back.out(1.5)" }, "+=0.5")
+            .to(".line-2", { duration: 0.8, y: -30, ease: "power3.inOut" }, "-=0.4")
             
             // 6. Поява початкового "ЧіЧ"
-            .to(".line-3", { duration: 0.1, opacity: 1 })
-            .from([ch1, spaceAndI, ch2], { duration: 0.8, opacity: 0, y: 20, stagger: 0.2, ease: "back.out(1.7)" })
+            .to(".line-3", { duration: 0.1, opacity: 1 }, "-=0.5")
+            .from([ch1, spaceAndI, ch2], { duration: 0.8, opacity: 0, y: 15, stagger: 0.15, ease: "power3.out" }, "-=0.6")
             
             // 7. Розгортання тексту
-            .to(restLeft, { width: "auto", opacity: 1, duration: 1.5, ease: "power4.inOut" }, "+=0.5")
-            .to(restRight, { width: "auto", opacity: 1, duration: 1.5, ease: "power4.inOut" }, "<")
+            .to(restLeft, { width: "auto", opacity: 1, duration: 1.8, ease: "power3.inOut" }, "-=0.2")
+            .to(restRight, { width: "auto", opacity: 1, duration: 1.8, ease: "power3.inOut" }, "<")
 
             // 8. Підняття рядка 3
-            .to(".line-3", { duration: 0.5, y: -40, ease: "back.out(1.5)" }, "+=0.5")
+            .to(".line-3", { duration: 0.8, y: -40, ease: "power3.inOut" }, "-=0.6")
             
             // 9. ЗУМАУТ ПОСТЕРА
-            .to("#poster-bg", { duration: 0.5, opacity: 1 })
+            .to("#poster-bg", { duration: 0.8, opacity: 1, ease: "power2.inOut" }, "-=0.4")
             .fromTo("#poster-img", 
                 { scale: 2.5, objectFit: "cover" }, 
-                { scale: 1, objectFit: "contain", duration: 4, ease: "power4.inOut" }, 
-                "-=0.5"
+                { scale: 1, objectFit: "contain", duration: 4.5, ease: "power3.inOut" }, 
+                "-=0.8"
             )
             
-            // 10. Текст стає на свої місця
-            .to("#text-block", { duration: 1.5, scale: 0.7, y: -70, ease: "power4.inOut" }, "-=3.5");
+            // 10. Текст стає на фінальні місця
+            .to("#text-block", { duration: 2, scale: 0.7, y: -70, ease: "power3.inOut" }, "-=4.2");
             
             // Логіка переходу
             function goToCopilot() {
