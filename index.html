@@ -65,15 +65,20 @@
         .line-2 { font-size: 1.5rem; color: #ccc; opacity: 0; display: flex; justify-content: center; align-items: center; gap: 10px; letter-spacing: 5px; height: 2rem; }
         .copyright-symbol { font-size: 2rem; display: inline-block; transform: scale(0); }
 
-        /* Рядок 3: ЧіЧ */
-        .line-3 { 
-            font-family: 'Playfair Display', serif; font-size: 2.5rem; font-style: italic; 
-            color: #ffd700; text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); 
-            opacity: 0; display: flex; justify-content: center; align-items: center; 
-            min-height: 4rem; 
-            white-space: nowrap; 
-        }
-        
+                   const chichContainer = document.getElementById("chichText");
+            
+            // БЛОК 1: "Ч" + "агарники" (додаємо &nbsp; в кінці)
+            const ch1 = document.createElement("span"); ch1.className = "char"; ch1.textContent = "Ч";
+            const restLeft = document.createElement("span"); restLeft.className = "char"; 
+            restLeft.innerHTML = "агарники&nbsp;"; // <--- ОСЬ ТУТ
+            
+            // БЛОК 2: " і " (додаємо &nbsp; з обох боків)
+            const spaceAndI = document.createElement("span"); spaceAndI.className = "char"; 
+            spaceAndI.innerHTML = "&nbsp;і&nbsp;"; // <--- І ТУТ
+            
+            // БЛОК 3: "Ч" + "орнобривці"
+            const ch2 = document.createElement("span"); ch2.className = "char"; ch2.textContent = "Ч";
+            const restRight = document.createElement("span"); restRight.className = "char"; restRight.textContent = "орнобривці";
         .char { display: inline-block; }
 
         #hint {
