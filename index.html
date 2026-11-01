@@ -27,6 +27,7 @@
             overflow: hidden;
         }
 
+        /* Оновлено шлях до картинки */
         #poster-img {
             width: 100%; height: 100%;
             object-fit: cover; 
@@ -94,11 +95,11 @@
 
     <div id="intro-container">
         <div id="poster-bg">
+            <!-- НОВИЙ ШИРОКИЙ ПОСТЕР -->
             <img id="poster-img" src="чічposter.png" alt="Poster">
         </div>
 
         <div id="text-block">
-            <!-- Об'єднаний текст ArtWeb -->
             <div class="line-1-wrapper" id="row1">
                 ArtWeb
             </div>
@@ -118,7 +119,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
-        <script>
+    <script>
         document.addEventListener("DOMContentLoaded", () => {
             
             const chichContainer = document.getElementById("chichText");
@@ -143,24 +144,18 @@
                 }
             });
 
-            // 1. Поява ArtWeb (виринання)
+            // 1. Поява ArtWeb
             tl.to(".line-1-wrapper", { duration: 1.8, opacity: 1, scale: 1, ease: "power3.out" })
             
             // 2. Градієнт
             .add(() => { document.getElementById("row1").classList.add("run-shine"); }, "-=0.8")
             .to({}, { duration: 2.5 })
             
-            // 3. Підняття ArtWeb (використовуємо back.out з м'якшим параметром)
-            .to(".line-1-wrapper", { 
-                duration: 1.2, 
-                y: -50, 
-                ease: "back.out(1.2)" // <--- 1.2 робить пружину дуже м'якою, без різкого відскоку
-            }, "-=0.5")
-            
-            // Поява ©
+            // 3. Підняття ArtWeb + поява © (м'яка пружина)
+            .to(".line-1-wrapper", { duration: 1.2, y: -50, ease: "back.out(1.2)" }, "-=0.5")
             .to(".copyright-symbol", { duration: 0.8, opacity: 1, scale: 1, ease: "power3.out" }, "-=0.7")
             
-            // 4. Поява Studio (додаємо ефект виринання)
+            // 4. Поява Studio
             .to(".line-2", { duration: 0.1, opacity: 1 }, "-=0.5")
             .fromTo("#studioWord", 
                 { opacity: 0, y: 20, scale: 0.9 }, 
@@ -168,30 +163,24 @@
                 "-=0.8"
             )
             
-            // 5. Підняття рядка 2 (м'яка пружина)
+            // 5. Підняття рядка 2
             .to(".line-2", { duration: 1, y: -30, ease: "back.out(1.2)" }, "-=0.4")
             
-            // 6. Поява початкового "ЧіЧ" (літери вилітають знизу і м'яко стають на місце)
+            // 6. Поява початкового "ЧіЧ"
             .to(".line-3", { duration: 0.1, opacity: 1 }, "-=0.5")
-            .from([ch1, spaceAndI, ch2], { 
-                duration: 1, 
-                opacity: 0, 
-                y: 30, 
-                stagger: 0.15, 
-                ease: "power4.out" // Дуже плавне гальмування
-            }, "-=0.6")
+            .from([ch1, spaceAndI, ch2], { duration: 1, opacity: 0, y: 30, stagger: 0.15, ease: "power4.out" }, "-=0.6")
             
-            // 7. Розгортання тексту (плавне розширення)
+            // 7. Розгортання тексту
             .to(restLeft, { width: "auto", opacity: 1, duration: 1.8, ease: "power3.inOut" }, "-=0.2")
             .to(restRight, { width: "auto", opacity: 1, duration: 1.8, ease: "power3.inOut" }, "<")
 
-            // 8. Підняття рядка 3 (теж м'яка пружина)
+            // 8. Підняття рядка 3
             .to(".line-3", { duration: 1, y: -40, ease: "back.out(1.2)" }, "-=0.6")
             
-            // 9. ЗУМАУТ ПОСТЕРА
+            // 9. ЗУМАУТ ПОСТЕРА (Оскільки картинка широка, зменшуємо початковий масштаб до 1.2)
             .to("#poster-bg", { duration: 0.8, opacity: 1, ease: "power2.inOut" }, "-=0.4")
             .fromTo("#poster-img", 
-                { scale: 2.5, objectFit: "cover" }, 
+                { scale: 1.2, objectFit: "cover" }, 
                 { scale: 1, objectFit: "contain", duration: 4.5, ease: "power3.inOut" }, 
                 "-=0.8"
             )
