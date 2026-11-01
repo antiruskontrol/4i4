@@ -38,36 +38,22 @@
             display: flex; flex-direction: column; align-items: center; gap: 10px; 
         }
 
-        /* Рядок 1: ArtWeb */
-        .line-1 { 
+        /* Рядок 1: ArtWeb (Один суцільний градієнт) */
+        .line-1-wrapper {
             font-size: 4rem; font-weight: 700; letter-spacing: 2px; opacity: 0; 
             display: flex; justify-content: center; align-items: center; gap: 15px;
             position: relative; 
             padding: 10px;
-        }
-        
-        /* ПРАВКА 1: Ідеальний градієнт через CSS-анімацію */
-        .art-text, .web-text {
-            position: relative;
+            background-image: linear-gradient(120deg, #ff8c00 0%, #ff8c00 30%, #ffffff 50%, #00bfff 70%, #00bfff 100%);
             background-size: 200% auto;
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
         }
 
-        .art-text {
-            background-image: linear-gradient(120deg, #ff8c00 0%, #ff8c00 40%, #ffffff 50%, #ff8c00 60%, #ff8c00 100%);
-            text-shadow: 0 0 15px rgba(255, 140, 0, 0.4);
-        }
-
-        .web-text {
-            background-image: linear-gradient(120deg, #00bfff 0%, #00bfff 40%, #ffffff 50%, #00bfff 60%, #00bfff 100%);
-            text-shadow: 0 0 15px rgba(0, 191, 255, 0.4);
-        }
-
-        /* Додаємо клас, який запускає анімацію */
         .run-shine {
-            animation: shine-effect 2.5s ease-in-out forwards;
+            animation: shine-effect 3s ease-in-out forwards;
         }
 
         @keyframes shine-effect {
@@ -90,8 +76,14 @@
         
         .char { display: inline-block; }
 
+        #hint {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.5); font-size: 1rem; z-index: 20;
+            opacity: 0; transition: opacity 1s; letter-spacing: 2px; cursor: pointer;
+        }
+
         @media (max-width: 768px) {
-            .line-1 { font-size: 2.5rem; flex-direction: column; gap: 0; }
+            .line-1-wrapper { font-size: 2.5rem; flex-direction: column; gap: 0; }
             .line-3 { font-size: 1.5rem; }
             .line-2 { font-size: 1rem; }
         }
@@ -105,9 +97,9 @@
         </div>
 
         <div id="text-block">
-            <div class="line-1" id="row1">
-                <span class="art-text" id="artWord">Art</span>
-                <span class="web-text" id="webWord">Web</span>
+            <div class="line-1-wrapper" id="row1">
+                <span>Art</span>
+                <span>Web</span>
             </div>
             
             <div class="line-2" id="row2">
@@ -119,6 +111,8 @@
                 <span id="chichText"></span>
             </div>
         </div>
+        
+        <div id="hint">Натисніть, щоб увійти до студії</div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -126,86 +120,86 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             
-            // ПРАВКА 2: Правильне розсування літер
             const chichContainer = document.getElementById("chichText");
             
-            // Створюємо ліву "Ч" і початкову "і" та праву "Ч"
+            // БЛОК 1: "Чагарники" (Ч + агарники)
             const ch1 = document.createElement("span"); ch1.className = "char"; ch1.textContent = "Ч";
-            const i1 = document.createElement("span"); i1.className = "char"; i1.textContent = "і";
-            const ch2 = document.createElement("span"); ch2.className = "char"; ch2.textContent = "Ч";
+            const restLeft = document.createElement("span"); restLeft.className = "char"; restLeft.textContent = "агарники";
             
-            // Літери для розкриття
-            const restLeft = document.createElement("span"); restLeft.className = "char"; restLeft.textContent = "агарники ";
-            const restRight = document.createElement("span"); restRight.className = "char"; restRight.textContent = "орнобрив";
-            const lastI = document.createElement("span"); lastI.className = "char"; lastI.textContent = "ці";
+            // БЛОК 2: " і " та "Чорнобривці" (і + Ч + орнобривці)
+            const spaceAndI = document.createElement("span"); spaceAndI.className = "char"; spaceAndI.textContent = " і ";
+            const ch2 = document.createElement("span"); ch2.className = "char"; ch2.textContent = "Ч";
+            const restRight = document.createElement("span"); restRight.className = "char"; restRight.textContent = "орнобривці";
 
-            // Вставляємо так, щоб середина була прихована між "Ч" і "Ч"
+            // Збираємо в правильному порядку
             chichContainer.appendChild(ch1);
             chichContainer.appendChild(restLeft);
-            chichContainer.appendChild(i1);
-            chichContainer.appendChild(restRight);
+            chichContainer.appendChild(spaceAndI);
             chichContainer.appendChild(ch2);
+            chichContainer.appendChild(restRight);
             
-            // Ховаємо нові літери
-            gsap.set([restLeft, restRight, lastI], { opacity: 0, width: 0, display: "inline-block", overflow: "hidden" });
+            // Ховаємо частини, які будуть розгортатися
+            gsap.set([restLeft, restRight], { opacity: 0, width: 0, display: "inline-block", overflow: "hidden" });
 
             const tl = gsap.timeline({
                 onComplete: () => {
-                    setTimeout(() => {
-                        gsap.to("body", { opacity: 0, duration: 1, onComplete: () => {
-                            window.location.href = 'copilot.html'; 
-                        }});
-                    }, 2500); 
+                    document.getElementById("hint").style.opacity = "1";
                 }
             });
 
-            // КРОК 1: Поява ArtWeb
-            tl.to(".line-1", { duration: 1.5, opacity: 1, ease: "power4.out" })
+            // 1. Поява ArtWeb
+            tl.to(".line-1-wrapper", { duration: 1.5, opacity: 1, ease: "power4.out" })
             
-            // КРОК 2: Запускаємо CSS-анімацію для градієнта
+            // 2. Запуск градієнта
             .add(() => {
-                document.getElementById("artWord").classList.add("run-shine");
-                document.getElementById("webWord").classList.add("run-shine");
+                document.getElementById("row1").classList.add("run-shine");
             })
-            // Чекаємо 2 секунди, поки йде анімація
-            .to({}, { duration: 2 })
+            .to({}, { duration: 3 })
             
-            // КРОК 3: Підняття ArtWeb і поява ©
-            .to(".line-1", { duration: 0.5, y: -50, ease: "back.out(1.7)" })
+            // 3. Підняття ArtWeb і поява ©
+            .to(".line-1-wrapper", { duration: 0.5, y: -50, ease: "back.out(1.7)" })
             .to(".copyright-symbol", { duration: 0.8, opacity: 1, scale: 1, ease: "back.out(2)" }, "-=0.5")
             
-            // КРОК 4: Поява Studio
+            // 4. Поява Studio
             .to(".line-2", { duration: 0.1, opacity: 1 }, "+=0.3")
             .to("#studioWord", { duration: 1, opacity: 1, ease: "power3.out" })
             
-            // КРОК 5: Підняття рядка 2
+            // 5. Підняття рядка 2
             .to(".line-2", { duration: 0.5, y: -30, ease: "back.out(1.5)" }, "+=0.5")
             
-            // КРОК 6: Поява "ЧіЧ"
+            // 6. Поява початкового "ЧіЧ"
             .to(".line-3", { duration: 0.1, opacity: 1 })
-            .from([ch1, i1, ch2], { duration: 0.8, opacity: 0, y: 20, stagger: 0.2, ease: "back.out(1.7)" })
+            .from([ch1, spaceAndI, ch2], { duration: 0.8, opacity: 0, y: 20, stagger: 0.2, ease: "back.out(1.7)" })
             
-            // КРОК 7: Розсування "Ч" і "Ч"
-            // Ми анімуємо margin (відступ) для "Ч" та "Ч", щоб вони роз'їхалися
-            .to(restLeft, { width: "auto", opacity: 1, duration: 1.5, ease: "power4.inOut" }, "+=0.5")
+            // 7. Розгортання тексту
+            // Ліва "Ч" (ch1) зміщується вліво (x: "-20px")
+            .to(ch1, { x: "-20px", duration: 1.5, ease: "power4.inOut" }, "+=0.5")
+            // Одночасно з цим, лівий та правий тексти розширюються
+            .to(restLeft, { width: "auto", opacity: 1, duration: 1.5, ease: "power4.inOut" }, "<")
             .to(restRight, { width: "auto", opacity: 1, duration: 1.5, ease: "power4.inOut" }, "<")
-            .to(ch1, { x: "-10px", duration: 1.5, ease: "power4.inOut" }, "<") // Ліва "Ч" їде вліво
-            .to(ch2, { x: "10px", duration: 1.5, ease: "power4.inOut" }, "<")  // Права "Ч" їде вправо
 
-            // КРОК 8: Підняття рядка 3
+            // 8. Підняття рядка 3
             .to(".line-3", { duration: 0.5, y: -20, ease: "back.out(1.5)" }, "+=0.5")
             
-            // КРОК 9: ЗУМАУТ ПОСТЕРА
+            // 9. ЗУМАУТ ПОСТЕРА
             .to("#poster-bg", { duration: 0.5, opacity: 1 })
-            
             .fromTo("#poster-img", 
                 { scale: 2.5, objectFit: "cover" }, 
                 { scale: 1, objectFit: "contain", duration: 4, ease: "power4.inOut" }, 
                 "-=0.5"
             )
             
-            // КРОК 10: Текст стає на свої місця
+            // 10. Текст стає на свої місця
             .to("#text-block", { duration: 1.5, scale: 0.7, y: -50, ease: "power4.inOut" }, "-=3.5");
+            
+            // Логіка переходу
+            function goToCopilot() {
+                gsap.to("body", { opacity: 0, duration: 1, onComplete: () => {
+                    window.location.href = 'copilot.html'; 
+                }});
+            }
+            document.getElementById("hint").addEventListener("click", goToCopilot);
+            document.getElementById("poster-bg").addEventListener("click", goToCopilot);
         });
     </script>
 </body>
