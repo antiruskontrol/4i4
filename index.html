@@ -38,7 +38,7 @@
             display: flex; flex-direction: column; align-items: center; gap: 10px; 
         }
 
-        /* Рядок 1: ArtWeb (Один суцільний градієнт) */
+        /* Рядок 1: ArtWeb */
         .line-1-wrapper {
             font-size: 4rem; font-weight: 700; letter-spacing: 2px; opacity: 0; 
             display: flex; justify-content: center; align-items: center; gap: 15px;
@@ -122,16 +122,17 @@
             
             const chichContainer = document.getElementById("chichText");
             
-            // БЛОК 1: "Чагарники" (Ч + агарники)
+            // БЛОК 1: "Чагарники"
             const ch1 = document.createElement("span"); ch1.className = "char"; ch1.textContent = "Ч";
-            const restLeft = document.createElement("span"); restLeft.className = "char"; restLeft.textContent = "агарники";
+            const restLeft = document.createElement("span"); restLeft.className = "char"; 
+            restLeft.textContent = "агарники"; // Пробіл в кінці
             
-            // БЛОК 2: " і " та "Чорнобривці" (і + Ч + орнобривці)
-            const spaceAndI = document.createElement("span"); spaceAndI.className = "char"; spaceAndI.textContent = " і ";
+            // БЛОК 2: " і " та "Чорнобривці"
+            const spaceAndI = document.createElement("span"); spaceAndI.className = "char"; spaceAndI.textContent = " і "; // Пробіли з обох боків
             const ch2 = document.createElement("span"); ch2.className = "char"; ch2.textContent = "Ч";
             const restRight = document.createElement("span"); restRight.className = "char"; restRight.textContent = "орнобривці";
 
-            // Збираємо в правильному порядку
+            // Збираємо
             chichContainer.appendChild(ch1);
             chichContainer.appendChild(restLeft);
             chichContainer.appendChild(spaceAndI);
@@ -150,7 +151,7 @@
             // 1. Поява ArtWeb
             tl.to(".line-1-wrapper", { duration: 1.5, opacity: 1, ease: "power4.out" })
             
-            // 2. Запуск градієнта
+            // 2. Градієнт
             .add(() => {
                 document.getElementById("row1").classList.add("run-shine");
             })
@@ -172,14 +173,12 @@
             .from([ch1, spaceAndI, ch2], { duration: 0.8, opacity: 0, y: 20, stagger: 0.2, ease: "back.out(1.7)" })
             
             // 7. Розгортання тексту
-            // Ліва "Ч" (ch1) зміщується вліво (x: "-20px")
             .to(ch1, { x: "-20px", duration: 1.5, ease: "power4.inOut" }, "+=0.5")
-            // Одночасно з цим, лівий та правий тексти розширюються
             .to(restLeft, { width: "auto", opacity: 1, duration: 1.5, ease: "power4.inOut" }, "<")
             .to(restRight, { width: "auto", opacity: 1, duration: 1.5, ease: "power4.inOut" }, "<")
 
-            // 8. Підняття рядка 3
-            .to(".line-3", { duration: 0.5, y: -20, ease: "back.out(1.5)" }, "+=0.5")
+            // 8. Підняття рядка 3 (ДОДАНО y: -40, щоб він підлетів вище)
+            .to(".line-3", { duration: 0.5, y: -40, ease: "back.out(1.5)" }, "+=0.5")
             
             // 9. ЗУМАУТ ПОСТЕРА
             .to("#poster-bg", { duration: 0.5, opacity: 1 })
@@ -189,8 +188,8 @@
                 "-=0.5"
             )
             
-            // 10. Текст стає на свої місця
-            .to("#text-block", { duration: 1.5, scale: 0.7, y: -50, ease: "power4.inOut" }, "-=3.5");
+            // 10. Текст стає на свої місця (також зсуваємо трохи вище)
+            .to("#text-block", { duration: 1.5, scale: 0.7, y: -70, ease: "power4.inOut" }, "-=3.5");
             
             // Логіка переходу
             function goToCopilot() {
