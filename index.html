@@ -122,14 +122,16 @@
             
             const chichContainer = document.getElementById("chichText");
             
-            // Створюємо літери з класом "char", щоб стилі застосувалися
+            // БЛОК 1: "Ч" + "агарники" (без пробілу, бо вони мають бути разом)
             const ch1 = document.createElement("span"); ch1.className = "char"; ch1.textContent = "Ч";
             const restLeft = document.createElement("span"); restLeft.className = "char"; 
-            restLeft.textContent = "агарники"; 
+            restLeft.textContent = "агарники"; // БЕЗ пробілу!
             
+            // БЛОК 2: " і " (з пробілами)
             const spaceAndI = document.createElement("span"); spaceAndI.className = "char"; 
-            spaceAndI.textContent = "\u00A0і\u00A0"; // \u00A0 - це нерозривний пробіл
+            spaceAndI.textContent = "\u00A0і\u00A0"; 
             
+            // БЛОК 3: "Ч" + "орнобривці"
             const ch2 = document.createElement("span"); ch2.className = "char"; ch2.textContent = "Ч";
             const restRight = document.createElement("span"); restRight.className = "char"; restRight.textContent = "орнобривці";
 
@@ -174,8 +176,8 @@
             .from([ch1, spaceAndI, ch2], { duration: 0.8, opacity: 0, y: 20, stagger: 0.2, ease: "back.out(1.7)" })
             
             // 7. Розгортання тексту
-            .to(ch1, { x: "-20px", duration: 1.5, ease: "power4.inOut" }, "+=0.5")
-            .to(restLeft, { width: "auto", opacity: 1, duration: 1.5, ease: "power4.inOut" }, "<")
+            // Тепер ми просто розширюємо блоки, без зсуву "Ч"
+            .to(restLeft, { width: "auto", opacity: 1, duration: 1.5, ease: "power4.inOut" }, "+=0.5")
             .to(restRight, { width: "auto", opacity: 1, duration: 1.5, ease: "power4.inOut" }, "<")
 
             // 8. Підняття рядка 3
