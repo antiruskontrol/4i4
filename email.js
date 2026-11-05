@@ -11,7 +11,7 @@
                 return Promise.reject("Missing Public Key");
             }
             // Формуємо правильний JSON-запит до API, передаючи всі ID
-            return fetch("https://emailjs.com", {
+            return fetch("https://api.emailjs.com/api/v1.0/email/send", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
