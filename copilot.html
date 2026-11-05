@@ -3,7 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Студія розробки 4і4</title>
+    <title>AI-Асистент Студії 4і4 | Автоматичне формування ТЗ</title>
+    <meta name="description" content="Сформуйте базове технічне завдання (ТЗ) для вашого вебсайту чи мобільного застосунку за допомогою нашого інтелектуального ШІ-копілота студії 4і4.">
+    
+    <!-- Підключення бібліотеки EmailJS -->
+    <script type="text/javascript" src="https://jsdelivr.net"></script>
+    <script type="text/javascript">
+        (function() {
+            // Ініціалізація EmailJS твоїм Публічним Ключем
+            emailjs.init({
+              publicKey: "dbQbev4DmfsbbelAg", // <--- ЗАМІНИ НА СВІЙ PUBLIC KEY З ВКЛАДКИ ACCOUNT
+            });
+        })();
+    </script>
+
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
         .hero { max-width: 600px; text-align: center; background: #1e293b; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #334155; }
@@ -46,7 +59,7 @@
         const chatInput = document.getElementById('chat-input');
         const chatSend = document.getElementById('chat-send');
 
-        const BACKEND_URL = 'https://fouri4-copilot-backend.onrender.com'; 
+        const BACKEND_URL = 'https://onrender.com'; 
 
         if (!localStorage.getItem('chat_session_id')) {
             localStorage.setItem('chat_session_id', 'session-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now());
@@ -61,24 +74,36 @@
             } 
         });
 
+        // ФУНКЦІЯ ВІДПРАВКИ ЛИСТА З ТВОЇМИ ID СЕРВІСІВ
+        function sendEmailNotification(userMessage, botReply) {
+            const templateParams = {
+                session_id: sessionId,
+                // Використовуємо кириличний ключ 'повідомлення', бо сервіс так його переклав у конструкторі
+                повідомлення: `Нова активність у Copilot 4i4!\n\nID Сесії: ${sessionId}\n\nПовідомлення користувача: ${userMessage}\n\nВідповідь ШІ-асистента:\n${botReply}`
+            };
+
+            // Передаємо твої service_ihkh6et та template_2bdg8p2
+            emailjs.send('service_ihkh6et', 'template_2bdg8p2', templateParams)
+                .then((response) => {
+                   console.log('Лист успішно надіслано на antiruskontrol@ukr.net!', response.status, response.text);
+                }, (error) => {
+                   console.error('Помилка відправки листа:', error);
+                });
+        }
+
         async function sendMessage() {
             const text = chatInput.value.trim();
             if (!text) return;
 
-            // Перевіряємо, чи це команда адміна (починається з /)
             const isCommand = text.startsWith('/');
 
-            // Додаємо повідомлення в чат, тільки якщо це не команда
             if (!isCommand) {
                 appendMessage(text, 'user');
             }
             
             chatInput.value = '';
             
-            // Показуємо статус завантаження
             const loadingId = appendMessage(isCommand ? 'Виконую команду...' : 'Аналізую вашу ідею, зачекайте...', 'bot');
-
-            // Отримуємо ключ адміна з localStorage (якщо він є)
             const adminKey = localStorage.getItem('adminKey') || '';
 
             try {
@@ -88,7 +113,7 @@
                     body: JSON.stringify({ 
                         message: text, 
                         sessionId: sessionId,
-                        adminKey: adminKey // <--- ПЕРЕДАЄМО КЛЮЧ!
+                        adminKey: adminKey
                     })
                 });
                 
@@ -99,6 +124,15 @@
                 if (loadingElement) loadingElement.remove();
                 
                 appendMessage(data.reply, 'bot');
+
+                // ТРИГЕР ДЛЯ ВІДПРАВКИ ЛИСТА
+                const triggerWords = ['технічне завдання', 'тз', 'сформовано', 'контакти', 'телефон', 'email', 'пошта', 'дякую', 'привіт', 'ідея'];
+                const shouldSendEmail = triggerWords.some(word => data.reply.toLowerCase().includes(word) || text.toLowerCase().includes(word));
+
+                if (shouldSendEmail && !isCommand) {
+                    sendEmailNotification(text, data.reply);
+                }
+
             } catch (error) {
                 console.error('Помилка:', error);
                 const loadingElement = document.getElementById(loadingId);
@@ -115,7 +149,7 @@
             msgDiv.classList.add('msg', sender);
             
             if (sender === 'bot') {
-                let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); 
+                let formattedText = text.replace(/\*\*(.*?)\*\"/g, '<b>$1</b>'); 
                 formattedText = formattedText.replace(/\n/g, '<br>'); 
                 msgDiv.innerHTML = formattedText;
             } else {
