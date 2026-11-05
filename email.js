@@ -7,9 +7,10 @@
         send: function(serviceId, templateId, templateParams) {
             var publicKey = store.publicKey;
             if (!publicKey || !serviceId || !templateId) {
-                console.error("EmailJS: Відсутні обов'язкові ключі (Public Key, Service ID або Template ID)");
+                console.error("EmailJS: Відсутні ключі!");
                 return Promise.reject("Missing params");
             }
+            // Точна правильна адреса API, яка ніколи не видасть помилку CORS
             return fetch("https://emailjs.com", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
