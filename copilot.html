@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Асистент Студії 4і4 | Автоматичне формування ТЗ | Розрахунок бюджету</title>
+    <!-- СЕО-налаштування сторінки -->
+    <title>AI-Асистент Студії 4і4 | Автоматичне формування ТЗ</title>
     <meta name="description" content="Сформуйте базове технічне завдання (ТЗ) для вашого вебсайту чи мобільного застосунку за допомогою нашого інтелектуального ШІ-копілота студії 4і4.">
     
-    <!-- Підключення бібліотеки EmailJS -->
-    <script type="text/javascript" src="https://jsdelivr.net"></script>
+    <!-- Стабільне підключення EmailJS в обхід блокованих CDN -->
+    <script type="text/javascript" src="https://emailjs.com"></script>
     <script type="text/javascript">
         (function() {
-            // Ініціалізація EmailJS твоїм Публічним Ключем
-            emailjs.init({
-              publicKey: "dbQbev4DmfsbbelAg", // <--- ЗАМІНИ НА СВІЙ PUBLIC KEY З ВКЛАДКИ ACCOUNT
-            });
+            // Класична ініціалізація за допомогою твого Публічного Ключа
+            emailjs.init("dbQbev4DmfsbbelAg"); // <--- ЗАМІНИ НА СВІЙ PUBLIC KEY З ВКЛАДКИ ACCOUNT
         })();
     </script>
 
@@ -74,15 +73,15 @@
             } 
         });
 
-        // ФУНКЦІЯ ВІДПРАВКИ ЛИСТА З ТВОЇМИ ID СЕРВІСІВ
+        // ФУНКЦІЯ АВТОМАТИЧНОЇ ВІДПРАВКИ ЛИСТА З ТВОЇМИ НАЛАШТОВАНИМИ ID
         function sendEmailNotification(userMessage, botReply) {
             const templateParams = {
                 session_id: sessionId,
-                // Використовуємо кириличний ключ 'повідомлення', бо сервіс так його переклав у конструкторі
+                // Використовуємо кириличний ключ 'повідомлення', бо сервіс так його переклав у тебе в конструкторі
                 повідомлення: `Нова активність у Copilot 4i4!\n\nID Сесії: ${sessionId}\n\nПовідомлення користувача: ${userMessage}\n\nВідповідь ШІ-асистента:\n${botReply}`
             };
 
-            // Передаємо твої service_ihkh6et та template_2bdg8p2
+            // Інтегруємо твої service_ihkh6et та template_2bdg8p2
             emailjs.send('service_ihkh6et', 'template_2bdg8p2', templateParams)
                 .then((response) => {
                    console.log('Лист успішно надіслано на antiruskontrol@ukr.net!', response.status, response.text);
@@ -95,15 +94,20 @@
             const text = chatInput.value.trim();
             if (!text) return;
 
+            // Перевіряємо, чи це команда адміна (починається з /)
             const isCommand = text.startsWith('/');
 
+            // Додаємо повідомлення в чат, тільки якщо це не команда
             if (!isCommand) {
                 appendMessage(text, 'user');
             }
             
             chatInput.value = '';
             
+            // Показуємо статус завантаження
             const loadingId = appendMessage(isCommand ? 'Виконую команду...' : 'Аналізую вашу ідею, зачекайте...', 'bot');
+
+            // Отримуємо ключ адміна з localStorage (якщо він є)
             const adminKey = localStorage.getItem('adminKey') || '';
 
             try {
@@ -113,7 +117,7 @@
                     body: JSON.stringify({ 
                         message: text, 
                         sessionId: sessionId,
-                        adminKey: adminKey
+                        adminKey: adminKey // <--- ПЕРЕДАЄМО КЛЮЧ!
                     })
                 });
                 
@@ -125,8 +129,9 @@
                 
                 appendMessage(data.reply, 'bot');
 
-                // ТРИГЕР ДЛЯ ВІДПРАВКИ ЛИСТА
-                const triggerWords = ['технічне завдання', 'тз', 'сформовано', 'контакти', 'телефон', 'email', 'пошта', 'дякую', 'привіт', 'ідея'];
+                // ТРИГЕРИ ДЛЯ ВІДПРАВКИ ЛИСТА
+                // Якщо користувач або бот згадує ці стоп-слова, діалог дублюється тобі на пошту
+                const triggerWords = ['технічне завдання', 'тз', 'сформовано', 'контакти', 'телефон', 'email', 'пошта', 'дякую', 'привіт', 'ідея', 'вебсайт', 'допоможи'];
                 const shouldSendEmail = triggerWords.some(word => data.reply.toLowerCase().includes(word) || text.toLowerCase().includes(word));
 
                 if (shouldSendEmail && !isCommand) {
@@ -149,7 +154,7 @@
             msgDiv.classList.add('msg', sender);
             
             if (sender === 'bot') {
-                let formattedText = text.replace(/\*\*(.*?)\*\"/g, '<b>$1</b>'); 
+                let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); 
                 formattedText = formattedText.replace(/\n/g, '<br>'); 
                 msgDiv.innerHTML = formattedText;
             } else {
