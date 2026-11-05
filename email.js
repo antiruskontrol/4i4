@@ -10,6 +10,7 @@
                 console.error("EmailJS: Відсутній Public Key!");
                 return Promise.reject("Missing Public Key");
             }
+            var realTemplateId = "template_ixw0wxg";
             // Формуємо правильний JSON-запит до API, передаючи всі ID
             return fetch("https://api.emailjs.com/api/v1.0/email/send", {
                 method: "POST",
