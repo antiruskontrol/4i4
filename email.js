@@ -1,26 +1,22 @@
 (function(global) {
-    var store = { publicKey: void 0 };
     global.emailjs = {
         init: function(publicKey) {
-            store.publicKey = publicKey;
+            // Метод залишається для сумісності, нічого не робить
         },
         send: function(serviceId, templateId, templateParams) {
-            var publicKey = store.publicKey;
-            if (!publicKey) {
-                console.error("EmailJS: Відсутній Public Key!");
-                return Promise.reject("Missing Public Key");
-            }
+            // Твої точні перевірені ключі
             var realPublicKey = "dbQbev4DmfsbbelAg";            
             var realTemplateId = "template_ixw0wxg";
             var realServiceId = "service_ihkh6et";
-            // Формуємо правильний JSON-запит до API, передаючи всі ID
+
+            // Надсилаємо запит строго на правильні робочі змінні
             return fetch("https://api.emailjs.com/api/v1.0/email/send", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    service_id: serviceId,
-                    template_id: templateId,
-                    user_id: publicKey,
+                    service_id: realServiceId,   // Використовуємо realServiceId
+                    template_id: realTemplateId, // Використовуємо realTemplateId
+                    user_id: realPublicKey,      // Використовуємо realPublicKey
                     template_params: templateParams
                 })
             }).then(function(response) {
