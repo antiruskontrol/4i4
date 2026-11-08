@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 1. ТАЙТЛ (Головний маркер для пошуку, до 65 символів) -->
+    <title>Цифрова виставка Марії Примаченко | Арт-студія Чагарники і Чорнобривці</title>
+    
+    <!-- 2. МЕТА-ОПИС (Сніппет, який люди бачать у видачі Google) -->
+    <meta name="description" content="Віртуальна диджитал-експозиція, натхненна генієм українського наївного мистецтва Марією Примаченко. Етно-модерн дизайн та сучасна веб-інтерпретація від 4і4.">
+    
+    <!-- Open Graph мета-теги (Щоб сторінка красиво виглядала, коли нею діляться у соцмережах/месенджерах) -->
+    <meta property="og:title" content="Цифрова виставка Марії Примаченко | Студія 4і4">
+    <meta property="og:description" content="Поєднання українського етно-модерну та передових веб-технологій від арт-студії Чагарники і Чорнобривці.">
+    <meta property="og:image" content="https://github.io"> <!-- Твоя афіша виставки -->
+    <meta property="og:url" content="https://github.io">
+
+    <style>
+        /* Тут будуть твої фірмові стилі у темних тонах розробки */
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 40px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { color: #38bdf8; font-size: 2.5rem; margin-bottom: 10px; }
+        .meta-info { color: #94a3b8; font-style: italic; margin-bottom: 30px; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
+        .art-card { background: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 20px; text-align: center; }
+        .art-card img { max-width: 100%; border-radius: 8px; height: auto; }
+        .art-card h3 { color: #38bdf8; margin: 15px 0 5px 0; }
+        .art-card p { color: #94a3b8; font-size: 0.95rem; line-height: 1.5; }
+        .back-btn { display: inline-block; margin-top: 40px; color: #38bdf8; text-decoration: none; font-weight: bold; }
+        .back-btn:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- 3. ГОЛОВНИЙ ЗАГОЛОВОК СТОРІНКИ (Суворо ОДИН на сторінку, містить головний ключ) -->
+        <h1>Цифрова виставка «Всесвіт Марії Примаченко»</h1>
+        <div class="meta-info">Концептуальна експозиція від арт-веб студії «Чагарники і Чорнобривці»</div>
+
+        <!-- 4. СЕО-ОПИС КОНЦЕПЦІЇ (Унікальний текст, який пояснює роботу студії. Пошуковики його обожнюють) -->
+        <section class="intro-text">
+            <p>Вітаємо у віртуальному просторі, де український дивовижний етно-світ зустрічається з передовими технологіями веб-розробки. Марія Примаченко — це символ глибинної української ідентичності, наївного мистецтва та безмежної фантазії. Наша команда <strong>4і4</strong> переосмислила її художні образи через призму сучасного UI/UX дизайну та диджитал-арту.</p>
+            <p>Кожна робота, представлена нижче, є демонстрацією того, як автентичні мотиви та художній код України можуть інтегруватися у сучасні цифрові продукти, створюючи унікальне брендування та неповторні інтерфейси.</p>
+        </section>
+
+        <!-- 5. ГАЛЕРЕЯ З ОПТИМІЗАЦІЄЮ ЗОБРАЖЕНЬ (Для виходу в Google Картинки) -->
+        <main class="gallery-grid">
+            
+            <!-- Картка 1 -->
+            <div class="art-card">
+                <!-- Обов'язково використовуємо WebP/AVIF формати + СЕО-оптимізований тег ALT -->
+                <img src="img/prymachenko-beast.webp" alt="Диджитал арт за мотивами Марії Примаченко Дивовижний Звір від студії 4і4">
+                <h3>Дивовижний Звір у Вебі</h3>
+                <p>Інтерпретація класичного образу фантастичної істоти, адаптована під сучасну векторну графіку для інтерфейсів.</p>
+            </div>
+
+            <!-- Картка 2 -->
+            <div class="art-card">
+                <img src="img/prymachenko-flowers.webp" alt="Український етно орнамент квіти Марії Примаченко веб-дизайн">
+                <h3>Етно-Брендинг «Чорнобривці»</h3>
+                <p>Переосмислення рослинних орнаментів художниці як елементів фірмового стилю та сучасного цифрового брендингу.</p>
+            </div>
+
+            <!-- Картка 3 -->
+            <div class="art-card">
+                <img src="img/prymachenko-birds.webp" alt="Цифрова ілюстрація птахи Марії Примаченко концепт арт 4і4">
+                <h3>Птахи Надії</h3>
+                <p>Концептуальний арт-блок, який демонструє використання яскравої палітри Примаченко у веб-ілюстраціях.</p>
+            </div>
+
+        </main>
+
+        <a href="index.html" class="back-btn">← Повернутися на головну</a>
+    </div>
+
+</body>
+</html>
