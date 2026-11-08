@@ -160,6 +160,7 @@
                 formattedText = formattedText.replace(/\n/g, '<br>'); 
                 msgDiv.innerHTML = formattedText;
                 
+                // Якщо текст довгий — додаємо кнопку "Показати більше"
                 if (text.length > 300) {
                     msgDiv.classList.add('collapsed');
                     
@@ -168,7 +169,7 @@
                     expandBtn.innerText = 'Показати більше';
                     expandBtn.onclick = function() {
                         msgDiv.classList.remove('collapsed');
-                        this.remove();
+                        this.remove(); // Видаляємо кнопку після натискання
                     };
                     msgDiv.appendChild(expandBtn);
                 }
