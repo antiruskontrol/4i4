@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- СЕО-оптимізація мета-тегів хабу виставок -->
+    <title>Галерея цифрових виставок | Арт-веб студія Чагарники і Чорнобривці</title>
+    <meta name="description" content="Віртуальний простір цифрових експозицій від студії 4і4. Інноваційні веб-виставки, натхненні генієм Марії Примаченко, Георгія Нарбута та Івана Марчука.">
+    
+    <!-- Open Graph мікророзмітка для соцмереж -->
+    <meta property="og:title" content="Галерея цифрових виставок | Студія 4і4">
+    <meta property="og:description" content="Віртуальний хаб українського диджитал-мистецтва та етно-модерн дизайну від Чагарники і Чорнобривці.">
+    <meta property="og:image" content="https://github.io">
+    <meta property="og:url" content="https://github.io">
+
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 40px; line-height: 1.6; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header-block { text-align: center; margin-bottom: 50px; }
+        h1 { color: #38bdf8; font-size: 2.8rem; margin-bottom: 10px; }
+        .subtitle { color: #94a3b8; font-size: 1.2rem; max-width: 700px; margin: 0 auto; }
+        
+        .exhibitions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 35px; margin-top: 20px; }
+        .exhibition-card { background: #1e293b; border-radius: 16px; border: 1px solid #334155; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; }
+        .exhibition-card:hover { transform: translateY(-8px); border-color: #38bdf8; box-shadow: 0 10px 25px rgba(56, 189, 248, 0.15); }
+        
+        .card-image { position: relative; width: 100%; height: 220px; background: #0f172a; overflow: hidden; }
+        .card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .exhibition-card:hover .card-image img { transform: scale(1.05); }
+        
+        .badge { position: absolute; top: 15px; right: 15px; background: #0284c7; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .card-content { padding: 25px; flex: 1; display: flex; flex-direction: column; }
+        .card-content h2 { font-size: 1.5rem; color: #38bdf8; margin: 0 0 12px 0; }
+        .card-content p { color: #94a3b8; font-size: 1rem; margin: 0 0 20px 0; flex: 1; }
+        
+        .view-btn { display: block; text-align: center; background: #0284c7; color: white; text-decoration: none; padding: 12px; border-radius: 8px; font-weight: bold; transition: background 0.2s; }
+        .view-btn:hover { background: #0369a1; }
+        
+        .footer-nav { margin-top: 60px; border-top: 1px solid #334155; padding-top: 25px; text-align: center; }
+        .back-btn { color: #94a3b8; text-decoration: none; font-weight: bold; transition: color 0.2s; }
+        .back-btn:hover { color: #38bdf8; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="header-block">
+            <!-- Головний SEO заголовок H1 -->
+            <h1>Цифрові виставки українських геніїв</h1>
+            <p class="subtitle">Переосмислення національного культурного коду через призму штучного інтелекту, сучасного UI/UX дизайну та веб-технологій від арт-студії 4і4.</p>
+        </header>
+
+        <main class="exhibitions-grid">
+            
+            <!-- Картка 1: Марія Примаченко -->
+            <section class="exhibition-card">
+                <div class="card-image">
+                    <!-- Усі прев'ю-обкладинки лежать в твоїй загальній папці img/ -->
+                    <img src="img/prymachenko-preview.webp" alt="Афіша цифрової виставки Всесвіт Марії Примаченко від студії 4і4">
+                    <span class="badge">Етно-модерн</span>
+                </div>
+                <div class="card-content">
+                    <h2>Всесвіт Марії Примаченко</h2>
+                    <p>Віртуальний простір дивовижних звірів та яскравих рослинних орнаментів українського наївного мистецтва, адаптованих під сучасну комп'ютерну графіку.</p>
+                    <a href="prymachenko.html" class="view-btn">Увійти до експозиції</a>
+                </div>
+            </section>
+
+            <!-- Картка 2: Георгій Нарбут -->
+            <section class="exhibition-card">
+                <div class="card-image">
+                    <img src="img/narbut-preview.webp" alt="Обкладинка виставки Геометрія та Шрифт Георгія Нарбута дизайн 4і4">
+                    <span class="badge">Графіка & Шрифт</span>
+                </div>
+                <div class="card-content">
+                    <h2>Геометрія Георгія Нарбута</h2>
+                    <p>Дослідження монументальної української шрифтової спадщини та барокової симетрії як ідеальної основи для сучасного корпоративного брендингу.</p>
+                    <a href="narbut.html" class="view-btn">Увійти до експозиції</a>
+                </div>
+            </section>
+
+            <!-- Картка 3: Іван Марчук -->
+            <section class="exhibition-card">
+                <div class="card-image">
+                    <img src="img/marchuk-preview.webp" alt="Цифрова афіша виставки Плетіння світів Івана Марчука Ші генеративний арт">
+                    <span class="badge">Генеративний ШІ</span>
+                </div>
+                <div class="card-content">
+                    <h2>Плетіння світів Івана Марчука</h2>
+                    <p>Унікальна художня техніка «пльонтанізму» в цифрову епоху. Нейромережеві текстури, інтерактивні лінії та генеративне мистецтво майбутнього.</p>
+                    <a href="marchuk.html" class="view-btn">Увійти до експозиції</a>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="footer-nav">
+            <a href="index.html" class="back-btn">← Повернутися на головну сторінку інтро</a>
+        </footer>
+    </div>
+
+</body>
+</html>
