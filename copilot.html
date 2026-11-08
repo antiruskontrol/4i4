@@ -115,10 +115,9 @@
             const loadingId = appendMessage(isCommand ? 'Виконую команду...' : 'Аналізую вашу ідею, зачекайте...', 'bot');
 
             const adminKey = localStorage.getItem('adminKey') || '';
-            // Отримуємо email з localStorage, якщо він там є
             const userEmail = localStorage.getItem('userEmail') || null;
 
-                        try {
+            try {
                 const response = await fetch(`${BACKEND_URL}/api/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -130,13 +129,12 @@
                     })
                 });
                 
-                if (!response.ok) throw new Error(`Помилка сервера: ${response.status}`);
+                if (!response.ok) throw new Error('Network error');
                 const data = await response.json();
                 
                 const loadingElement = document.getElementById(loadingId);
                 if (loadingElement) loadingElement.remove();
                 
-                // Перевіряємо, чи є відповідь
                 if (data && data.reply) {
                     appendMessage(data.reply, 'bot');
                 } else {
@@ -147,10 +145,10 @@
                 const loadingElement = document.getElementById(loadingId);
                 if (loadingElement) {
                     loadingElement.innerText = 'Помилка зв\'язку. Зачекайте 15 секунд і спробуйте знову.';
-                } else {
-                    appendMessage('Помилка зв\'язку. Зачекайте 15 секунд і спробуйте знову.', 'bot');
                 }
             }
+        }
+
         function appendMessage(text, sender) {
             const msgDiv = document.createElement('div');
             const id = 'msg-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
@@ -162,7 +160,6 @@
                 formattedText = formattedText.replace(/\n/g, '<br>'); 
                 msgDiv.innerHTML = formattedText;
                 
-                // Якщо текст довгий — додаємо кнопку "Показати більше"
                 if (text.length > 300) {
                     msgDiv.classList.add('collapsed');
                     
@@ -171,7 +168,7 @@
                     expandBtn.innerText = 'Показати більше';
                     expandBtn.onclick = function() {
                         msgDiv.classList.remove('collapsed');
-                        this.remove(); // Видаляємо кнопку після натискання
+                        this.remove();
                     };
                     msgDiv.appendChild(expandBtn);
                 }
