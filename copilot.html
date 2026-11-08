@@ -118,7 +118,7 @@
             // Отримуємо email з localStorage, якщо він там є
             const userEmail = localStorage.getItem('userEmail') || null;
 
-            try {
+                        try {
                 const response = await fetch(`${BACKEND_URL}/api/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -126,26 +126,31 @@
                         message: text, 
                         sessionId: sessionId,
                         adminKey: adminKey,
-                        userEmail: userEmail // <--- ДОДАНО ЦЕ ПОЛЕ
+                        userEmail: userEmail
                     })
                 });
                 
-                if (!response.ok) throw new Error('Network error');
+                if (!response.ok) throw new Error(`Помилка сервера: ${response.status}`);
                 const data = await response.json();
                 
                 const loadingElement = document.getElementById(loadingId);
                 if (loadingElement) loadingElement.remove();
                 
-                appendMessage(data.reply, 'bot');
+                // Перевіряємо, чи є відповідь
+                if (data && data.reply) {
+                    appendMessage(data.reply, 'bot');
+                } else {
+                    appendMessage('ШІ не зміг згенерувати відповідь. Спробуйте ще раз.', 'bot');
+                }
             } catch (error) {
                 console.error('Помилка:', error);
                 const loadingElement = document.getElementById(loadingId);
                 if (loadingElement) {
                     loadingElement.innerText = 'Помилка зв\'язку. Зачекайте 15 секунд і спробуйте знову.';
+                } else {
+                    appendMessage('Помилка зв\'язку. Зачекайте 15 секунд і спробуйте знову.', 'bot');
                 }
             }
-        }
-
         function appendMessage(text, sender) {
             const msgDiv = document.createElement('div');
             const id = 'msg-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
