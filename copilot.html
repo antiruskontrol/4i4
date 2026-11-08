@@ -134,12 +134,14 @@
                 if (loadingElement) loadingElement.remove();
                 
                 appendMessage(data.reply, 'bot');
-            } catch (error) {
-                console.error('Помилка:', error);
-                const loadingElement = document.getElementById(loadingId);
-                if (loadingElement) {
-                    loadingElement.innerText = 'Помилка зв\'язку. Зачекайте 15 секунд і спробуйте знову.';
-                }
+            
+                } catch (error) {
+        console.error("=== CRITICAL ERROR ===");
+        console.error("Message:", error.message);
+        console.error("Stack:", error.stack);
+        console.error("======================");
+        res.status(500).json({ reply: 'Помилка з\'єднання.' });
+    }
             }
         }
 
