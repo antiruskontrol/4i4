@@ -141,7 +141,7 @@
             }
         }
 
-        function appendMessage(text, sender) {
+               function appendMessage(text, sender) {
             const msgDiv = document.createElement('div');
             const id = 'msg-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
             msgDiv.id = id;
@@ -152,7 +152,7 @@
                 formattedText = formattedText.replace(/\n/g, '<br>'); 
                 msgDiv.innerHTML = formattedText;
                 
-                // Перевіряємо, чи текст довгий (наприклад, більше 300 символів)
+                // Якщо текст довгий — додаємо кнопку "Показати більше"
                 if (text.length > 300) {
                     msgDiv.classList.add('collapsed');
                     
