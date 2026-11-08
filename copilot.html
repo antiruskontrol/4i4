@@ -23,7 +23,7 @@
         
         /* Обмеження висоти для довгих повідомлень */
         .msg.collapsed {
-            max-height: 150px; /* Приблизна висота, після якої з'являється кнопка */
+            max-height: 150px;
             overflow: hidden;
             position: relative;
         }
@@ -115,6 +115,8 @@
             const loadingId = appendMessage(isCommand ? 'Виконую команду...' : 'Аналізую вашу ідею, зачекайте...', 'bot');
 
             const adminKey = localStorage.getItem('adminKey') || '';
+            // Отримуємо email з localStorage, якщо він там є
+            const userEmail = localStorage.getItem('userEmail') || null;
 
             try {
                 const response = await fetch(`${BACKEND_URL}/api/chat`, {
@@ -123,7 +125,8 @@
                     body: JSON.stringify({ 
                         message: text, 
                         sessionId: sessionId,
-                        adminKey: adminKey
+                        adminKey: adminKey,
+                        userEmail: userEmail // <--- ДОДАНО ЦЕ ПОЛЕ
                     })
                 });
                 
@@ -134,18 +137,16 @@
                 if (loadingElement) loadingElement.remove();
                 
                 appendMessage(data.reply, 'bot');
-            
-                } catch (error) {
-        console.error("=== CRITICAL ERROR ===");
-        console.error("Message:", error.message);
-        console.error("Stack:", error.stack);
-        console.error("======================");
-        res.status(500).json({ reply: 'Помилка з\'єднання.' });
-    }
+            } catch (error) {
+                console.error('Помилка:', error);
+                const loadingElement = document.getElementById(loadingId);
+                if (loadingElement) {
+                    loadingElement.innerText = 'Помилка зв\'язку. Зачекайте 15 секунд і спробуйте знову.';
+                }
             }
         }
 
-               function appendMessage(text, sender) {
+        function appendMessage(text, sender) {
             const msgDiv = document.createElement('div');
             const id = 'msg-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
             msgDiv.id = id;
