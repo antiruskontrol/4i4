@@ -3,26 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- СЕО-налаштування сторінки -->
-    <title>AI-Асистент Студії 4і4 | Автоматичне формування ТЗ | Розрахунок бюджету проекта</title>
-    <meta name="description" content="Сформуйте базове технічне завдання (ТЗ) для вашого вебсайту чи мобільного застосунку за допомогою нашого інтелектуального ШІ-копілота студії 4і4.">
-    <meta property="og:title" content="ArtWeb Studio | Copilot">
-    <meta property="og:description" content="Сторінка Copilot АртВеб студії 'Чагарники і Чорнобривці'.">
-    <meta property="og:image" content="https://github.io">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:type" content="website">
-
-    <!-- Стабільне підключення EmailJS в обхід блокованих CDN -->
-    <script type="text/javascript" src="email.js"></script>
-    <script type="text/javascript">
-        (function() {
-            // Класична ініціалізація за допомогою твого Публічного Ключа
-            emailjs.init("dbQbev4DmfsbbelAg"); // <--- ЗАМІНИ НА СВІЙ PUBLIC KEY З ВКЛАДКИ ACCOUNT
-        })();
-    </script>
-
+    <title>Студія розробки 4і4</title>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
         .hero { max-width: 600px; text-align: center; background: #1e293b; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #334155; }
@@ -32,9 +13,46 @@
         #chat-widget { position: fixed; bottom: 25px; right: 25px; width: 380px; height: 500px; background: #1e293b; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); display: flex; flex-direction: column; overflow: hidden; border: 1px solid #334155; }
         #chat-header { background: #0284c7; color: white; padding: 18px; font-weight: bold; font-size: 1.1rem; letter-spacing: 0.5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         #chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #0f172a; min-height: 0; }
-        .msg { padding: 12px 16px; border-radius: 12px; max-width: 80%; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; }
+        
+        /* Стилі для повідомлень */
+        .msg { padding: 12px 16px; border-radius: 12px; max-width: 80%; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; position: relative; }
         .user { background: #0284c7; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
         .bot { background: #334155; color: #f8fafc; align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #475569; }
+        
+        /* Обмеження висоти для довгих повідомлень */
+        .msg.collapsed {
+            max-height: 150px; /* Приблизна висота, після якої з'являється кнопка */
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Градієнт, який показує, що текст обрізано */
+        .msg.collapsed::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(transparent, #334155);
+            pointer-events: none;
+        }
+
+        .expand-btn {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            background: #475569;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .expand-btn:hover { background: #64748b; }
+
         #chat-input-area { display: flex; background: #1e293b; border-top: 1px solid #334155; padding: 10px; flex-shrink: 0; }
         #chat-input { flex: 1; padding: 12px; background: #334155; color: white; border: 1px solid #475569; border-radius: 8px; outline: none; font-size: 0.95rem; }
         #chat-input::placeholder { color: #94a3b8; }
@@ -80,41 +98,20 @@
             } 
         });
 
-        // ФУНКЦІЯ АВТОМАТИЧНОЇ ВІДПРАВКИ ЛИСТА З ТВОЇМИ НАЛАШТОВАНИМИ ID
-        function sendEmailNotification(userMessage, botReply) {
-            const templateParams = {
-                session_id: sessionId,
-                // Використовуємо кириличний ключ 'повідомлення', бо сервіс так його переклав у тебе в конструкторі
-                повідомлення: `Нова активність у Copilot 4i4!\n\nID Сесії: ${sessionId}\n\nПовідомлення користувача: ${userMessage}\n\nВідповідь ШІ-асистента:\n${botReply}`
-            };
-
-            // Інтегруємо твої service_ihkh6et та template_2bdg8p2
-            emailjs.send('service_ihkh6et', 'template_2bdg8p2', templateParams)
-                .then((response) => {
-                   console.log('Лист успішно надіслано на antiruskontrol@ukr.net!', response.status, response.text);
-                }, (error) => {
-                   console.error('Помилка відправки листа:', error);
-                });
-        }
-
         async function sendMessage() {
             const text = chatInput.value.trim();
             if (!text) return;
 
-            // Перевіряємо, чи це команда адміна (починається з /)
             const isCommand = text.startsWith('/');
 
-            // Додаємо повідомлення в чат, тільки якщо це не команда
             if (!isCommand) {
                 appendMessage(text, 'user');
             }
             
             chatInput.value = '';
             
-            // Показуємо статус завантаження
             const loadingId = appendMessage(isCommand ? 'Виконую команду...' : 'Аналізую вашу ідею, зачекайте...', 'bot');
 
-            // Отримуємо ключ адміна з localStorage (якщо він є)
             const adminKey = localStorage.getItem('adminKey') || '';
 
             try {
@@ -124,7 +121,7 @@
                     body: JSON.stringify({ 
                         message: text, 
                         sessionId: sessionId,
-                        adminKey: adminKey // <--- ПЕРЕДАЄМО КЛЮЧ!
+                        adminKey: adminKey
                     })
                 });
                 
@@ -135,16 +132,6 @@
                 if (loadingElement) loadingElement.remove();
                 
                 appendMessage(data.reply, 'bot');
-
-                // ТРИГЕРИ ДЛЯ ВІДПРАВКИ ЛИСТА
-                // Якщо користувач або бот згадує ці стоп-слова, діалог дублюється тобі на пошту
-                const triggerWords = ['технічне завдання', 'тз', 'сформовано', 'контакти', 'телефон', 'email', 'пошта', 'дякую', 'привіт', 'ідея', 'вебсайт', 'допоможи'];
-                const shouldSendEmail = triggerWords.some(word => data.reply.toLowerCase().includes(word) || text.toLowerCase().includes(word));
-
-                if (shouldSendEmail && !isCommand) {
-                    sendEmailNotification(text, data.reply);
-                }
-
             } catch (error) {
                 console.error('Помилка:', error);
                 const loadingElement = document.getElementById(loadingId);
@@ -164,6 +151,20 @@
                 let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); 
                 formattedText = formattedText.replace(/\n/g, '<br>'); 
                 msgDiv.innerHTML = formattedText;
+                
+                // Перевіряємо, чи текст довгий (наприклад, більше 300 символів)
+                if (text.length > 300) {
+                    msgDiv.classList.add('collapsed');
+                    
+                    const expandBtn = document.createElement('button');
+                    expandBtn.className = 'expand-btn';
+                    expandBtn.innerText = 'Показати більше';
+                    expandBtn.onclick = function() {
+                        msgDiv.classList.remove('collapsed');
+                        this.remove(); // Видаляємо кнопку після натискання
+                    };
+                    msgDiv.appendChild(expandBtn);
+                }
             } else {
                 msgDiv.innerText = text;
             }
