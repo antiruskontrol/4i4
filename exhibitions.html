@@ -117,10 +117,27 @@ body::before {
     background-size: 90% auto; /* На телефоні вінок займатиме 90% ширини екрана */
   }
 }
+.fixed-bg-wreath {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('./groundexhib.webp');
+  background-repeat: no-repeat;
+  background-size: auto 135vh;
+  background-position: 145% center;
+  opacity: 0.35;
+  mix-blend-mode: screen;
+  z-index: 0;
+  pointer-events: none;
+}
 
     </style>
 </head>
 <body>
+    <div class="fixed-bg-wreath"></div>
+
   <div id="page-transition-overlay"></div>
 
     <div class="container">
