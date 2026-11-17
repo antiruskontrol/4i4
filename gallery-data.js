@@ -1,32 +1,38 @@
-﻿const EXHIBITIONS_DATA = [
+const EXHIBITIONS_DATA = [
   {
     id: "prymachenko",
     artist: "Марія Примаченко",
-    category: "Етно-модерн",
+    title: "Фантастичний світ",
+    dates: "Постійна експозиція",
     folder: "images/prymachenko",
     tileImage: "priymachenkotitle.webp",
+    artworksCount: 10,
     pageUrl: "prymachenko.html",
-    glowColor: "rgba(255, 110, 40, 0.55)",
-    artworksCount: 10
-  },
+    description: "Перлини українського наївного мистецтва: фантастичні звірі, дивовижні квіти та філософія добра."
+  }
+  /* Зарезервовано для майбутніх виставок:
+  ,
   {
     id: "narbut",
     artist: "Георгій Нарбут",
-    category: "Графіка & Шрифт",
+    title: "Українська абетка та графіка",
+    dates: "Незабаром",
     folder: "images/narbut",
     tileImage: "narbuttitle.webp",
+    artworksCount: 0,
     pageUrl: "narbut.html",
-    glowColor: "rgba(229, 193, 88, 0.55)",
-    artworksCount: 0
+    description: "Вишукана книжкова графіка, геральдика та становлення нового українського стилю."
   },
   {
     id: "marchuk",
     artist: "Іван Марчук",
-    category: "Пльонтанізм",
+    title: "Голос моєї душі",
+    dates: "Незабаром",
     folder: "images/marchuk",
     tileImage: "marchuktitle.webp",
+    artworksCount: 0,
     pageUrl: "marchuk.html",
-    glowColor: "rgba(56, 189, 248, 0.55)",
-    artworksCount: 0
+    description: "Унікальна техніка пльонтанізму та філософські пейзажі генія сучасності."
   }
+  */
 ];
