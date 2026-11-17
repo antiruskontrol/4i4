@@ -123,11 +123,38 @@ body {
   pointer-events: none;
 }
 
+#video-transition-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 99999;
+  transition: opacity 0.35s ease-in-out;
+}
+
+#video-transition-overlay.is-playing {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#transition-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  max-width: 900px;
+}
 
     </style>
 </head>
 <body>
     <div class="fixed-bg-wreath"></div>
+  <div id="video-transition-overlay">
+  <video id="transition-video" src="./transmit.mp4" playsinline preload="auto"></video>
+</div>
 
   <div id="page-transition-overlay"></div>
 
@@ -187,36 +214,77 @@ body {
         </footer>
     </div>
 <script>
+ <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('page-transition-overlay');
+    const fadeOverlay = document.getElementById('page-transition-overlay');
+    const videoOverlay = document.getElementById('video-transition-overlay');
+    const video = document.getElementById('transition-video');
     const links = document.querySelectorAll('a[href]');
+    let pendingUrl = null;
+    let fallbackTimer = null;
+
+    function goToPage() {
+      if (pendingUrl) {
+        const url = pendingUrl;
+        pendingUrl = null;
+        clearTimeout(fallbackTimer);
+        window.location.href = url;
+      }
+    }
 
     links.forEach(link => {
       link.addEventListener('click', function(e) {
         const href = this.getAttribute('href');
-        
-        // Ігноруємо порожні посилання, якорі та зовнішні вкладки
+
+        // Ігноруємо якорі, пошту та нові вкладки
         if (!href || href.startsWith('#') || href.startsWith('mailto:') || this.target === '_blank') {
           return;
         }
 
         e.preventDefault();
-        overlay.classList.add('is-active');
 
-        setTimeout(() => {
-          window.location.href = href;
-        }, 550);
+        // Якщо це повернення на головну сторінку — вмикаємо відео зі звуком
+        if (href.includes('index.html') || href === '/' || href === './') {
+          pendingUrl = href;
+          videoOverlay.classList.add('is-playing');
+          video.currentTime = 0;
+          video.playbackRate = 1.0;
+          video.muted = false;
+          video.volume = 1.0;
+
+          fallbackTimer = setTimeout(goToPage, 5500);
+
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {
+              video.muted = true;
+              video.play().catch(goToPage);
+            });
+          }
+        } else {
+          // Для переходу на виставки художників — швидке плавне затемнення
+          if (fadeOverlay) fadeOverlay.classList.add('is-active');
+          setTimeout(() => {
+            window.location.href = href;
+          }, 550);
+        }
       });
     });
 
-    // Прибираємо темний екран, якщо натиснули кнопку "Назад" у браузері
+    video.addEventListener('ended', goToPage);
+    video.addEventListener('error', goToPage);
+
+    // Скидаємо екрани при використанні кнопки "Назад" у браузері
     window.addEventListener('pageshow', (event) => {
       if (event.persisted) {
-        overlay.classList.remove('is-active');
+        if (fadeOverlay) fadeOverlay.classList.remove('is-active');
+        videoOverlay.classList.remove('is-playing');
+        video.pause();
       }
     });
   });
 </script>
+
 
 </body>
 </html>
