@@ -66,6 +66,46 @@ body {
   opacity: 1;
   pointer-events: all;
 }
+/* Базове темне тло сторінки, яке зливається з краями картинки */
+body {
+  position: relative;
+  background-color: #000000; /* Чистий чорний, щоб не було видно меж зображення */
+  min-height: 100vh;
+}
+
+/* Шар із напівпрозорим вінком на задньому плані */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  
+  /* 1. ШЛЯХ ДО ФАЙЛУ (заміни на свою назву, якщо потрібно) */
+  background-image: url('groundexhib.webp');
+  
+  /* 2. РОЗМІЩЕННЯ: по центру екрана, без повторів */
+  background-position: center center;
+  background-repeat: no-repeat;
+  
+  /* 3. РОЗМІРИ: 
+     'contain' — вінок повністю вміщується в екран і не обрізається.
+     Якщо захочеш зробити його трохи меншим (наприклад, 75% висоти екрана), 
+     заміни 'contain' на 'auto 75vh' */
+  background-size: contain; 
+  
+  /* 4. ПРОЗОРІСТЬ: 0.25 (25% видимості). 
+     Змінюй від 0.15 (дуже делікатно) до 0.45 (яскраво) */
+  opacity: 0.25; 
+  
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Адаптація розміру фону для мобільних телефонів */
+@media (max-width: 768px) {
+  body::before {
+    background-size: 90% auto; /* На телефоні вінок займатиме 90% ширини екрана */
+  }
+}
 
     </style>
 </head>
