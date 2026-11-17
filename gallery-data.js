@@ -28,6 +28,16 @@ const EXHIBITIONS_DATA = [
         "coverImage": "images/prymachenko/POV№ 1_Марко Оцтович Афтіпа/1.webp",
         "artworksCount": 10,
         "glowColor": "rgba(56, 189, 248, 0.55)"
+      },
+      {
+        "id": "exp-1794943997178",
+        "badge": "POV",
+        "title": "pov2",
+        "desc": "Кураторська експозиція.",
+        "folder": "pov2",
+        "coverImage": "pov2/1.webp",
+        "artworksCount": 4,
+        "glowColor": "rgba(56, 189, 248, 0.55)"
       }
     ]
   },
