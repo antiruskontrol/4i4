@@ -349,7 +349,7 @@ body {
 </head>
 <body>
     <div id="video-transition-overlay">
-      <video id="transition-video" src="./transmit.mp4" muted playsinline preload="auto"></video>
+      <video id="transition-video" src="./transmit.mp4" playsinline preload="auto"></video>
     </div>
 
     <header class="top-navbar">
@@ -525,7 +525,7 @@ div id="page-transition-overlay"></div>
         setTimeout(() => {
           videoOverlay.classList.add('is-playing');
           video.currentTime = 0;
-          video.playbackRate = 5.0; // Прискорюємо 5-сек відео до 2.5 сек (можеш змінити на 1.0 для звичайної швидкості)
+          video.playbackRate = 1.0; // Прискорюємо 5-сек відео до 2.5 сек (можеш змінити на 1.0 для звичайної швидкості)
           
           video.play().catch(() => {
             // Якщо браузер заблокував відео — переходимо одразу без зависання
