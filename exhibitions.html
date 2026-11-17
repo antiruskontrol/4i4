@@ -6,10 +6,11 @@
     
     <!-- СЕО-оптимізація мета-тегів хабу виставок -->
     <title>Галерея цифрових виставок | Арт-веб студія Чагарники і Чорнобривці</title>
-    <meta name="description" content="Віртуальний простір цифрових експозицій від студії 4і4. Інноваційні веб-виставки, натхненні генієм Марії Примаченко, Георгія Нарбута та Івана Марчука.">
-    
+    <meta name="description" content="Віртуальний простір цифрових експозицій від студії Чагарники і Чорнобривці. Інноваційні веб-виставки, натхненні генієм Марії Примаченко, Георгія Нарбута та Івана Марчука.">
+    <link rel="icon" type="image/png" sizes="144x144" href="favicon.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="favicon.png"
     <!-- Open Graph мікророзмітка для соцмереж -->
-    <meta property="og:title" content="Галерея цифрових виставок | Студія 4і4">
+    <meta property="og:title" content="Галерея цифрових виставок |  АртВеб Студія "Чагарники і Чорнобривці">
     <meta property="og:description" content="Віртуальний хаб українського диджитал-мистецтва та етно-модерн дизайну від Чагарники і Чорнобривці.">
     <meta property="og:image" content="https://github.io">
     <meta property="og:url" content="https://github.io">
@@ -66,17 +67,75 @@ body {
   opacity: 1;
   pointer-events: all;
 }
+/* Базове темне тло сторінки, яке зливається з краями картинки */
+body {
+  position: relative;
+  background-color: #000000; /* Чистий чорний, щоб не було видно меж зображення */
+  min-height: 100vh;
+}
+
+
+  /* 1. ШЛЯХ ДО ФАЙЛУ (заміни на свою назву, якщо потрібно) */
+  background-image: url('groundexhib.webp');
+  
+  /* 2. РОЗМІЩЕННЯ: по центру екрана, без повторів */
+  background-position: center center;
+  background-repeat: no-repeat;
+  
+  /* 3. РОЗМІРИ: 
+     'contain' — вінок повністю вміщується в екран і не обрізається.
+     Якщо захочеш зробити його трохи меншим (наприклад, 75% висоти екрана), 
+     заміни 'contain' на 'auto 75vh' */
+  background-size: contain; 
+  
+  /* 4. ПРОЗОРІСТЬ: 0.25 (25% видимості). 
+     Змінюй від 0.15 (дуже делікатно) до 0.45 (яскраво) */
+  opacity: 0.25; 
+  
+  z-index: 0;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Адаптація розміру фону для мобільних телефонів */
+@media (max-width: 768px) {
+  body::before {
+    background-size: 90% auto; /* На телефоні вінок займатиме 90% ширини екрана */
+  }
+}
+.fixed-bg-wreath {
+  position: fixed;
+  inset: 0;
+  background-image: url('./groundexhib.webp');
+  background-repeat: no-repeat;
+  
+  /* Збільшуємо вінок до 140% від висоти екрана */
+  background-size: auto 140vh; 
+  
+  /* Зсуваємо праворуч за край екрана, щоб показувалася його ліва половина.
+     (Якщо хочеш, щоб виходив із лівого краю — заміни 145% на -45%) */
+  background-position: 145% center; 
+  
+  /* Прозорість: зробив трохи делікатнішою (0.28), щоб білий підзаголовок ідеально читався */
+  opacity: 0.5; 
+  mix-blend-mode: screen;
+  z-index: 0;
+  pointer-events: none;
+}
+
 
     </style>
 </head>
 <body>
+    <div class="fixed-bg-wreath"></div>
+
   <div id="page-transition-overlay"></div>
 
     <div class="container">
         <header class="header-block">
             <!-- Головний SEO заголовок H1 -->
             <h1>Цифрові виставки українських геніїв</h1>
-            <p class="subtitle">Переосмислення національного культурного коду через призму штучного інтелекту, сучасного UI/UX дизайну та веб-технологій від арт-студії 4і4.</p>
+            <p class="subtitle">Переосмислення національного культурного коду через призму штучного інтелекту, сучасного UI/UX дизайну та веб-технологій від арт-студії Чагарники і Чорнобривці.</p>
         </header>
 
         <main class="exhibitions-grid">
@@ -85,7 +144,7 @@ body {
             <section class="exhibition-card">
                 <div class="card-image">
                     <!-- Усі прев'ю-обкладинки лежать в твоїй загальній папці img/ -->
-                    <img src="img/prymachenko-preview.webp" alt="Афіша цифрової виставки Всесвіт Марії Примаченко від студії 4і4">
+                    <img src="img/prymachenko-preview.webp" alt="Афіша цифрової виставки Всесвіт Марії Примаченко від студії Чагарники і Чорнобривці">
                     <span class="badge">Етно-модерн</span>
                 </div>
                 <div class="card-content">
@@ -98,7 +157,7 @@ body {
             <!-- Картка 2: Георгій Нарбут -->
             <section class="exhibition-card">
                 <div class="card-image">
-                    <img src="img/narbut-preview.webp" alt="Обкладинка виставки Геометрія та Шрифт Георгія Нарбута дизайн 4і4">
+                    <img src="img/narbut-preview.webp" alt="Обкладинка виставки Геометрія та Шрифт Георгія Нарбута дизайн Чагарники і Чорнобривці">
                     <span class="badge">Графіка & Шрифт</span>
                 </div>
                 <div class="card-content">
