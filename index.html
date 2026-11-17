@@ -266,15 +266,6 @@ body {
   max-width: 800px; /* Обмежуємо, щоб величезне лого не різало очі */
 }
 
-.skip-hint {
-  position: absolute;
-  bottom: 30px;
-  color: rgba(255, 255, 255, 0.45);
-  font-family: sans-serif;
-  font-size: 13px;
-  letter-spacing: 0.5px;
-}
-
     </style>
     <script type="application/ld+json">
 {
@@ -329,7 +320,6 @@ body {
 #video-transition-overlay.is-playing {
   opacity: 1;
   pointer-events: all;
-  cursor: pointer;
 }
 
 #transition-video {
@@ -371,12 +361,18 @@ body {
 </head>
 <body>
     <!-- Оверлей для плавного затемнення при переході -->
+<body>
+    <!-- Оверлей для плавного затемнення при переході -->
 <div id="video-transition-overlay">
   <video id="transition-video" muted playsinline preload="auto">
     <source src="transmit.mp4" type="video/mp4">
   </video>
-  <span class="skip-hint">Натисніть, щоб пропустити</span>
 </div>
+
+div id="page-transition-overlay"></div>
+
+<header class="top-navbar">
+
 div id="page-transition-overlay"></div>
 
 <header class="top-navbar">
