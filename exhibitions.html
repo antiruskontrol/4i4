@@ -104,19 +104,24 @@ body {
 }
 .fixed-bg-wreath {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   background-image: url('./groundexhib.webp');
   background-repeat: no-repeat;
-  background-size: auto 135vh;
-  background-position: 145% center;
-  opacity: 0.35;
+  
+  /* Збільшуємо вінок до 140% від висоти екрана */
+  background-size: auto 140vh; 
+  
+  /* Зсуваємо праворуч за край екрана, щоб показувалася його ліва половина.
+     (Якщо хочеш, щоб виходив із лівого краю — заміни 145% на -45%) */
+  background-position: 145% center; 
+  
+  /* Прозорість: зробив трохи делікатнішою (0.28), щоб білий підзаголовок ідеально читався */
+  opacity: 0.28; 
   mix-blend-mode: screen;
   z-index: 0;
   pointer-events: none;
 }
+
 
     </style>
 </head>
