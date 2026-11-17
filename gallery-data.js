@@ -26,7 +26,7 @@ const EXHIBITIONS_DATA = [
         "desc": "Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині (10 робіт).",
         "folder": "images/prymachenko/POV№ 1_Марко Оцтович Афтіпа",
         "coverImage": "images/prymachenko/POV№ 1_Марко Оцтович Афтіпа/1.webp",
-        "artworksCount": 19,
+        "artworksCount": 23,
         "glowColor": "rgba(56, 189, 248, 0.55)"
       }
     ]
