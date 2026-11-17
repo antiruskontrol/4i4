@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
@@ -168,7 +168,7 @@ body {
             <p class="subtitle">Переосмислення національного культурного коду через призму штучного інтелекту, сучасного UI/UX дизайну та веб-технологій від арт-студії Чагарники і Чорнобривці.</p>
         </header>
 
-        <main class="exhibitions-grid">
+        <main id="exhibitions-grid" class="exhibitions-grid">
             
             <!-- Картка 1: Марія Примаченко -->
             <section class="exhibition-card">
@@ -252,9 +252,9 @@ body {
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const grid = document.getElementById('exhibitions-grid');
-    if (!grid || typeof EXHIBITIONS_DATA === 'undefined') return;
+    const data = JSON.parse(localStorage.getItem('studio_exhibitions_data') || 'null') || (typeof EXHIBITIONS_DATA !== 'undefined' ? EXHIBITIONS_DATA : []); if (!grid || !data.length) return;
 
-    grid.innerHTML = EXHIBITIONS_DATA.map(item => `
+    grid.innerHTML = data.map(item => `
       <a href="${item.pageUrl}" 
          class="art-tile-link" 
          style="--glow-color: ${item.glowColor};"
@@ -264,6 +264,7 @@ body {
     `).join('');
   });
 </script>
+<script src="admin-panel.js"></script>
 </body>
 </html>
 
