@@ -238,6 +238,42 @@ body {
     font-size: 13px;
   }
 }
+#video-transition-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 99999;
+  transition: opacity 0.4s ease-in-out;
+}
+
+#video-transition-overlay.is-playing {
+  opacity: 1;
+  pointer-events: all;
+  cursor: pointer;
+}
+
+#transition-video {
+  width: 100%;
+  height: 100%;
+  /* 'contain' покаже логотип повністю по центру на чорному тлі, 
+     'cover' — розтягне на весь екран без полів */
+  object-fit: contain; 
+  max-width: 800px; /* Обмежуємо, щоб величезне лого не різало очі */
+}
+
+.skip-hint {
+  position: absolute;
+  bottom: 30px;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
 
     </style>
     <script type="application/ld+json">
@@ -260,7 +296,13 @@ body {
 </head>
 <body>
     <!-- Оверлей для плавного затемнення при переході -->
-<div id="page-transition-overlay"></div>
+<div id="video-transition-overlay">
+  <video id="transition-video" muted playsinline preload="auto">
+    <source src="transmit.mp4" type="video/mp4">
+  </video>
+  <span class="skip-hint">Натисніть, щоб пропустити</span>
+</div>
+div id="page-transition-overlay"></div>
 
 <header class="top-navbar">
   <nav class="nav-line" aria-label="Головна навігація">
@@ -392,49 +434,68 @@ body {
             document.getElementById("poster-bg").addEventListener("click", goToCopilot);
         });
     </script>
-    <script>
+ <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('page-transition-overlay');
+    const videoOverlay = document.getElementById('video-transition-overlay');
+    const video = document.getElementById('transition-video');
     const navButtons = document.querySelectorAll('.neon-btn');
+    let pendingUrl = null;
+
+    // Функція миттєвого переходу
+    function goToPage() {
+      if (pendingUrl) {
+        window.location.href = pendingUrl;
+      }
+    }
 
     navButtons.forEach(btn => {
       btn.addEventListener('click', function(e) {
-        e.stopPropagation(); // Не даємо кліку провалитися на фон (перехід на копілот)
+        e.stopPropagation();
         const targetUrl = this.getAttribute('href');
 
-        // Якщо це якір-заглушка (#projects або #cooperation) — робимо лише ефект спалаху
+        // Для кнопок-заглушок (#projects, #cooperation) залишаємо лише спалах
         if (!targetUrl || targetUrl.startsWith('#')) {
           e.preventDefault();
           this.classList.remove('is-flashing');
-          void this.offsetWidth; // Перезапуск анімації
+          void this.offsetWidth;
           this.classList.add('is-flashing');
           return;
         }
 
-        // Якщо це реальне посилання (copilot.html, exhibitions.html)
         e.preventDefault();
+        pendingUrl = targetUrl;
         this.classList.add('is-flashing');
 
-        // Через 220мс після спалаху починаємо плавне затемнення
+        // Після спалаху кнопки вмикаємо чорний екран із відео
         setTimeout(() => {
-          overlay.classList.add('is-active');
-        }, 220);
-
-        // Після завершення затемнення переходимо на сторінку
-        setTimeout(() => {
-          window.location.href = targetUrl;
-        }, 780);
+          videoOverlay.classList.add('is-playing');
+          video.currentTime = 0;
+          video.playbackRate = 5.0; // Прискорюємо 5-сек відео до 2.5 сек (можеш змінити на 1.0 для звичайної швидкості)
+          
+          video.play().catch(() => {
+            // Якщо браузер заблокував відео — переходимо одразу без зависання
+            goToPage();
+          });
+        }, 250);
       });
     });
 
-    // При поверненні кнопкою "Назад" у браузері прибираємо чорний екран
+    // Як тільки відео закінчилося — переходимо на нову сторінку
+    video.addEventListener('ended', goToPage);
+
+    // Дозволяємо пропустити відео кліком по екрану
+    videoOverlay.addEventListener('click', goToPage);
+
+    // Скидаємо оверлей при натисканні "Назад" у браузері
     window.addEventListener('pageshow', (event) => {
       if (event.persisted) {
-        overlay.classList.remove('is-active');
+        videoOverlay.classList.remove('is-playing');
+        video.pause();
         navButtons.forEach(b => b.classList.remove('is-flashing'));
       }
     });
   });
 </script>
+
 </body>
 </html> 
