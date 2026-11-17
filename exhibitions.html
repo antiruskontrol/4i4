@@ -73,22 +73,7 @@ body {
   min-height: 100vh;
 }
 
-/* Шар із напівпрозорим вінком на задньому плані */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: url('groundexhib.webp');
-  background-repeat: no-repeat;
-  background-size: auto 135vh;
-  background-position: 145% center;
-  opacity: 0.35;
-  mix-blend-mode: screen; /* Робить чорний фон картинки прозорим! */
-  z-index: 0;
-  pointer-events: none;
-}
 
-  
   /* 1. ШЛЯХ ДО ФАЙЛУ (заміни на свою назву, якщо потрібно) */
   background-image: url('groundexhib.webp');
   
