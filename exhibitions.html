@@ -67,60 +67,32 @@ body {
   opacity: 1;
   pointer-events: all;
 }
-/* Базове темне тло сторінки, яке зливається з краями картинки */
+/* Базове темне тло сторінки */
 body {
   position: relative;
-  background-color: #000000; /* Чистий чорний, щоб не було видно меж зображення */
+  background-color: #000000;
   min-height: 100vh;
 }
 
-
-  /* 1. ШЛЯХ ДО ФАЙЛУ (заміни на свою назву, якщо потрібно) */
-  background-image: url('groundexhib.webp');
-  
-  /* 2. РОЗМІЩЕННЯ: по центру екрана, без повторів */
-  background-position: center center;
-  background-repeat: no-repeat;
-  
-  /* 3. РОЗМІРИ: 
-     'contain' — вінок повністю вміщується в екран і не обрізається.
-     Якщо захочеш зробити його трохи меншим (наприклад, 75% висоти екрана), 
-     заміни 'contain' на 'auto 75vh' */
-  background-size: contain; 
-  
-  /* 4. ПРОЗОРІСТЬ: 0.25 (25% видимості). 
-     Змінюй від 0.15 (дуже делікатно) до 0.45 (яскраво) */
-  opacity: 0.25; 
-  
-  z-index: 0;
-  mix-blend-mode: screen;
-  pointer-events: none;
-}
-
-/* Адаптація розміру фону для мобільних телефонів */
-@media (max-width: 768px) {
-  body::before {
-    background-size: 90% auto; /* На телефоні вінок займатиме 90% ширини екрана */
-  }
-}
 .fixed-bg-wreath {
   position: fixed;
   inset: 0;
   background-image: url('./groundexhib.webp');
   background-repeat: no-repeat;
-  
-  /* Збільшуємо вінок до 140% від висоти екрана */
-  background-size: auto 140vh; 
-  
-  /* Зсуваємо праворуч за край екрана, щоб показувалася його ліва половина.
-     (Якщо хочеш, щоб виходив із лівого краю — заміни 145% на -45%) */
-  background-position: 145% center; 
-  
-  /* Прозорість: зробив трохи делікатнішою (0.28), щоб білий підзаголовок ідеально читався */
-  opacity: 0.5; 
+  background-size: auto 140vh;
+  background-position: 145% center;
+  opacity: 0.5;
   mix-blend-mode: screen;
   z-index: 0;
   pointer-events: none;
+}
+
+/* Адаптація фону для мобільних екранів */
+@media (max-width: 768px) {
+  .fixed-bg-wreath {
+    background-size: auto 95vh;
+    background-position: 160% center;
+  }
 }
 
 #video-transition-overlay {
@@ -147,16 +119,15 @@ body {
   object-fit: contain;
   max-width: 900px;
 }
-
     </style>
 </head>
 <body>
     <div class="fixed-bg-wreath"></div>
-  <div id="video-transition-overlay">
-  <video id="transition-video" src="./transmit.mp4" playsinline preload="auto"></video>
-</div>
+    <div id="video-transition-overlay">
+      <video id="transition-video" src="./transmit.mp4" playsinline preload="auto"></video>
+    </div>
+    <div id="page-transition-overlay"></div>
 
-  <div id="page-transition-overlay"></div>
 
     <div class="container">
         <header class="header-block">
