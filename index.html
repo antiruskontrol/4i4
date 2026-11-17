@@ -254,5 +254,49 @@
             document.getElementById("poster-bg").addEventListener("click", goToCopilot);
         });
     </script>
+    <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('page-transition-overlay');
+    const navButtons = document.querySelectorAll('.neon-btn');
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation(); // Не даємо кліку провалитися на фон (перехід на копілот)
+        const targetUrl = this.getAttribute('href');
+
+        // Якщо це якір-заглушка (#projects або #cooperation) — робимо лише ефект спалаху
+        if (!targetUrl || targetUrl.startsWith('#')) {
+          e.preventDefault();
+          this.classList.remove('is-flashing');
+          void this.offsetWidth; // Перезапуск анімації
+          this.classList.add('is-flashing');
+          return;
+        }
+
+        // Якщо це реальне посилання (copilot.html, exhibitions.html)
+        e.preventDefault();
+        this.classList.add('is-flashing');
+
+        // Через 220мс після спалаху починаємо плавне затемнення
+        setTimeout(() => {
+          overlay.classList.add('is-active');
+        }, 220);
+
+        // Після завершення затемнення переходимо на сторінку
+        setTimeout(() => {
+          window.location.href = targetUrl;
+        }, 780);
+      });
+    });
+
+    // При поверненні кнопкою "Назад" у браузері прибираємо чорний екран
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        overlay.classList.remove('is-active');
+        navButtons.forEach(b => b.classList.remove('is-flashing'));
+      }
+    });
+  });
+</script>
 </body>
 </html> 
