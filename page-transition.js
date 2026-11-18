@@ -20,6 +20,7 @@
     }
     #page-fade-veil.is-back-transition {
       background-image: url('./backtransist.webp');
+      transition: opacity 1.5s ease-in-out;
     }
   `;
   (document.head || document.documentElement).appendChild(style);
@@ -33,7 +34,7 @@
   backAudio.preload = 'auto';
   backAudio.style.display = 'none';
 
-  // Якщо прийшли сюди зворотним переходом — показуємо постер при відкритті нової сторінки
+  // Перевіряємо, чи ми прийшли сюди зворотним переходом
   const wasBack = sessionStorage.getItem('4i4_back_transition') === '1';
   if (wasBack) {
     veil.classList.add('is-back-transition');
@@ -45,7 +46,8 @@
       if (!veil.parentNode) document.body.appendChild(veil);
       if (!backAudio.parentNode) document.body.appendChild(backAudio);
     }
-    const revealDelay = wasBack ? 450 : 0;
+    // Для зворотного переходу тримаємо постер 300мс і плавно розчиняємо за 1500мс (разом 1.8с)
+    const revealDelay = wasBack ? 300 : 0;
     setTimeout(() => {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -100,7 +102,8 @@
     if (isBack) {
       veil.classList.add('is-back-transition');
       sessionStorage.setItem('4i4_back_transition', '1');
-      transitionDuration = 1100; // Трохи довший час для звуку та перегляду постера
+      // 1.5с fade-in + 1.7с утримання на поточній сторінці (+ 1.8с fade-out на новій = 5.0 сек)
+      transitionDuration = 3200;
       try {
         backAudio.currentTime = 0;
         backAudio.play().catch(() => {});
