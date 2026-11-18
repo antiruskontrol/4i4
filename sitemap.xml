@@ -1,15 +1,165 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://sitemaps.org"
-        xmlns:image="http://google.com/schemas/sitemap-image/1.1">
-
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://antiruskontrol.github.io/4i4/</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
     <image:image>
       <image:loc>https://antiruskontrol.github.io/4i4/poster1.png</image:loc>
-      <image:title>Постер АртВеб студії Чагарники і Чорнобривці</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://antiruskontrol.github.io/4i4/copilot.html</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://antiruskontrol.github.io/4i4/exhibitions.html</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://antiruskontrol.github.io/4i4/prymachenko.html</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/priymachenkotitle.webp</image:loc>
+      <image:title>Марія Примаченко — Етно-модерн</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/originals/1.webp</image:loc>
+      <image:title>Марія Примаченко: Оригінали Марії Примаченко — №1</image:title>
+      <image:caption>Золотий фонд українського народного декоративного живопису (експозиція готується).</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/originals/2.webp</image:loc>
+      <image:title>Марія Примаченко: Оригінали Марії Примаченко — №2</image:title>
+      <image:caption>Золотий фонд українського народного декоративного живопису (експозиція готується).</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/originals/3.webp</image:loc>
+      <image:title>Марія Примаченко: Оригінали Марії Примаченко — №3</image:title>
+      <image:caption>Золотий фонд українського народного декоративного живопису (експозиція готується).</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/1.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №1</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/2.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №2</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/3.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №3</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/4.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №4</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/5.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №5</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/6.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №6</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/7.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №7</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/8.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №8</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/9.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №9</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/10.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №10</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/11.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №11</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/12.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №12</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/13.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №13</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/14.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №14</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/POV%E2%84%96%201_%D0%9C%D0%B0%D1%80%D0%BA%D0%BE%20%D0%9E%D1%86%D1%82%D0%BE%D0%B2%D0%B8%D1%87%20%D0%90%D1%84%D1%82%D1%96%D0%BF%D0%B0/15.webp</image:loc>
+      <image:title>Марія Примаченко: POV №1: Марко Оцтович Афтіпа — №15</image:title>
+      <image:caption>Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/pov3/1.webp</image:loc>
+      <image:title>Марія Примаченко: POV №2: Чагарники і Чорнобривці — №1</image:title>
+      <image:caption>Кураторська експозиція: сучасне візуальне переосмислення.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/pov3/2.webp</image:loc>
+      <image:title>Марія Примаченко: POV №2: Чагарники і Чорнобривці — №2</image:title>
+      <image:caption>Кураторська експозиція: сучасне візуальне переосмислення.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/pov3/3.webp</image:loc>
+      <image:title>Марія Примаченко: POV №2: Чагарники і Чорнобривці — №3</image:title>
+      <image:caption>Кураторська експозиція: сучасне візуальне переосмислення.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/prymachenko/pov3/4.webp</image:loc>
+      <image:title>Марія Примаченко: POV №2: Чагарники і Чорнобривці — №4</image:title>
+      <image:caption>Кураторська експозиція: сучасне візуальне переосмислення.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://antiruskontrol.github.io/4i4/narbut.html</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/narbut/narbuttitle.webp</image:loc>
+      <image:title>Георгій Нарбут — Графіка &amp; Шрифт</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://antiruskontrol.github.io/4i4/marchuk.html</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://antiruskontrol.github.io/4i4/images/marchuk/marchuktitle.webp</image:loc>
+      <image:title>Іван Марчук — Пльонтанізм</image:title>
+    </image:image>
   </url>
 </urlset>
