@@ -2,86 +2,323 @@
 <html lang="uk">
 <head>
   <script src="page-transition.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Зала Георгія Нарбута — Чагарники і Чорнобривці</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    :root { --bg: #000000; --gold: #d4af37; --cyan: #38bdf8; --txt: #f4f1ea; --mut: #94a3b8; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--txt); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; overflow-x: hidden; position: relative; }
+    .bg-wreath {
+      position: fixed; inset: 0; background: url('./groundexhib.webp') 145% center / auto 140vh no-repeat;
+      opacity: 0.70; mix-blend-mode: screen; pointer-events: none; z-index: 0;
+    }
+    header {
+      position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: center;
+      padding: 22px 6%; border-bottom: 1px solid rgba(212,175,55,0.18); backdrop-filter: blur(8px);
+    }
+    .brand { font-size: 1.05rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); text-decoration: none; }
+    .nav-btn {
+      background: transparent; color: var(--txt); border: 1px solid rgba(212,175,55,0.45);
+      padding: 9px 22px; font-size: 0.88rem; letter-spacing: 0.08em; text-transform: uppercase;
+      text-decoration: none; border-radius: 6px; transition: all 0.3s ease;
+    }
+    .nav-btn:hover { border-color: var(--gold); color: #fff; box-shadow: 0 0 18px rgba(212,175,55,0.55); }
+    main { position: relative; z-index: 5; max-width: 1320px; margin: 0 auto; padding: 52px 6% 90px; }
+    .hall-head { text-align: center; margin-bottom: 54px; }
+    .hall-head h1 { font-size: clamp(2.1rem, 4.2vw, 3.2rem); font-weight: 300; color: var(--gold); letter-spacing: 0.05em; margin-bottom: 12px; }
+    .hall-head p { color: var(--mut); font-size: 1.08rem; max-width: 680px; margin: 0 auto; line-height: 1.6; }
+    .tiles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; align-items: stretch; }
+    .tile {
+      position: relative; background: transparent; mix-blend-mode: lighten; border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 20px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column;
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.8s ease, border-color 0.8s ease;
+      
+    }
+    .tile:hover { transform: translateY(-6px); border-color: #22c55e; box-shadow: 0 12px 30px rgba(0,0,0,0.7), 0 0 28px rgba(34, 197, 94, 0.75), 0 0 55px rgba(34, 197, 94, 0.35); }
+    .tile-cover { position: relative; width: 100%; aspect-ratio: 3/4; background: transparent; overflow: hidden; }
+    .tile-cover img { width: 100%; height: 100%; object-fit: contain; background: transparent; transition: transform 0.85s ease-out; }
+    .tile:hover .tile-cover img { transform: scale(1.04); }
+    .tile-badge {
+      position: absolute; top: 14px; right: 14px; z-index: 3; background: rgba(5,7,12,0.88);
+      border: 1px solid var(--glow, var(--gold)); color: var(--txt); font-size: 0.72rem;
+      padding: 4px 11px; border-radius: 20px; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .tile-overlay {
+      position: absolute; inset: 0; z-index: 2; background: linear-gradient(to top, rgba(5,7,12,0.78) 12%, rgba(5,7,12,0.22) 55%, transparent 100%);
+      padding: 22px; display: flex; flex-direction: column; justify-content: flex-end;
+      opacity: 0; transition: opacity 0.7s ease-in-out;
+    }
+    .tile:hover .tile-overlay { opacity: 1; }
+    .tile-desc { font-size: 0.9rem; color: var(--txt); line-height: 1.5; margin-bottom: 12px; }
+    .tile-cta { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold); }
+    .tile-body { padding: 16px 20px; background: transparent; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; }
+    .tile-title { font-size: 1.15rem; color: var(--gold); margin: 0; font-weight: 500; }
+    .lb-wrap { overflow: hidden; cursor: zoom-in; touch-action: none; }
+    .lb-wrap.zoomed { cursor: grab; }
+    .lb-wrap.dragging { cursor: grabbing; }
+    .lb-wrap img { transition: transform 0.12s ease-out, opacity 0.7s ease-in-out; user-select: none; -webkit-user-drag: none; }
+    .lb-wrap.dragging img { transition: none; }
+    .tile-submit {
+      border: 1px dashed rgba(212,175,55,0.45); background: transparent; mix-blend-mode: lighten;
+      justify-content: center; align-items: center; text-align: center; padding: 36px 26px; min-height: 100%;
+    }
+    .tile-submit:hover { border-style: solid; border-color: #22c55e; box-shadow: 0 0 28px rgba(34, 197, 94, 0.75), 0 0 55px rgba(34, 197, 94, 0.35); }
+    .plus-ring {
+      width: 68px; height: 68px; border-radius: 50%; border: 1px solid var(--gold);
+      display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--gold);
+      margin-bottom: 20px; box-shadow: 0 0 18px rgba(212,175,55,0.25);
+    }
+    .modal { position: fixed; inset: 0; background: rgba(2,3,6,0.92); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(6px); }
+    .modal.open { display: flex; }
+    .modal-box { background: #0e1017; border: 1px solid rgba(212,175,55,0.4); border-radius: 16px; max-width: 480px; width: 100%; padding: 32px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
+    .modal-box h3 { color: var(--gold); font-size: 1.45rem; font-weight: 400; margin-bottom: 10px; }
+    .modal-box p { color: var(--mut); font-size: 0.92rem; line-height: 1.55; margin-bottom: 20px; }
+    .field { width: 100%; background: #06070a; border: 1px solid rgba(255,255,255,0.16); color: var(--txt); padding: 12px 14px; border-radius: 8px; margin-bottom: 14px; font-family: inherit; font-size: 0.95rem; }
+    .field:focus { outline: none; border-color: var(--gold); }
+    .btn-gold { width: 100%; background: var(--gold); color: #000; border: none; padding: 13px; border-radius: 8px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: 0.25s; }
+    .btn-gold:hover { box-shadow: 0 0 22px rgba(212,175,55,0.6); }
+    .close-x { position: absolute; top: 16px; right: 18px; background: none; border: none; color: var(--mut); font-size: 1.6rem; cursor: pointer; }
+    .close-x:hover { color: var(--gold); }
+    #lb-modal { padding: 0; background: #000; }
+    .lb-wrap { position: relative; width: 100vw; height: 100vh; max-width: 100vw; max-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .lb-wrap img { width: 100vw; height: 100vh; max-width: 100vw; max-height: 100vh; object-fit: contain; border: none; border-radius: 0; }
+    .lb-info { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 1020; background: rgba(5,7,12,0.78); border: 1px solid rgba(212,175,55,0.35); padding: 6px 18px; border-radius: 20px; color: var(--gold); letter-spacing: 0.06em; font-size: 0.88rem; pointer-events: none; backdrop-filter: blur(6px); }
+    .lb-nav { position: fixed; top: 50%; transform: translateY(-50%); z-index: 1020; width: 50px; height: 50px; border-radius: 50%; background: rgba(14,16,22,0.75); border: 1px solid rgba(212,175,55,0.45); color: var(--gold); font-size: 1.5rem; cursor: pointer; }
+    .lb-nav:hover { background: var(--gold); color: #000; }
+    .lb-prev { left: 20px; } .lb-next { right: 20px; }
     
-    <!-- СЕО-оптимізація мета-тегів -->
-    <title>Цифрова виставка Георгія Нарбута | Український веб-брендинг 4і4</title>
-    <meta name="description" content="Віртуальна експозиція, присвячена батьку української графіки Георгію Нарбуту. Модернізація класичної української айдентики та шрифтів від арт-студії 4і4.">
     
-    <!-- Open Graph мікророзмітка для соцмереж та месенджерів -->
-    <meta property="og:title" content="Цифрова виставка Георгія Нарбута | Студія 4і4">
-    <meta property="og:description" content="Переосмислення української графічної спадщини та створення сучасної айдентики від Чагарники і Чорнобривці.">
-    <meta property="og:image" content="https://github.io">
-    <meta property="og:url" content="https://github.io">
-
-    <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 40px; line-height: 1.6; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        .header-block { text-align: center; margin-bottom: 40px; }
-        h1 { color: #38bdf8; font-size: 2.5rem; margin-bottom: 10px; }
-        .meta-info { color: #94a3b8; font-style: italic; font-size: 1.1rem; }
-        
-        .intro-text { background: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 25px; margin-bottom: 40px; }
-        .intro-text p { margin: 0 0 15px 0; font-size: 1.1rem; color: #cbd5e1; }
-        .intro-text p:last-child { margin-bottom: 0; }
-        
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .art-card { background: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 20px; text-align: center; transition: transform 0.2s, border-color 0.2s; }
-        .art-card:hover { transform: translateY(-5px); border-color: #38bdf8; }
-        .art-card img { max-width: 100%; border-radius: 8px; height: auto; background: #0f172a; padding: 10px; box-sizing: border-box; }
-        .art-card h3 { color: #38bdf8; margin: 15px 0 5px 0; font-size: 1.3rem; }
-        .art-card p { color: #94a3b8; font-size: 0.95rem; margin: 0; }
-        
-        .navigation-links { display: flex; justify-content: space-between; margin-top: 50px; border-top: 1px solid #334155; padding-top: 20px; }
-        .btn { color: #38bdf8; text-decoration: none; font-weight: bold; transition: color 0.2s; }
-        .btn:hover { color: #0ea5e9; text-decoration: underline; }
-    </style>
+    .status-msg { font-size: 0.88rem; margin-top: 12px; color: var(--cyan); text-align: center; }
+  </style>
 </head>
-<body>
-
-    <div class="container">
-        <header class="header-block">
-            <!-- Головний Н1 заголовок для зчитування пошуковим роботом -->
-            <h1>Цифрова виставка «Геометрія та Шрифт Георгія Нарбута»</h1>
-            <div class="meta-info">Концептуальний веб-брендинг від арт-студії «Чагарники і Чорнобривці»</div>
-        </header>
-
-        <!-- СЕО-оптимізований текстовий блок, що зв'язує митця та послуги веб-студії -->
-        <section class="intro-text">
-            <p>Георгій Нарбут — творець візуального коду української державності, архітектор нашого національного шрифту та першої офіційної айдентики. Його тонка графічна робота, поєднання барокових традицій та модерну стали основою для формування унікального українського стилю в дизайні.</p>
-            <p>Команда арт-веб студії <strong>4і4</strong> переосмислила монументальну спадщину Нарбута для цифрового простору. Ця експозиція демонструє, як класичні нарбутівські шрифтові композиції, симетрія та орнаменталістика трансформуються в преміальний веб-дизайн, унікальні корпоративні логотипи та сучасні інтерфейси брендів.</p>
-        </section>
-
-        <!-- Галерея робіт з СЕО-тегами "alt" для виходу в Google Картинки -->
-        <main class="gallery-grid">
-            
-            <article class="art-card">
-                <!-- Оптимальний формат WebP + СЕО-опис у тезі alt -->
-                <img src="img/narbut-font.webp" alt="Графічний дизайн фірмовий шрифт у стилі Георгія Нарбута від студії 4і4">
-                <h3>Нарбутівський цифровий шрифт</h3>
-                <p>Адаптація легендарного українського шрифту для сучасних UI/UX інтерфейсів та веб-типографіки.</p>
-            </article>
-
-            <article class="art-card">
-                <img src="img/narbut-logo.webp" alt="Розробка логотипу українська етно айдентика Нарбут концепт брендингу">
-                <h3>Етно-айдентика та герби</h3>
-                <p>Концепт геометричного логотипу, натхненний державними знаками та марками авторства Нарбута.</p>
-            </article>
-
-            <article class="art-card">
-                <img src="img/narbut-branding.webp" alt="Український корпоративний стиль дизайн упаковок та брендбук студія 4і4">
-                <h3>Цифровий корпоративний стиль</h3>
-                <p>Інтеграція класичних симетричних орнаментів у сучасні брендбуки та пакувальні матеріали.</p>
-            </article>
-
-        </main>
-
-        <footer class="navigation-links">
-            <a href="index.html" class="btn">← На головну</a>
-            <a href="copilot.html" class="btn">Запустити AI Копілота →</a>
-        </footer>
+<body data-exhibition="prymachenko">
+  <div class="bg-wreath"></div>
+  <header>
+    <a href="index.html" class="brand">Чагарники і Чорнобривці</a>
+    <a href="exhibitions.html" class="nav-btn">← До виставок</a>
+  </header>
+  <main>
+    <div class="hall-head">
+      <h1 id="hall-title">Марія Примаченко</h1>
+      <p id="hall-sub">Магічний світ українського наїву: автентична спадщина та сучасні візуальні переосмислення.</p>
     </div>
+    <div id="tiles-grid" class="tiles-grid"></div>
+  </main>
 
+  
+
+  <div id="lb-modal" class="modal">
+    <button id="lb-close" class="close-x" style="position:fixed;top:22px;right:26px;font-size:2rem;z-index:1020;">&times;</button>
+    <button id="lb-prev" class="lb-nav lb-prev">&#10094;</button>
+    <div class="lb-wrap"><img id="lb-img" src="" alt=""><div id="lb-info" class="lb-info"></div></div>
+    <button id="lb-next" class="lb-nav lb-next">&#10095;</button>
+  </div>
+
+  <div id="vision-modal" class="modal">
+    <div class="modal-box">
+      <button class="close-x" onclick="closeModals()">&times;</button>
+      <h3>Викласти ваше бачення</h3>
+      <p>Залиште свою пошту та короткий опис концепції. Після розгляду куратором на ваш e-mail надійде персональне запрошення від адміна для розміщення власної експозиції на сайті.</p>
+      <input id="vis-email" type="email" class="field" placeholder="Ваш E-mail" required>
+      <textarea id="vis-text" class="field" rows="3" placeholder="Ваша пропозиція або посилання на роботи..."></textarea>
+      <button id="vis-send" class="btn-gold">Надіслати заявку</button>
+      <div id="vis-status" class="status-msg"></div>
+    </div>
+  </div>
+
+  
+  <script src="gallery-data.js"></script>
+  <script>
+    const BACKEND_URL = 'https://fouri4-copilot-backend.onrender.com';
+    const exId = location.pathname.split('/').pop().replace('.html','') || 'prymachenko';
+    const allData = JSON.parse(localStorage.getItem('studio_exhibitions_data') || 'null') || (typeof EXHIBITIONS_DATA !== 'undefined' ? EXHIBITIONS_DATA : []); const exData = allData.find(x => x.id === exId) || null;
+    const extraKey = `extra_sections_${exId}`;
+    let curImgs = [], curIdx = 0;
+
+    function closeModals() {
+      document.querySelectorAll('.modal').forEach(m => m.classList.remove('open'));
+      document.body.style.overflow = '';
+    }
+
+    function openLightbox(sec) {
+      if (!sec.artworksCount || sec.artworksCount <= 0) {
+        alert('Експозиція «' + sec.title + '» зараз готується до відкриття.');
+        return;
+      }
+      curImgs = (sec.customImages && sec.customImages.length) ? sec.customImages : Array.from({ length: sec.artworksCount }, (_, i) => `./${sec.folder}/${i + 1}.webp`);
+      curIdx = 0;
+      updLb(true);
+      document.getElementById('lb-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    let scale = 1, panX = 0, panY = 0, isDragging = false, startX = 0, startY = 0;
+
+    function resetTransform() {
+      scale = 1; panX = 0; panY = 0; isDragging = false;
+      applyTransform();
+    }
+
+    function applyTransform() {
+      const img = document.getElementById('lb-img');
+      const wrap = img.parentElement;
+      img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+      wrap.classList.toggle('zoomed', scale > 1);
+      wrap.classList.toggle('dragging', isDragging);
+      document.getElementById('lb-info').textContent = `Картина ${curIdx + 1} з ${curImgs.length}  •  Масштаб: ${Math.round(scale * 100)}% (скрол — зум, ЛКМ — рух)`;
+    }
+
+    function updLb(instant = false) {
+      const img = document.getElementById('lb-img');
+      if (instant) {
+        img.style.opacity = '1';
+        img.src = curImgs[curIdx];
+        resetTransform();
+        return;
+      }
+      img.style.opacity = '0';
+      setTimeout(() => {
+        img.onload = () => {
+          resetTransform();
+          img.style.opacity = '1';
+        };
+        img.src = curImgs[curIdx];
+      }, 440);
+    }
+
+    function renderTiles() {
+      const grid = document.getElementById('tiles-grid');
+      grid.innerHTML = '';
+      const base = exData && exData.sections ? exData.sections : [];
+      const extra = JSON.parse(localStorage.getItem(extraKey) || '[]');
+      [...base, ...extra].forEach(sec => {
+        const el = document.createElement('div');
+        el.className = 'tile';
+        el.style.setProperty('--glow', sec.glowColor || 'rgba(212,175,55,0.5)');
+        const cta = sec.artworksCount > 0 ? `Відкрити (${sec.artworksCount} робіт) →` : 'Готується до показу';
+        el.innerHTML = `
+          <div class="tile-cover">
+            <img src="./${sec.coverImage}" alt="${sec.title}" loading="lazy">
+            <span class="tile-badge">${sec.badge || 'POV'}</span>
+            <div class="tile-overlay">
+              <p class="tile-desc">${sec.desc || ''}</p>
+              <div class="tile-cta">${cta}</div>
+            </div>
+          </div>
+          <div class="tile-body">
+            <h2 class="tile-title">${sec.title}</h2>
+          </div>`;
+        el.onclick = () => openLightbox(sec);
+        grid.appendChild(el);
+      });
+
+      const sub = document.createElement('div');
+      sub.className = 'tile tile-submit';
+      sub.innerHTML = `
+        <div class="plus-ring">+</div>
+        <h2 class="tile-title">Викласти ваше бачення</h2>
+        <p class="tile-desc" style="flex-grow:0;margin-bottom:0;">Подайте заявку, щоб отримати персональне запрошення від куратора та розмістити власну експозицію на сайті.</p>`;
+      sub.onclick = () => {
+        document.getElementById('vis-status').textContent = '';
+        document.getElementById('vision-modal').classList.add('open');
+      };
+      grid.appendChild(sub);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (exData) {
+        document.getElementById('hall-title').textContent = exData.artist;
+        document.getElementById('hall-sub').textContent = exData.subtitle || '';
+      }
+      renderTiles();
+
+            const lbImg = document.getElementById('lb-img');
+      const lbWrap = lbImg.parentElement;
+
+      lbWrap.addEventListener('wheel', e => {
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 0.25 : -0.25;
+        scale = Math.min(Math.max(1, scale + delta), 4);
+        if (scale === 1) { panX = 0; panY = 0; }
+        applyTransform();
+      }, { passive: false });
+
+      lbWrap.addEventListener('dblclick', e => {
+        e.stopPropagation();
+        if (scale > 1) { resetTransform(); } else { scale = 2.2; applyTransform(); }
+      });
+
+      lbWrap.addEventListener('mousedown', e => {
+        if (scale <= 1 || e.button !== 0) return;
+        e.preventDefault();
+        isDragging = true;
+        startX = e.clientX - panX;
+        startY = e.clientY - panY;
+        applyTransform();
+      });
+
+      window.addEventListener('mousemove', e => {
+        if (!isDragging) return;
+        panX = e.clientX - startX;
+        panY = e.clientY - startY;
+        applyTransform();
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        applyTransform();
+      });
+      document.getElementById('lb-close').onclick = closeModals;
+      document.getElementById('lb-prev').onclick = e => { e.stopPropagation(); curIdx = (curIdx - 1 + curImgs.length) % curImgs.length; updLb(); };
+      document.getElementById('lb-next').onclick = e => { e.stopPropagation(); curIdx = (curIdx + 1) % curImgs.length; updLb(); };
+      document.getElementById('lb-modal').onclick = e => { if (e.target.id === 'lb-modal') closeModals(); };
+
+      document.onkeydown = e => {
+        if (!document.getElementById('lb-modal').classList.contains('open')) return;
+        if (e.key === 'Escape') closeModals();
+        if (e.key === 'ArrowLeft') { curIdx = (curIdx - 1 + curImgs.length) % curImgs.length; updLb(); }
+        if (e.key === 'ArrowRight') { curIdx = (curIdx + 1) % curImgs.length; updLb(); }
+      };
+
+      document.getElementById('vis-send').onclick = async () => {
+        const email = document.getElementById('vis-email').value.trim();
+        const text = document.getElementById('vis-text').value.trim();
+        const st = document.getElementById('vis-status');
+        if (!email) { st.textContent = 'Будь ласка, вкажіть ваш E-mail.'; return; }
+        if (!text) { st.textContent = 'Будь ласка, опишіть вашу концепцію або додайте посилання.'; return; }
+        const btn = document.getElementById('vis-send');
+        btn.disabled = true;
+        st.textContent = 'Відправка заявки куратору...';
+        try {
+          const response = await fetch(`${BACKEND_URL}/api/vision`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: email,
+              concept: text,
+              hallName: exData ? exData.title : exId,
+              pageUrl: location.href
+            })
+          });
+          const result = await response.json();
+          if (!response.ok || !result.ok) {
+            throw new Error(result.error || 'Помилка сервера');
+          }
+          st.textContent = 'Дякуємо! Заявку надіслано куратору на пошту. Очікуйте відповідь.';
+          document.getElementById('vis-email').value = '';
+          document.getElementById('vis-text').value = '';
+        } catch (err) {
+          st.textContent = 'Не вдалося надіслати заявку: ' + err.message;
+        } finally {
+          btn.disabled = false;
+        }
+      };
+
+          });
+  </script>
+  <script src="admin-panel.js"></script>
 </body>
 </html>
