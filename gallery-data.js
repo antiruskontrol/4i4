@@ -1,4 +1,4 @@
-const EXHIBITIONS_DATA = [
+﻿const EXHIBITIONS_DATA = [
   {
     "id": "prymachenko",
     "artist": "Марія Примаченко",
@@ -37,11 +37,21 @@ const EXHIBITIONS_DATA = [
     "category": "Графіка & Шрифт",
     "folder": "images/narbut",
     "tileImage": "narbuttitle.webp",
-    "pageUrl": "#",
+    "pageUrl": "narbut.html",
     "glowColor": "rgba(212, 175, 55, 0.5)",
-    "comingSoon": true,
     "subtitle": "Фундатор українського академічного мистецтва, творець національного стилю в графіці та книзі.",
-    "sections": []
+    "sections": [
+      {
+        "id": "originals",
+        "badge": "АВТЕНТИКА",
+        "title": "Оригінали Георгія Нарбута",
+        "desc": "Золотий фонд української графіки, книжкового мистецтва та державних символів (експозиція готується).",
+        "folder": "images/narbut/originals",
+        "coverImage": "images/narbut/narbuttitle.webp",
+        "artworksCount": 0,
+        "glowColor": "rgba(212, 175, 55, 0.55)"
+      }
+    ]
   },
   {
     "id": "marchuk",
@@ -49,10 +59,20 @@ const EXHIBITIONS_DATA = [
     "category": "Пльонтанізм",
     "folder": "images/marchuk",
     "tileImage": "marchuktitle.webp",
-    "pageUrl": "#",
+    "pageUrl": "marchuk.html",
     "glowColor": "rgba(56, 189, 248, 0.5)",
-    "comingSoon": true,
     "subtitle": "Медитативний всесвіт космічного пльонтанізму, світлових ліній та філософії.",
-    "sections": []
+    "sections": [
+      {
+        "id": "originals",
+        "badge": "АВТЕНТИКА",
+        "title": "Оригінали Івана Марчука",
+        "desc": "Золотий фонд живопису та авторської техніки пльонтанізму (експозиція готується).",
+        "folder": "images/marchuk/originals",
+        "coverImage": "images/marchuk/marchuktitle.webp",
+        "artworksCount": 0,
+        "glowColor": "rgba(56, 189, 248, 0.55)"
+      }
+    ]
   }
 ];

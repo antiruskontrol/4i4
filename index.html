@@ -1,1 +1,72 @@
-
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <script src="page-transition.js"></script>
+  <meta name="google-site-verification" content="IJ17HxF8FHXw9MX0QTGxkdBEhR-vreJXlMTeiUUTC1k" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArtWeb Studio | Візитівка</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/png" sizes="144x144" href="favicon.png">
+  <link href="https://googleapis.com" rel="stylesheet">
+  <style>
+    body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Montserrat', sans-serif; animation: fadeInPage .8s ease-out forwards; }
+    @keyframes fadeInPage { from { opacity: 0; } to { opacity: 1; } }
+    #intro-container { position: relative; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+    #poster-bg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; z-index: 1; background: #000; cursor: pointer; }
+    #poster-img { width: 100%; height: 100%; object-fit: contain; transform-origin: center center; }
+    #text-block { position: relative; z-index: 10; text-align: center; pointer-events: none; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 0 16px; }
+    .calligraphy-line { font-family: 'Marck Script', cursive; font-weight: 400; line-height: 1.25; color: #ffe8a3; text-shadow: 0 0 12px rgba(255,195,75,.85), 0 0 28px rgba(255,140,0,.6); -webkit-mask-image: linear-gradient(90deg,#000 0%,#000 45%,transparent 55%,transparent 100%); mask-image: linear-gradient(90deg,#000 0%,#000 45%,transparent 55%,transparent 100%); -webkit-mask-size: 240% 100%; mask-size: 240% 100%; -webkit-mask-position: 100% 0; mask-position: 100% 0; opacity: 0; }
+    .line-studio { font-size: clamp(2.1rem, 5vw, 3.8rem); letter-spacing: 1px; }
+    .line-title { font-size: clamp(2.4rem, 6.2vw, 4.6rem); color: #ffd76a; text-shadow: 0 0 16px rgba(255,215,90,.95), 0 0 34px rgba(255,145,0,.75); }
+    .top-navbar { position: fixed; top: 22px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 1000; padding: 0 16px; box-sizing: border-box; pointer-events: none; }
+    .nav-line { display: flex; align-items: center; gap: 20px; pointer-events: auto; overflow: visible; }
+    .neon-btn { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: transparent; border: 1px solid rgba(255,190,90,.45); border-radius: 30px; color: #ffe8b3; text-decoration: none; font-size: 14px; font-weight: 500; letter-spacing: .6px; text-shadow: 0 0 8px rgba(255,170,50,.9), 0 0 18px rgba(255,130,0,.7); transition: all .25s ease; white-space: nowrap; cursor: pointer; }
+    .neon-btn:hover { color: #fff; border-color: #fff3d6; background: rgba(255,165,30,.08); text-shadow: 0 0 6px #fff, 0 0 14px #ffbe55, 0 0 28px #ff8800; box-shadow: 0 0 10px rgba(255,240,200,.85), 0 0 22px rgba(255,175,45,.8); transform: translateY(-2px); }
+    .neon-btn.is-flashing { animation: neonFlash .38s ease-out forwards; }
+    @keyframes neonFlash { 0% { background: rgba(255,220,140,.9); color: #05070d; border-color: #fff; transform: scale(1.06); } 100% { background: rgba(255,180,60,.25); color: #fff; transform: scale(1); } }
+    @media (max-width: 720px) { .nav-line { gap: 10px; max-width: 100%; overflow-x: auto; padding: 6px 4px; scrollbar-width: none; } .nav-line::-webkit-scrollbar { display: none; } .neon-btn { padding: 8px 14px; font-size: 13px; } }
+    #video-transition-overlay { position: fixed; inset: 0; background: #000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; z-index: 99999; transition: opacity .4s ease-in-out; }
+    #video-transition-overlay.is-playing { opacity: 1; pointer-events: all; }
+    #transition-video { width: 100%; height: 100%; object-fit: contain; max-width: 900px; }
+  </style>
+</head>
+<body>
+  <div id="video-transition-overlay"><video id="transition-video" src="./transmit.mp4" playsinline preload="auto"></video></div>
+  <header class="top-navbar"><nav class="nav-line" aria-label="Головна навігація">
+    <a href="#projects" class="neon-btn"><span>Наші проєкти</span></a>
+    <a href="#cooperation" class="neon-btn"><span>Співпраця</span></a>
+    <a href="copilot.html" class="neon-btn"><span>Копілот</span></a>
+    <a href="exhibitions.html" class="neon-btn"><span>Виставки</span></a>
+  </nav></header>
+  <div id="intro-container"><div id="poster-bg"><img id="poster-img" src="poster1.png" alt="Чагарники і Чорнобривці"></div><div id="text-block"><div class="calligraphy-line line-studio" id="lineStudio">АртВеб студія</div><div class="calligraphy-line line-title" id="lineTitle">Чагарники і Чорнобривці</div></div></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('[4i4 Intro] DOM loaded');
+      const videoOverlay = document.getElementById('video-transition-overlay'), video = document.getElementById('transition-video');
+      const studio = document.getElementById('lineStudio'), title = document.getElementById('lineTitle');
+      const posterBg = document.getElementById('poster-bg'), posterImg = document.getElementById('poster-img'), textBlock = document.getElementById('text-block');
+      let pendingUrl = null;
+      const goToPage = () => { if (pendingUrl) window.location.href = pendingUrl; };
+      const startTransition = (url) => { pendingUrl = url; videoOverlay.classList.add('is-playing'); video.currentTime = 0; video.play().catch(goToPage); };
+      const writeStroke = (el, dur) => el.animate([{ opacity: 0, maskPosition: '100% 0%', webkitMaskPosition: '100% 0%' }, { opacity: 1, offset: .08 }, { opacity: 1, maskPosition: '0% 0%', webkitMaskPosition: '0% 0%' }], { duration: dur, easing: 'cubic-bezier(.37,0,.63,1)', fill: 'forwards' }).finished;
+      (async () => {
+        await writeStroke(studio, 2300); await writeStroke(title, 2900);
+        posterBg.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 1400, easing: 'ease-in-out', fill: 'forwards' });
+        posterImg.animate([{ transform: 'scale(1.15)' }, { transform: 'scale(1)' }], { duration: 4000, easing: 'cubic-bezier(.25,1,.5,1)', fill: 'forwards' });
+        textBlock.animate([{ transform: 'translateY(0) scale(1)' }, { transform: 'translateY(-115px) scale(.72)' }], { duration: 2200, easing: 'cubic-bezier(.25,1,.5,1)', fill: 'forwards' });
+        console.log('[4i4 Intro] Calligraphy & poster sequence complete');
+      })();
+      posterBg.addEventListener('click', () => startTransition('copilot.html'));
+      document.querySelectorAll('.neon-btn').forEach(btn => btn.addEventListener('click', function(e) {
+        e.stopPropagation(); const url = this.getAttribute('href');
+        if (!url || url.startsWith('#')) { e.preventDefault(); this.classList.remove('is-flashing'); void this.offsetWidth; this.classList.add('is-flashing'); return; }
+        e.preventDefault(); this.classList.add('is-flashing'); setTimeout(() => startTransition(url), 250);
+      }));
+      video.addEventListener('ended', goToPage); videoOverlay.addEventListener('click', goToPage);
+      window.addEventListener('pageshow', e => { if (e.persisted) { videoOverlay.classList.remove('is-playing'); video.pause(); } });
+    });
+  </script>
+</body>
+</html>

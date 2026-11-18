@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="uk">
 <head>
   <script src="page-transition.js"></script>
@@ -231,7 +231,7 @@ body {
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const grid = document.getElementById('exhibitions-grid');
-    const data = JSON.parse(localStorage.getItem('studio_exhibitions_data') || 'null') || (typeof EXHIBITIONS_DATA !== 'undefined' ? EXHIBITIONS_DATA : []); if (!grid || !data.length) return;
+    let data = JSON.parse(localStorage.getItem('studio_exhibitions_data') || 'null') || (typeof EXHIBITIONS_DATA !== 'undefined' ? EXHIBITIONS_DATA : []); data = data.map(d => (d.id === 'narbut' && d.pageUrl === '#') ? {...d, pageUrl: 'narbut.html'} : (d.id === 'marchuk' && d.pageUrl === '#') ? {...d, pageUrl: 'marchuk.html'} : d); if (!grid || !data.length) return;
 
     grid.innerHTML = data.map(item => `
       <a href="${item.pageUrl}" 
