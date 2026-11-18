@@ -7,8 +7,10 @@
     style.textContent = `
       header:has(a.is-hub-open),
       nav:has(a.is-hub-open) {
-        position: relative !important;
         z-index: 1001 !important;
+      }
+      nav:has(a.is-hub-open) {
+        position: relative !important;
       }
       a[href="#cooperation"].is-hub-open {
         position: relative !important;
@@ -266,18 +268,18 @@
           </div>
         </div>
 
-        <div class="coop-card" data-card="copilot">
+        <div class="coop-card" data-card="copilot" style="cursor:pointer;">
           <div class="coop-card-title"><span>Допомога AI-Копілота</span> <span class="coop-arrow">→</span></div>
           <div class="coop-card-hint">ШІ-асистент студії за 2 хвилини допоможе сформувати технічне завдання, оцінити бюджет та ризики проєкту.</div>
           <div class="coop-drawer">
             <div class="coop-drawer-inner">
               <p style="font-size:12.5px;color:#94a3b8;margin:4px 0 12px;">Ідеально, якщо ідея ще формується і потрібна структурована оцінка перед стартом.</p>
-Перейти на сторінку Копілота
-
-
-
-
-`;
+<a href="copilot.html" class="coop-copilot-link">Перейти на сторінку Копілота →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
 document.body.appendChild(backdrop);
 document.body.appendChild(modal);
 let closeTimer = null;
@@ -292,10 +294,11 @@ function scheduleClose() {
 if (isLockedByFocus) return;
 clearTimeout(closeTimer);
 closeTimer = setTimeout(() => {
+      modal.querySelectorAll('.coop-card').forEach(c => c.classList.remove('is-active'));
 trigger.classList.remove('is-hub-open');
       backdrop.classList.remove('is-open');
 modal.classList.remove('is-open');
-}, 850);
+}, 1500);
 }
 trigger.addEventListener('mouseenter', openHub);
 trigger.addEventListener('mouseleave', scheduleClose);
@@ -325,7 +328,16 @@ trigger.classList.remove('is-hub-open');
       backdrop.classList.remove('is-open');
 modal.classList.remove('is-open');
 });
-modal.querySelectorAll('.coop-card-title').forEach(titleEl => {
+const copilotCard = modal.querySelector('.coop-card[data-card="copilot"]');
+    if (copilotCard) {
+      copilotCard.addEventListener('click', (e) => {
+        if (e.target.closest('a[href]')) return;
+        const link = copilotCard.querySelector('a[href="copilot.html"]');
+        if (link) link.click();
+      });
+    }
+
+    modal.querySelectorAll('.coop-card-title').forEach(titleEl => {
 titleEl.addEventListener('click', () => {
 const card = titleEl.closest('.coop-card');
 modal.querySelectorAll('.coop-card').forEach(c => { if (c !== card) c.classList.remove('is-active'); });
