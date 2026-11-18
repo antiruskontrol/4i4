@@ -64,5 +64,16 @@ const EXHIBITIONS_DATA = [
     "comingSoon": true,
     "subtitle": "Медитативний всесвіт космічного пльонтанізму, світлових ліній та філософії.",
     "sections": []
+  },
+  {
+    "id": "mkhj",
+    "artist": "mhvmhv,hv,",
+    "category": "Нова зала",
+    "subtitle": "Персональна виставкова зала: mhvmhv,hv,.",
+    "folder": "images/mkhj",
+    "tileImage": "mkhjtitle.webp",
+    "pageUrl": "mkhj.html",
+    "glowColor": "rgba(212, 175, 55, 0.55)",
+    "sections": []
   }
 ];
