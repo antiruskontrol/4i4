@@ -287,22 +287,32 @@
         const text = document.getElementById('vis-text').value.trim();
         const st = document.getElementById('vis-status');
         if (!email) { st.textContent = 'Будь ласка, вкажіть ваш E-mail.'; return; }
-        st.textContent = 'Відправка заявки...';
+        if (!text) { st.textContent = 'Будь ласка, опишіть вашу концепцію або додайте посилання.'; return; }
+        const btn = document.getElementById('vis-send');
+        btn.disabled = true;
+        st.textContent = 'Відправка заявки куратору...';
         try {
-          await fetch(`${BACKEND_URL}/api/chat`, {
+          const response = await fetch(`${BACKEND_URL}/api/vision`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              message: `/vision_request Зала: ${exId} | Email: ${email} | Ідея: ${text}`,
-              sessionId: localStorage.getItem('chat_session_id') || 'vision-' + Date.now(),
-              userEmail: email
+              email: email,
+              concept: text,
+              hallName: exData ? exData.title : exId,
+              pageUrl: location.href
             })
           });
-          st.textContent = 'Дякуємо! Заявку передано адміну. Очікуйте запрошення на пошту.';
+          const result = await response.json();
+          if (!response.ok || !result.ok) {
+            throw new Error(result.error || 'Помилка сервера');
+          }
+          st.textContent = 'Дякуємо! Заявку надіслано куратору на пошту. Очікуйте відповідь.';
           document.getElementById('vis-email').value = '';
           document.getElementById('vis-text').value = '';
-        } catch {
-          st.textContent = 'Заявку збережено! Ми зв’яжемося з вами за вказаною поштою.';
+        } catch (err) {
+          st.textContent = 'Не вдалося надіслати заявку: ' + err.message;
+        } finally {
+          btn.disabled = false;
         }
       };
 
