@@ -9,11 +9,11 @@
   <style>
     :root { --bg: #000000; --gold: #d4af37; --cyan: #38bdf8; --txt: #f4f1ea; --mut: #94a3b8; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scrollbar-gutter: stable; }
+    html, body { background-color: #000000 !important; scrollbar-gutter: stable; }
     body { background: var(--bg); color: var(--txt); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; overflow-x: hidden; position: relative; }
     .bg-wreath {
       position: fixed; inset: 0; background: url('./groundexhib.webp') 145% center / auto 140vh no-repeat;
-      opacity: 0.70; mix-blend-mode: screen; pointer-events: none; z-index: 0;
+      opacity: 0.50; mix-blend-mode: screen; pointer-events: none; z-index: 0;
     }
     header {
       position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: center;
@@ -54,8 +54,8 @@
     .tile:hover .tile-overlay { opacity: 1; }
     .tile-desc { font-size: 0.9rem; color: var(--txt); line-height: 1.5; margin-bottom: 12px; }
     .tile-cta { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold); }
-    .tile-html { scrollbar-gutter: stable; }
-    body { padding: 16px 20px; background: transparent; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; }
+    .tile-html, body { background-color: #000000 !important; scrollbar-gutter: stable; }
+    .tile-body { padding: 16px 20px; background: transparent; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; }
     .tile-title { font-size: 1.15rem; color: var(--gold); margin: 0; font-weight: 500; }
     .lb-wrap { overflow: hidden; cursor: zoom-in; touch-action: none; }
     .lb-wrap.zoomed { cursor: grab; }
