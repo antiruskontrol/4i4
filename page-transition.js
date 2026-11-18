@@ -7,10 +7,7 @@
       width: 100vw;
       height: 100vh;
       background-color: #000000;
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      z-index: 2147483647;
+      z-index: 2147483646;
       pointer-events: none;
       opacity: 1;
       transition: opacity 0.65s ease-in-out;
@@ -18,9 +15,23 @@
     #page-fade-veil.hidden {
       opacity: 0;
     }
-    #page-fade-veil.is-back-transition {
+    #back-poster-layer {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #000000;
       background-image: url('./backtransist.webp');
-      transition: opacity 1.5s ease-in-out;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      z-index: 2147483647;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.8s ease-in-out;
+    }
+    #back-poster-layer.visible {
+      opacity: 1;
     }
   `;
   (document.head || document.documentElement).appendChild(style);
@@ -28,33 +39,25 @@
   const veil = document.createElement('div');
   veil.id = 'page-fade-veil';
 
-  // Прихований аудіоплеєр для звукової доріжки з transmit.mp4 (без відео)
+  const posterLayer = document.createElement('div');
+  posterLayer.id = 'back-poster-layer';
+
   const backAudio = document.createElement('audio');
   backAudio.src = './transmit.mp4';
   backAudio.preload = 'auto';
   backAudio.style.display = 'none';
 
-  // Перевіряємо, чи ми прийшли сюди зворотним переходом
-  const wasBack = sessionStorage.getItem('4i4_back_transition') === '1';
-  if (wasBack) {
-    veil.classList.add('is-back-transition');
-    sessionStorage.removeItem('4i4_back_transition');
-  }
-
   function mountAndReveal() {
     if (document.body) {
       if (!veil.parentNode) document.body.appendChild(veil);
+      if (!posterLayer.parentNode) document.body.appendChild(posterLayer);
       if (!backAudio.parentNode) document.body.appendChild(backAudio);
     }
-    // Для зворотного переходу тримаємо постер 300мс і плавно розчиняємо за 1500мс (разом 1.8с)
-    const revealDelay = wasBack ? 300 : 0;
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          veil.classList.add('hidden');
-        });
+        veil.classList.add('hidden');
       });
-    }, revealDelay);
+    });
   }
 
   if (document.readyState === 'loading') {
@@ -65,12 +68,11 @@
 
   window.addEventListener('pageshow', (e) => {
     if (e.persisted) {
-      veil.classList.remove('is-back-transition');
+      posterLayer.classList.remove('visible');
       veil.classList.add('hidden');
     }
   });
 
-  // Визначаємо, чи є посилання зворотним переходом
   function isBackNavigationLink(link) {
     if (link.dataset.transition === 'back') return true;
     if (link.classList.contains('nav-btn') || link.classList.contains('back-btn')) return true;
@@ -93,31 +95,42 @@
     e.preventDefault();
     if (document.body) {
       if (!veil.parentNode) document.body.appendChild(veil);
+      if (!posterLayer.parentNode) document.body.appendChild(posterLayer);
       if (!backAudio.parentNode) document.body.appendChild(backAudio);
     }
 
     const isBack = isBackNavigationLink(link);
-    let transitionDuration = 600;
 
     if (isBack) {
-      veil.classList.add('is-back-transition');
-      sessionStorage.setItem('4i4_back_transition', '1');
-      // 1.5с fade-in + 1.7с утримання на поточній сторінці (+ 1.8с fade-out на новій = 5.0 сек)
-      transitionDuration = 3200;
+      // 1. Одразу перекриваємо нижню сторінку чорним шаром, щоб при fade-out постера не блимав старий екран
+      veil.style.transition = 'opacity 0.8s ease-in-out';
+      veil.classList.remove('hidden');
+
+      // 2. Запускаємо звук
       try {
         backAudio.currentTime = 0;
         backAudio.play().catch(() => {});
       } catch (err) {}
+
+      // 3. Плавний fade-in постера (0 -> 1.8 сек)
+      void posterLayer.offsetWidth;
+      posterLayer.classList.add('visible');
+
+      // 4. Через 3.2 сек починаємо плавний fade-out постера у чорний екран (3.2 -> 5.0 сек)
+      setTimeout(() => {
+        posterLayer.classList.remove('visible');
+      }, 3200);
+
+      // 5. Рівно на 5.0 сек під чорним екраном переходимо на попередню сторінку
+      setTimeout(() => {
+        window.location.href = link.href;
+      }, 5000);
     } else {
-      veil.classList.remove('is-back-transition');
-      sessionStorage.removeItem('4i4_back_transition');
+      void veil.offsetWidth;
+      veil.classList.remove('hidden');
+      setTimeout(() => {
+        window.location.href = link.href;
+      }, 600);
     }
-
-    void veil.offsetWidth;
-    veil.classList.remove('hidden');
-
-    setTimeout(() => {
-      window.location.href = link.href;
-    }, transitionDuration);
   });
 })();
