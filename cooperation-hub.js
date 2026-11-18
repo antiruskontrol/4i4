@@ -12,7 +12,7 @@
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-        transition: opacity 0.5s ease, visibility 0.5s ease;
+        transition: opacity 1.0s ease, visibility 1.0s ease;
         z-index: 998;
       }
       #coop-backdrop.is-open {
@@ -28,7 +28,7 @@
         width: min(940px, 94vw);
         background: rgba(11, 16, 30, 0.96);
         border: 1px solid rgba(56, 189, 248, 0.55);
-        box-shadow: 0 0 22px rgba(56, 189, 248, 0.35), 0 0 48px rgba(56, 189, 248, 0.15);
+        box-shadow: 0 0 24px rgba(56, 189, 248, 0.35), 0 0 52px rgba(56, 189, 248, 0.15);
         border-radius: 16px;
         padding: 22px;
         color: #f8fafc;
@@ -36,7 +36,7 @@
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-        transition: opacity 0.5s ease, visibility 0.5s ease;
+        transition: opacity 1.0s ease, visibility 1.0s ease;
         z-index: 999;
       }
       #coop-modal.is-open {
@@ -56,27 +56,29 @@
       }
       .coop-card {
         background: rgba(18, 26, 46, 0.85);
-        border: 1px solid rgba(56, 189, 248, 0.25);
+        border: 1.5px solid rgba(56, 189, 248, 0.25);
         border-radius: 12px;
         padding: 16px;
         will-change: transform, box-shadow, border-color;
         transition:
-          transform 0.68s cubic-bezier(0.22, 1.35, 0.36, 1),
-          border-color 0.55s ease,
-          box-shadow 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-          background 0.55s ease;
+          transform 1.36s cubic-bezier(0.22, 1.35, 0.36, 1),
+          border-color 1.1s ease,
+          box-shadow 1.3s cubic-bezier(0.22, 1, 0.36, 1),
+          background 1.1s ease;
         display: flex;
         flex-direction: column;
       }
-      .coop-card:hover, .coop-card.is-active {
+      .coop-card:hover {
         transform: translateY(-4px) scale(1.015);
         border-color: #38bdf8;
         background: rgba(22, 33, 58, 0.98);
         box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45), 0 0 16px rgba(56, 189, 248, 0.55), 0 0 36px rgba(56, 189, 248, 0.25);
       }
-      .coop-card:active {
-        transform: translateY(-1px) scale(0.995);
-        transition-duration: 0.2s;
+      .coop-card.is-active {
+        transform: translateY(-5px) scale(1.02);
+        border-color: #7dd3fc;
+        background: rgba(24, 38, 66, 0.99);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55), 0 0 24px rgba(56, 189, 248, 0.85), 0 0 54px rgba(56, 189, 248, 0.42);
       }
       .coop-card-title {
         font-size: 16px;
@@ -91,7 +93,7 @@
       }
       .coop-arrow {
         display: inline-block;
-        transition: transform 0.65s cubic-bezier(0.22, 1.4, 0.36, 1);
+        transition: transform 1.3s cubic-bezier(0.22, 1.4, 0.36, 1);
       }
       .coop-card:hover .coop-arrow,
       .coop-card.is-active .coop-arrow {
@@ -107,41 +109,47 @@
         grid-template-rows: 0fr;
         opacity: 0;
         transition:
-          grid-template-rows 0.68s cubic-bezier(0.22, 1.25, 0.36, 1),
-          opacity 0.55s ease,
-          margin-top 0.6s cubic-bezier(0.22, 1.25, 0.36, 1);
+          grid-template-rows 1.36s cubic-bezier(0.22, 1.25, 0.36, 1),
+          opacity 1.1s ease,
+          margin-top 1.2s cubic-bezier(0.22, 1.25, 0.36, 1);
       }
       .coop-drawer-inner {
         overflow: hidden;
+        padding: 4px;
       }
       .coop-card:hover .coop-drawer,
       .coop-card.is-active .coop-drawer {
         grid-template-rows: 1fr;
         opacity: 1;
-        margin-top: 14px;
+        margin-top: 12px;
       }
       .coop-input, .coop-textarea {
         width: 100%;
         box-sizing: border-box;
         background: rgba(10, 15, 28, 0.95);
-        border: 1px solid rgba(56, 189, 248, 0.3);
+        border: 1.5px solid rgba(56, 189, 248, 0.32);
         border-radius: 8px;
         padding: 9px 11px;
         color: #f8fafc;
         font-size: 13px;
-        margin-bottom: 8px;
+        margin-bottom: 9px;
         outline: none;
-        transition: border-color 0.45s ease, box-shadow 0.45s ease;
+        transition: border-color 0.9s ease, box-shadow 0.9s ease, background 0.9s ease;
+      }
+      .coop-input:hover, .coop-textarea:hover {
+        border-color: #38bdf8;
+        box-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
       }
       .coop-input:focus, .coop-textarea:focus {
-        border-color: #38bdf8;
-        box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+        border-color: #7dd3fc;
+        background: rgba(14, 22, 42, 0.99);
+        box-shadow: 0 0 18px rgba(56, 189, 248, 0.72), 0 0 30px rgba(56, 189, 248, 0.35);
       }
       .coop-textarea { min-height: 68px; resize: vertical; }
       .coop-submit {
         width: 100%;
         padding: 10px;
-        border: 1px solid #38bdf8;
+        border: 1.5px solid #38bdf8;
         border-radius: 8px;
         background: rgba(2, 132, 199, 0.25);
         color: #e0f2fe;
@@ -149,16 +157,21 @@
         font-size: 13px;
         cursor: pointer;
         transition:
-          transform 0.5s cubic-bezier(0.22, 1.4, 0.36, 1),
-          background 0.45s ease,
-          box-shadow 0.45s ease,
-          color 0.45s ease;
+          transform 1.0s cubic-bezier(0.22, 1.4, 0.36, 1),
+          background 0.9s ease,
+          box-shadow 0.9s ease,
+          border-color 0.9s ease,
+          color 0.9s ease;
       }
       .coop-submit:hover {
         transform: translateY(-2px);
         background: #38bdf8;
         color: #041222;
-        box-shadow: 0 0 16px rgba(56, 189, 248, 0.65);
+        box-shadow: 0 0 18px rgba(56, 189, 248, 0.65), 0 0 32px rgba(56, 189, 248, 0.3);
+      }
+      .coop-submit:focus, .coop-submit:active {
+        border-color: #bae6fd;
+        box-shadow: 0 0 26px rgba(56, 189, 248, 0.95), 0 0 48px rgba(56, 189, 248, 0.5);
       }
       .coop-submit:disabled { opacity: 0.6; cursor: wait; }
       .coop-copilot-link {
@@ -167,28 +180,32 @@
         margin-top: 9px;
         padding: 8px;
         border-radius: 8px;
-        border: 1px solid rgba(251, 191, 36, 0.45);
+        border: 1.5px solid rgba(251, 191, 36, 0.45);
         color: #fbbf24;
         font-size: 12.5px;
         text-decoration: none;
         transition:
-          transform 0.5s cubic-bezier(0.22, 1.4, 0.36, 1),
-          background 0.45s ease,
-          box-shadow 0.45s ease,
-          border-color 0.45s ease;
+          transform 1.0s cubic-bezier(0.22, 1.4, 0.36, 1),
+          background 0.9s ease,
+          box-shadow 0.9s ease,
+          border-color 0.9s ease;
       }
       .coop-copilot-link:hover {
         transform: translateY(-2px);
         border-color: #fbbf24;
         background: rgba(251, 191, 36, 0.15);
-        box-shadow: 0 0 14px rgba(251, 191, 36, 0.45);
+        box-shadow: 0 0 16px rgba(251, 191, 36, 0.5), 0 0 28px rgba(251, 191, 36, 0.25);
+      }
+      .coop-copilot-link:focus, .coop-copilot-link:active {
+        border-color: #fde68a;
+        box-shadow: 0 0 24px rgba(251, 191, 36, 0.8), 0 0 42px rgba(251, 191, 36, 0.4);
       }
       .coop-status {
         font-size: 12.5px;
         margin-top: 8px;
         text-align: center;
         min-height: 16px;
-        transition: opacity 0.45s ease;
+        transition: opacity 0.9s ease;
       }
     `;
     document.head.appendChild(style);
@@ -240,35 +257,30 @@
           <div class="coop-drawer">
             <div class="coop-drawer-inner">
               <p style="font-size:12.5px;color:#94a3b8;margin:4px 0 12px;">Ідеально, якщо ідея ще формується і потрібна структурована оцінка перед стартом.</p>
-              <a href="copilot.html" class="coop-submit" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box;">Перейти на сторінку Копілота</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
+Перейти на сторінку Копілота
 
-    document.body.appendChild(backdrop);
-    document.body.appendChild(modal);
 
-    let closeTimer = null;
-    let isLockedByFocus = false;
 
-    function openHub() {
-      clearTimeout(closeTimer);
-      backdrop.classList.add('is-open');
-      modal.classList.add('is-open');
-    }
 
-    function scheduleClose() {
-      if (isLockedByFocus) return;
-      clearTimeout(closeTimer);
-      closeTimer = setTimeout(() => {
-        backdrop.classList.remove('is-open');
-        modal.classList.remove('is-open');
-      }, 360);
-    }
-
-    trigger.addEventListener('mouseenter', openHub);
+`;
+document.body.appendChild(backdrop);
+document.body.appendChild(modal);
+let closeTimer = null;
+let isLockedByFocus = false;
+function openHub() {
+clearTimeout(closeTimer);
+backdrop.classList.add('is-open');
+modal.classList.add('is-open');
+}
+function scheduleClose() {
+if (isLockedByFocus) return;
+clearTimeout(closeTimer);
+closeTimer = setTimeout(() => {
+backdrop.classList.remove('is-open');
+modal.classList.remove('is-open');
+}, 450);
+}
+trigger.addEventListener('mouseenter', openHub);
 trigger.addEventListener('mouseleave', scheduleClose);
 trigger.addEventListener('click', (e) => {
 e.preventDefault();
@@ -284,6 +296,7 @@ modal.addEventListener('mouseenter', openHub);
 modal.addEventListener('mouseleave', scheduleClose);
 modal.addEventListener('focusin', (e) => {
 isLockedByFocus = true;
+modal.querySelectorAll('.coop-card').forEach(c => c.classList.remove('is-active'));
 const card = e.target.closest('.coop-card');
 if (card) card.classList.add('is-active');
 });
@@ -312,12 +325,23 @@ const msgVal = form.querySelector('[name="message"]').value.trim();
 btn.disabled = true;
 status.style.color = '#38bdf8';
 status.textContent = 'Надсилаємо запит...';
+const fullBody = 'Напрямок: ' + direction + '\nВід: ' + nameVal + '\nПошта: ' + emailVal + '\n\nПовідомлення:\n' + msgVal;
 const params = {
-from_name: nameVal,
-reply_to: emailVal,
-email: emailVal,
 subject: direction,
-message: '[' + direction + ']\nВід: ' + nameVal + ' (' + emailVal + ')\n\n' + msgVal
+title: direction,
+from_name: nameVal,
+user_name: nameVal,
+name: nameVal,
+reply_to: emailVal,
+user_email: emailVal,
+email: emailVal,
+message: fullBody,
+text: fullBody,
+body: fullBody,
+content: fullBody,
+description: fullBody,
+details: fullBody,
+user_message: fullBody
 };
 if (window.emailjs && typeof window.emailjs.send === 'function') {
 window.emailjs.send('default', 'default', params)

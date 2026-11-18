@@ -57,7 +57,7 @@ const EXHIBITIONS_DATA = [
         "title": "Оригінали Георгія Нарбута",
         "desc": "Золотий фонд української графіки, книжкового мистецтва та державних символів.",
         "folder": "images/narbut/originals",
-        "coverImage": "images/prymachenko/priymachenkotitle.webp",
+        "coverImage": "images/narbut/narbuttitle.webp",
         "artworksCount": 0,
         "glowColor": "rgba(212, 175, 55, 0.55)"
       }
@@ -79,7 +79,7 @@ const EXHIBITIONS_DATA = [
         "title": "Оригінали Івана Марчука",
         "desc": "Золотий фонд живопису та авторської техніки пльонтанізму.",
         "folder": "images/marchuk/originals",
-        "coverImage": "images/prymachenko/priymachenkotitle.webp",
+        "coverImage": "images/marchuk/marchuktitle.webp",
         "artworksCount": 0,
         "glowColor": "rgba(56, 189, 248, 0.55)"
       }
