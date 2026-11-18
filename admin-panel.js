@@ -73,7 +73,7 @@
           </div>
           <div class="adm-row" style="margin-bottom:0;">
             <input type="text" id="adm-new-exp-title" class="adm-in" placeholder="Назва (напр. POV №2: Новий погляд)">
-            <input type="text" id="adm-new-exp-folder" class="adm-in" placeholder="Папка (напр. images/prymachenko/pov2)">
+            <input type="text" id="adm-new-exp-folder" class="adm-in" placeholder="Папка (напр. pov2)">
             <button class="adm-btn" id="adm-add-exp">+ Додати</button>
           </div>
         </div>
@@ -252,11 +252,13 @@
 
   document.getElementById('adm-add-exp').onclick = () => {
     const title = document.getElementById('adm-new-exp-title').value.trim();
-    const folder = document.getElementById('adm-new-exp-folder').value.trim();
-    if (!title || !folder) { statusEl.textContent = 'Вкажіть назву та папку експозиції!'; return; }
+    let rawFolder = document.getElementById('adm-new-exp-folder').value.trim().replace(/^\/+|\/+$/g, '');
+    if (!title || !rawFolder) { statusEl.textContent = 'Вкажіть назву та папку експозиції!'; return; }
     const data = getData();
     const artist = data.find(a => a.id === artistSel.value);
     if (!artist) return;
+    const basePrefix = `images/${artist.id}/`;
+    const folder = rawFolder.startsWith(basePrefix) ? rawFolder : basePrefix + rawFolder.split('/').pop();
     if (!artist.sections) artist.sections = [];
     const newId = 'exp-' + Date.now();
     artist.sections.push({
