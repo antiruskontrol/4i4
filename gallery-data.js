@@ -30,16 +30,6 @@ const EXHIBITIONS_DATA = [
         "glowColor": "rgba(56, 189, 248, 0.55)"
       },
       {
-        "id": "exp-1794992345312",
-        "badge": "POV",
-        "title": "pov2",
-        "desc": "Кураторська експозиція.",
-        "folder": "images/prymachenko/pov2",
-        "coverImage": "images/prymachenko/pov2/1.webp",
-        "artworksCount": 0,
-        "glowColor": "rgba(56, 189, 248, 0.55)"
-      },
-      {
         "id": "exp-1794992353989",
         "badge": "POV №3",
         "title": "pov2",
