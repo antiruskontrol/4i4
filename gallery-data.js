@@ -1,4 +1,4 @@
-﻿const EXHIBITIONS_DATA = [
+const EXHIBITIONS_DATA = [
   {
     "id": "prymachenko",
     "artist": "Марія Примаченко",
@@ -26,14 +26,14 @@
         "desc": "Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині.",
         "folder": "images/prymachenko/POV№ 1_Марко Оцтович Афтіпа",
         "coverImage": "images/prymachenko/POV№ 1_Марко Оцтович Афтіпа/1.webp",
-        "artworksCount": 15,
+        "artworksCount": 10,
         "glowColor": "rgba(56, 189, 248, 0.55)"
       },
       {
-        "id": "pov-2",
-        "badge": "POV №2",
-        "title": "POV №2: Чагарники і Чорнобривці",
-        "desc": "Кураторська експозиція: сучасне візуальне переосмислення.",
+        "id": "exp-1794992353989",
+        "badge": "POV №3",
+        "title": "pov2",
+        "desc": "Кураторська експозиція.",
         "folder": "images/prymachenko/pov3",
         "coverImage": "images/prymachenko/pov3/1.webp",
         "artworksCount": 4,
@@ -57,7 +57,7 @@
         "title": "Оригінали Георгія Нарбута",
         "desc": "Золотий фонд української графіки, книжкового мистецтва та державних символів (експозиція готується).",
         "folder": "images/narbut/originals",
-        "coverImage": "images/narbut/narbuttitle.webp",
+        "coverImage": "images/prymachenko/priymachenkotitle.webp",
         "artworksCount": 0,
         "glowColor": "rgba(212, 175, 55, 0.55)"
       }
@@ -79,7 +79,7 @@
         "title": "Оригінали Івана Марчука",
         "desc": "Золотий фонд живопису та авторської техніки пльонтанізму (експозиція готується).",
         "folder": "images/marchuk/originals",
-        "coverImage": "images/marchuk/marchuktitle.webp",
+        "coverImage": "images/prymachenko/priymachenkotitle.webp",
         "artworksCount": 0,
         "glowColor": "rgba(56, 189, 248, 0.55)"
       }
