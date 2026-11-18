@@ -26,7 +26,7 @@ const EXHIBITIONS_DATA = [
         "desc": "Ремейк Марко Оцтович + AI. Сучасна цифрова інтерпретація фантастичних образів майстрині (10 робіт).",
         "folder": "images/prymachenko/POV№ 1_Марко Оцтович Афтіпа",
         "coverImage": "images/prymachenko/POV№ 1_Марко Оцтович Афтіпа/1.webp",
-        "artworksCount": 10,
+        "artworksCount": 19,
         "glowColor": "rgba(56, 189, 248, 0.55)"
       }
     ]
@@ -37,21 +37,11 @@ const EXHIBITIONS_DATA = [
     "category": "Графіка & Шрифт",
     "folder": "images/narbut",
     "tileImage": "narbuttitle.webp",
-    "pageUrl": "narbut.html",
+    "pageUrl": "#",
     "glowColor": "rgba(212, 175, 55, 0.5)",
+    "comingSoon": true,
     "subtitle": "Фундатор українського академічного мистецтва, творець національного стилю в графіці та книзі.",
-    "sections": [
-      {
-        "id": "originals",
-        "badge": "АВТЕНТИКА",
-        "title": "Оригінали Георгія Нарбута",
-        "desc": "Графічна та книжкова спадщина майстра українського стилю.",
-        "folder": "images/narbut/originals",
-        "coverImage": "images/narbut/narbuttitle.webp",
-        "artworksCount": 0,
-        "glowColor": "rgba(212, 175, 55, 0.55)"
-      }
-    ]
+    "sections": []
   },
   {
     "id": "marchuk",
@@ -59,20 +49,10 @@ const EXHIBITIONS_DATA = [
     "category": "Пльонтанізм",
     "folder": "images/marchuk",
     "tileImage": "marchuktitle.webp",
-    "pageUrl": "marchuk.html",
+    "pageUrl": "#",
     "glowColor": "rgba(56, 189, 248, 0.5)",
+    "comingSoon": true,
     "subtitle": "Медитативний всесвіт космічного пльонтанізму, світлових ліній та філософії.",
-    "sections": [
-      {
-        "id": "originals",
-        "badge": "АВТЕНТИКА",
-        "title": "Оригінали Івана Марчука",
-        "desc": "Вибрані полотна у техніці пльонтанізму.",
-        "folder": "images/marchuk/originals",
-        "coverImage": "images/marchuk/marchuktitle.webp",
-        "artworksCount": 0,
-        "glowColor": "rgba(56, 189, 248, 0.55)"
-      }
-    ]
+    "sections": []
   }
 ];
