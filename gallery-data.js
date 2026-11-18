@@ -15,8 +15,8 @@ const EXHIBITIONS_DATA = [
         "title": "Оригінали Марії Примаченко",
         "desc": "Золотий фонд українського народного декоративного живопису (експозиція готується).",
         "folder": "images/prymachenko/originals",
-        "coverImage": "images/prymachenko/originals/1.webp",
-        "artworksCount": 5,
+        "coverImage": "images/prymachenko/priymachenkotitle.webp",
+        "artworksCount": 0,
         "glowColor": "rgba(212, 175, 55, 0.55)"
       },
       {
@@ -27,6 +27,26 @@ const EXHIBITIONS_DATA = [
         "folder": "images/prymachenko/POV№ 1_Марко Оцтович Афтіпа",
         "coverImage": "images/prymachenko/POV№ 1_Марко Оцтович Афтіпа/1.webp",
         "artworksCount": 15,
+        "glowColor": "rgba(56, 189, 248, 0.55)"
+      },
+      {
+        "id": "exp-1794992345312",
+        "badge": "POV",
+        "title": "pov2",
+        "desc": "Кураторська експозиція.",
+        "folder": "images/prymachenko/pov2",
+        "coverImage": "images/prymachenko/pov2/1.webp",
+        "artworksCount": 0,
+        "glowColor": "rgba(56, 189, 248, 0.55)"
+      },
+      {
+        "id": "exp-1794992353989",
+        "badge": "POV №3",
+        "title": "pov2",
+        "desc": "Кураторська експозиція.",
+        "folder": "images/prymachenko/pov3",
+        "coverImage": "images/prymachenko/pov3/1.webp",
+        "artworksCount": 4,
         "glowColor": "rgba(56, 189, 248, 0.55)"
       }
     ]
@@ -47,7 +67,7 @@ const EXHIBITIONS_DATA = [
         "title": "Оригінали Георгія Нарбута",
         "desc": "Золотий фонд української графіки, книжкового мистецтва та державних символів (експозиція готується).",
         "folder": "images/narbut/originals",
-        "coverImage": "images/narbut/narbuttitle.webp",
+        "coverImage": "images/prymachenko/priymachenkotitle.webp",
         "artworksCount": 0,
         "glowColor": "rgba(212, 175, 55, 0.55)"
       }
@@ -69,7 +89,7 @@ const EXHIBITIONS_DATA = [
         "title": "Оригінали Івана Марчука",
         "desc": "Золотий фонд живопису та авторської техніки пльонтанізму (експозиція готується).",
         "folder": "images/marchuk/originals",
-        "coverImage": "images/marchuk/marchuktitle.webp",
+        "coverImage": "images/prymachenko/priymachenkotitle.webp",
         "artworksCount": 0,
         "glowColor": "rgba(56, 189, 248, 0.55)"
       }
