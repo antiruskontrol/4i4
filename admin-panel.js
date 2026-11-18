@@ -32,7 +32,7 @@
 
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
   const gear = document.createElement('button');
-  gear.className = 'adm-gear' + (localStorage.getItem('adminKey') ? ' authed' : '');
+  gear.className = 'adm-gear' + (localStorage.getItem('adminPin') ? ' authed' : '');
   gear.innerHTML = '⚙'; gear.title = 'Адмін-студія виставок'; document.body.appendChild(gear);
   const modal = document.createElement('div');
   modal.className = 'adm-modal';
@@ -44,7 +44,7 @@
       <div id="adm-auth">
         <p style="color:#94a3b8;font-size:0.9rem;margin-bottom:12px;">Вхід через сервер Render:</p>
         <div class="adm-row">
-          <input type="password" id="adm-pwd" class="adm-in" style="color:#fff;letter-spacing:0.08em;" placeholder="Адмін-пароль"><button type="button" id="adm-eye" class="adm-btn adm-btn-sec" title="Показати/приховати">👁</button>
+          <input type="password" id="adm-pwd" class="adm-in" style="color:#fff;letter-spacing:0.08em;" placeholder="Введіть ADMIN_PIN" inputmode="numeric"><button type="button" id="adm-eye" class="adm-btn adm-btn-sec" title="Показати/приховати">👁</button>
           <button class="adm-btn" id="adm-login-btn">Увійти</button>
         </div>
       </div>
@@ -195,7 +195,7 @@
   }
 
   gear.onclick = () => {
-    const authed = !!localStorage.getItem('adminKey');
+    const authed = !!localStorage.getItem('adminPin');
     document.getElementById('adm-auth').style.display = authed ? 'none' : 'block';
     document.getElementById('adm-workspace').style.display = authed ? 'block' : 'none';
     statusEl.textContent = '';
@@ -209,20 +209,20 @@
   document.getElementById('adm-eye').onclick = () => { const p = document.getElementById('adm-pwd'); p.type = p.type === 'password' ? 'text' : 'password'; }; document.getElementById('adm-login-btn').onclick = async () => {
     const pass = document.getElementById('adm-pwd').value.trim();
     if (!pass) return;
-    statusEl.textContent = 'Перевірка пароля на Render...';
+    statusEl.textContent = 'Перевірка ПІН-коду на Render...';
     try {
       const r = await fetch(`${BACKEND_URL}/api/verify-admin`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminKey: pass })
+        body: JSON.stringify({ adminPin: pass })
       });
       if (r.ok) {
-        localStorage.setItem('adminKey', pass);
+        localStorage.setItem('adminPin', pass);
         gear.classList.add('authed');
         document.getElementById('adm-auth').style.display = 'none';
         document.getElementById('adm-workspace').style.display = 'block';
         refreshUI();
         statusEl.textContent = 'Доступ підтверджено!';
-      } else { statusEl.textContent = 'Невірний адмін-пароль.'; }
+      } else { statusEl.textContent = 'Невірний ПІН-код.'; }
     } catch { statusEl.textContent = 'Сервер Render прокидається, спробуйте за 10 сек.'; }
   };
 
@@ -309,8 +309,8 @@
   };
 
   document.getElementById('adm-export-all').onclick = async () => {
-    const adminKey = localStorage.getItem('adminKey') || '';
-    if (!adminKey) { statusEl.textContent = 'Потрібна повторна авторизація!'; return; }
+    const adminPin = localStorage.getItem('adminPin') || '';
+    if (!adminPin) { statusEl.textContent = 'Потрібна повторна авторизація!'; return; }
     statusEl.textContent = 'Підготовка та публікація файлів у GitHub...';
 
     const clean = JSON.parse(JSON.stringify(getData()));
@@ -345,7 +345,7 @@
       const res = await fetch(`${BACKEND_URL}/api/publish`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminKey, files: filesToUpload, commitMessage: 'Публікація через Адмін-студію 4i4' })
+        body: JSON.stringify({ adminPin, files: filesToUpload, commitMessage: 'Публікація через Адмін-студію 4i4' })
       });
       const out = await res.json();
       if (!res.ok) throw new Error(out.error || 'Помилка сервера');
@@ -357,7 +357,7 @@
   };
 
   document.getElementById('adm-logout').onclick = () => {
-    localStorage.removeItem('adminKey');
+    localStorage.removeItem('adminPin');
     gear.classList.remove('authed');
     modal.classList.remove('open');
   };
