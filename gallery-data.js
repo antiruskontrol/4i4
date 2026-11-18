@@ -1,4 +1,4 @@
-﻿const EXHIBITIONS_DATA = [
+const EXHIBITIONS_DATA = [
   {
     "id": "prymachenko",
     "artist": "Марія Примаченко",
@@ -27,6 +27,26 @@
         "folder": "images/prymachenko/POV№ 1_Марко Оцтович Афтіпа",
         "coverImage": "images/prymachenko/POV№ 1_Марко Оцтович Афтіпа/1.webp",
         "artworksCount": 15,
+        "glowColor": "rgba(56, 189, 248, 0.55)"
+      },
+      {
+        "id": "exp-1794992345312",
+        "badge": "POV",
+        "title": "pov2",
+        "desc": "Кураторська експозиція.",
+        "folder": "images/prymachenko/pov2",
+        "coverImage": "images/prymachenko/pov2/1.webp",
+        "artworksCount": 0,
+        "glowColor": "rgba(56, 189, 248, 0.55)"
+      },
+      {
+        "id": "exp-1794992353989",
+        "badge": "POV №3",
+        "title": "pov2",
+        "desc": "Кураторська експозиція.",
+        "folder": "images/prymachenko/pov3",
+        "coverImage": "images/prymachenko/pov3/1.webp",
+        "artworksCount": 4,
         "glowColor": "rgba(56, 189, 248, 0.55)"
       }
     ]
