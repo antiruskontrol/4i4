@@ -1,4 +1,4 @@
-(function() {
+﻿(function() {
   const BACKEND_URL = 'https://' + 'fouri4' + '-copilot-' + 'backend.' + 'onrender.com';
   const STORAGE_KEY = 'studio_exhibitions_data';
 
@@ -179,7 +179,28 @@
   async function handleUpload(fileList) {
     const data = getData();
     const artist = data.find(a => a.id === artistSel.value);
+    const newTitleEl = document.getElementById('adm-new-exp-title');
+    const newFolderEl = document.getElementById('adm-new-exp-folder');
+    if (artist && newTitleEl && newTitleEl.value.trim()) {
+      const title = newTitleEl.value.trim();
+      if (!artist.sections) artist.sections = [];
+      const povNum = artist.sections.filter(s => s.id !== 'originals').length + 1;
+      const rawFolder = (newFolderEl && newFolderEl.value.trim()) ? newFolderEl.value.trim().replace(/^\/+|\/+$/g, '') : `pov${povNum}`;
+      const basePrefix = `images/${artist.id}/`;
+      const folder = rawFolder.startsWith(basePrefix) ? rawFolder : basePrefix + rawFolder.split('/').pop();
+      const newId = 'exp-' + Date.now();
+      artist.sections.push({
+        id: newId, badge: `POV №${povNum}`, title, desc: 'Кураторська експозиція.',
+        folder, coverImage: `${folder}/1.webp`, artworksCount: 0, glowColor: 'rgba(56, 189, 248, 0.55)'
+      });
+      expSel.innerHTML += `<option value="${newId}">${title}</option>`;
+      expSel.value = newId;
+      newTitleEl.value = ''; if (newFolderEl) newFolderEl.value = '';
+    }
     const sec = artist && artist.sections ? artist.sections.find(s => s.id === expSel.value) : null;
+    if (sec && sec.id === 'originals' && !confirm('Увага! Обрано першу плитку "Оригінали". Додати картини саме туди? (Скасувати — якщо хочете створити нову експозицію)')) {
+      statusEl.textContent = 'Скасовано. Введіть назву нової експозиції у поле вище.'; return;
+    }
     if (!sec) { statusEl.textContent = 'Спочатку оберіть або створіть експозицію!'; return; }
     statusEl.textContent = 'Конвертація у WebP...';
     const webps = await filesToWebp(fileList);
@@ -253,7 +274,7 @@
   document.getElementById('adm-add-exp').onclick = () => {
     const title = document.getElementById('adm-new-exp-title').value.trim();
     let rawFolder = document.getElementById('adm-new-exp-folder').value.trim().replace(/^\/+|\/+$/g, '');
-    if (!title || !rawFolder) { statusEl.textContent = 'Вкажіть назву та папку експозиції!'; return; }
+    if (!title) { statusEl.textContent = 'Вкажіть назву нової експозиції!'; return; } if (!rawFolder) { const n = (getData().find(a => a.id === artistSel.value)?.sections || []).filter(s => s.id !== 'originals').length + 1; rawFolder = 'pov' + n; }
     const data = getData();
     const artist = data.find(a => a.id === artistSel.value);
     if (!artist) return;
@@ -319,7 +340,7 @@
     try { const tRes = await fetch('./hall-template.html'); if (tRes.ok) tplHtml = await tRes.text(); } catch {}
 
     clean.forEach(a => {
-      if (tplHtml && a.pageUrl && a.pageUrl !== '#' && !['prymachenko.html'].includes(a.pageUrl)) {
+      if (tplHtml && a.pageUrl && a.pageUrl !== '#' && !['prymachenko.html', 'narbut.html', 'marchuk.html'].includes(a.pageUrl)) {
         const b64Page = btoa(unescape(encodeURIComponent(tplHtml)));
         filesToUpload.push({ path: a.pageUrl, contentBase64: b64Page });
       }

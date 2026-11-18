@@ -47,7 +47,7 @@
         "title": "Оригінали Георгія Нарбута",
         "desc": "Золотий фонд української графіки, книжкового мистецтва та державних символів (експозиція готується).",
         "folder": "images/narbut/originals",
-        "coverImage": "images/narbut/narbuttitle.webp",
+        "coverImage": "images/prymachenko/priymachenkotitle.webp",
         "artworksCount": 0,
         "glowColor": "rgba(212, 175, 55, 0.55)"
       }
@@ -69,7 +69,7 @@
         "title": "Оригінали Івана Марчука",
         "desc": "Золотий фонд живопису та авторської техніки пльонтанізму (експозиція готується).",
         "folder": "images/marchuk/originals",
-        "coverImage": "images/marchuk/marchuktitle.webp",
+        "coverImage": "images/prymachenko/priymachenkotitle.webp",
         "artworksCount": 0,
         "glowColor": "rgba(56, 189, 248, 0.55)"
       }
