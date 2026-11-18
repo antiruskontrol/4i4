@@ -5,6 +5,21 @@
 
     const style = document.createElement('style');
     style.textContent = `
+      header:has(a.is-hub-open),
+      nav:has(a.is-hub-open) {
+        position: relative !important;
+        z-index: 1001 !important;
+      }
+      a[href="#cooperation"].is-hub-open {
+        position: relative !important;
+        z-index: 1002 !important;
+        border-color: #7dd3fc !important;
+        background: rgba(14, 30, 58, 0.96) !important;
+        color: #e0f2fe !important;
+        text-shadow: 0 0 14px rgba(125, 211, 252, 0.9) !important;
+        box-shadow: 0 0 26px rgba(56, 189, 248, 0.95), 0 0 58px rgba(56, 189, 248, 0.75), 0 0 105px rgba(125, 211, 252, 0.55) !important;
+        transition: all 1.2s ease !important;
+      }
       #coop-backdrop {
         position: fixed;
         inset: 0;
@@ -12,7 +27,7 @@
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-        transition: opacity 1.0s ease, visibility 1.0s ease;
+        transition: opacity 1.45s ease, visibility 1.45s ease;
         z-index: 998;
       }
       #coop-backdrop.is-open {
@@ -36,7 +51,7 @@
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-        transition: opacity 1.0s ease, visibility 1.0s ease;
+        transition: opacity 1.45s ease, visibility 1.45s ease;
         z-index: 999;
       }
       #coop-modal.is-open {
@@ -269,16 +284,18 @@ let closeTimer = null;
 let isLockedByFocus = false;
 function openHub() {
 clearTimeout(closeTimer);
-backdrop.classList.add('is-open');
+trigger.classList.add('is-hub-open');
+      backdrop.classList.add('is-open');
 modal.classList.add('is-open');
 }
 function scheduleClose() {
 if (isLockedByFocus) return;
 clearTimeout(closeTimer);
 closeTimer = setTimeout(() => {
-backdrop.classList.remove('is-open');
+trigger.classList.remove('is-hub-open');
+      backdrop.classList.remove('is-open');
 modal.classList.remove('is-open');
-}, 450);
+}, 850);
 }
 trigger.addEventListener('mouseenter', openHub);
 trigger.addEventListener('mouseleave', scheduleClose);
@@ -286,7 +303,8 @@ trigger.addEventListener('click', (e) => {
 e.preventDefault();
 if (modal.classList.contains('is-open')) {
 isLockedByFocus = false;
-backdrop.classList.remove('is-open');
+trigger.classList.remove('is-hub-open');
+      backdrop.classList.remove('is-open');
 modal.classList.remove('is-open');
 } else {
 openHub();
@@ -303,7 +321,8 @@ if (card) card.classList.add('is-active');
 backdrop.addEventListener('click', () => {
 isLockedByFocus = false;
 modal.querySelectorAll('.coop-card').forEach(c => c.classList.remove('is-active'));
-backdrop.classList.remove('is-open');
+trigger.classList.remove('is-hub-open');
+      backdrop.classList.remove('is-open');
 modal.classList.remove('is-open');
 });
 modal.querySelectorAll('.coop-card-title').forEach(titleEl => {
