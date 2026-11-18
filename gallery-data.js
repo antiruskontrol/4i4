@@ -16,7 +16,7 @@ const EXHIBITIONS_DATA = [
         "desc": "Золотий фонд українського народного декоративного живопису (експозиція готується).",
         "folder": "images/prymachenko/originals",
         "coverImage": "images/prymachenko/originals/1.webp",
-        "artworksCount": 7,
+        "artworksCount": 5,
         "glowColor": "rgba(212, 175, 55, 0.55)"
       },
       {
