@@ -78,9 +78,7 @@
       }
 
       /* Світловий спалах поверх кнопок (0.57s = +50% тривалості) */
-      .ui-btn-host {
-        position: relative !important;
-      }
+      /* .ui-btn-host preserves fixed/absolute positioning */
       .ui-btn-host::after {
         content: "";
         position: absolute;
@@ -114,13 +112,27 @@
     `;
     document.head.appendChild(style);
 
-    const SITE_VERSION = 'v1.13';
+    const SITE_VERSION = 'v1.19';
     if (!document.getElementById('site-version-badge')) {
       const badge = document.createElement('div');
       badge.id = 'site-version-badge';
       badge.textContent = SITE_VERSION;
       badge.style.cssText = 'position:fixed;top:8px;right:12px;z-index:950;font-family:monospace,sans-serif;font-size:11px;font-weight:600;color:#4ade80;background:rgba(4,19,10,0.65);border:1px solid rgba(74,222,128,0.4);padding:2px 7px;border-radius:999px;pointer-events:none;letter-spacing:0.04em;box-shadow:0 0 8px rgba(34,197,94,0.25);';
       document.body.appendChild(badge);
+    }
+
+    if (!document.getElementById('site-global-footer')) {
+      const isHome = !!document.getElementById('intro-container');
+      const footer = document.createElement('footer');
+      footer.id = 'site-global-footer';
+      footer.textContent = '© АртВеб студія Чагарники і Чорнобривці Київ Україна 2026';
+
+      if (isHome) {
+        footer.style.cssText = 'position:fixed;bottom:14px;left:0;width:100%;text-align:center;z-index:20;pointer-events:none;font-family:"Montserrat","Segoe UI",sans-serif;font-size:12px;letter-spacing:0.08em;color:rgba(255,232,179,0.78);text-shadow:0 0 10px rgba(255,175,50,0.65),0 2px 6px rgba(0,0,0,0.9);padding:0 16px;';
+      } else {
+        footer.style.cssText = 'position:relative;z-index:10;width:100%;text-align:center;margin-top:48px;padding:22px 16px 28px;border-top:1px solid rgba(212,175,55,0.2);font-family:"Segoe UI",system-ui,sans-serif;font-size:0.86rem;letter-spacing:0.08em;color:rgba(244,241,234,0.72);text-shadow:0 0 10px rgba(212,175,55,0.35);';
+      }
+      document.body.appendChild(footer);
     }
 
     document.querySelectorAll('a[href="index.html"], a[href="./index.html"], a[href="/4i4/"]').forEach(link => {
@@ -151,6 +163,7 @@
 
       btn.style.setProperty('--flash-bg', bg);
       btn.style.setProperty('--flash-glow', glow);
+      if (getComputedStyle(btn).position === 'static') { btn.style.position = 'relative'; }
       btn.classList.add('ui-btn-host');
       btn.classList.remove('ui-do-flash');
       void btn.offsetWidth;

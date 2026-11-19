@@ -298,7 +298,7 @@ closeTimer = setTimeout(() => {
 trigger.classList.remove('is-hub-open');
       backdrop.classList.remove('is-open');
 modal.classList.remove('is-open');
-}, 1500);
+}, 500);
 }
 trigger.addEventListener('mouseenter', openHub);
 trigger.addEventListener('mouseleave', scheduleClose);

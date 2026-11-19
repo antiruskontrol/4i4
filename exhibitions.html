@@ -17,7 +17,7 @@
     <meta property="og:url" content="https://github.io">
 
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 40px; line-height: 1.6; }
+        html, body { background-color: #000000 !important; scrollbar-gutter: stable; } body { font-family: 'Segoe UI', Arial, sans-serif; background: #000000; color: #f8fafc; margin: 0; padding: 40px; line-height: 1.6; }
         .container { max-width: 1100px; margin: 0 auto; }
         .header-block { text-align: center; margin-bottom: 50px; }
         h1 { color: #38bdf8; font-size: 2.8rem; margin-bottom: 10px; }
@@ -44,30 +44,12 @@
         .back-btn { color: #94a3b8; text-decoration: none; font-weight: bold; transition: color 0.2s; }
         .back-btn:hover { color: #38bdf8; text-decoration: underline; }
         /* Плавне проявлення сторінки з темряви */
-body {
-  animation: fadeInPage 0.85s ease-out forwards;
-}
 
-@keyframes fadeInPage {
-  from { opacity: 0; }
   to { opacity: 1; }
 }
 
 /* Екран затемнення при виході зі сторінки */
-#page-transition-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: #05070d;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 9999;
-  transition: opacity 0.55s ease-in-out;
-}
 
-#page-transition-overlay.is-active {
-  opacity: 1;
-  pointer-events: all;
-}
 /* Базове темне тло сторінки, яке зливається з краями картинки */
 body {
   position: relative;
@@ -132,7 +114,7 @@ body {
   gap: 35px;
   margin-top: 30px;
 }
-.art-tile-link {
+.art-tile-link { aspect-ratio: 3/4; background: #05070c;
   position: relative;
   display: block;
   border-radius: 22px;
@@ -214,9 +196,7 @@ body {
 <body>
     <div class="fixed-bg-wreath"></div>
 
-  <div id="page-transition-overlay"></div>
-
-    <div class="container">
+  <div class="container">
                 <nav class="top-nav-ex" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;gap:12px;">
             <a href="index.html" class="ex-neon-btn brand-orange-btn" data-transition="back">Чагарники і Чорнобривці</a>
             <a href="#cooperation" class="ex-neon-btn">Співпраця</a>
@@ -227,53 +207,11 @@ body {
             <p class="subtitle">Переосмислення національного культурного коду через призму штучного інтелекту, сучасного UI/UX дизайну та веб-технологій від арт-студії Чагарники і Чорнобривці.</p>
         </header>
 
-        <main id="exhibitions-grid" class="exhibitions-grid">
-            
-            <!-- Картка 1: Марія Примаченко -->
-            <section class="exhibition-card">
-                <div class="card-image">
-                    <!-- Усі прев'ю-обкладинки лежать в твоїй загальній папці img/ -->
-                    <img src="images/prymachenko/priymachenkotitle.webp" alt="Афіша цифрової виставки Всесвіт Марії Примаченко від студії Чагарники і Чорнобривці">
-                    <span class="badge">Етно-модерн</span>
-                </div>
-                <div class="card-content">
-                    <h2>Всесвіт Марії Примаченко</h2>
-                    <p>Віртуальний простір дивовижних звірів та яскравих рослинних орнаментів українського наївного мистецтва, адаптованих під сучасну комп'ютерну графіку.</p>
-                    <a href="prymachenko.html" class="view-btn">Увійти до експозиції</a>
-                </div>
-            </section>
-
-            <!-- Картка 2: Георгій Нарбут -->
-            <section class="exhibition-card">
-                <div class="card-image">
-                    <img src="images/narbut/narbuttitle.webp" alt="Обкладинка виставки Геометрія та Шрифт Георгія Нарбута дизайн Чагарники і Чорнобривці">
-                    <span class="badge">Графіка & Шрифт</span>
-                </div>
-                <div class="card-content">
-                    <h2>Геометрія Георгія Нарбута</h2>
-                    <p>Дослідження монументальної української шрифтової спадщини та барокової симетрії як ідеальної основи для сучасного корпоративного брендингу.</p>
-                    <a href="narbut.html" class="view-btn">Увійти до експозиції</a>
-                </div>
-            </section>
-
-            <!-- Картка 3: Іван Марчук -->
-            <section class="exhibition-card">
-                <div class="card-image">
-                    <img src="images/marchuk/marchuktitle.webp" alt="Цифрова афіша виставки Плетіння світів Івана Марчука Ші генеративний арт">
-                    <span class="badge">Генеративний ШІ</span>
-                </div>
-                <div class="card-content">
-                    <h2>Плетіння світів Івана Марчука</h2>
-                    <p>Унікальна художня техніка «пльонтанізму» в цифрову епоху. Нейромережеві текстури, інтерактивні лінії та генеративне мистецтво майбутнього.</p>
-                    <a href="marchuk.html" class="view-btn">Увійти до експозиції</a>
-                </div>
-            </section>
-
-        </main>
+        <main id="exhibitions-grid" class="exhibitions-grid" style="min-height:460px;"></main>
     </div>
 <script src="./gallery-data.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  (function () {
     const grid = document.getElementById('exhibitions-grid');
     let data = JSON.parse(localStorage.getItem('studio_exhibitions_data') || 'null') || (typeof EXHIBITIONS_DATA !== 'undefined' ? EXHIBITIONS_DATA : []); data = data.map(d => (d.id === 'narbut' && d.pageUrl === '#') ? {...d, pageUrl: 'narbut.html'} : (d.id === 'marchuk' && d.pageUrl === '#') ? {...d, pageUrl: 'marchuk.html'} : d); if (!grid || !data.length) return;
 
@@ -282,15 +220,15 @@ body {
          class="art-tile-link" 
          style="--glow-color: ${item.glowColor};"
          aria-label="Відкрити виставку: ${item.artist}">
-        <img src="./${item.folder}/${item.tileImage}" alt="${item.artist} — ${item.category}" loading="lazy">
+        <img src="./${item.folder}/${item.tileImage}" alt="${item.artist} — ${item.category}" decoding="async">
       </a>
     `).join('');
-  });
+  })();
 </script>
 <script src="admin-panel.js?v=7"></script>
   <script src="email.js"></script>
-  <script src="cooperation-hub.js?v=20"></script>
-  <script src="ui-neon-effects.js?v=13"></script>
+  <script src="cooperation-hub.js?v=22"></script>
+  <script src="ui-neon-effects.js?v=19"></script>
 </body>
 </html>
 
