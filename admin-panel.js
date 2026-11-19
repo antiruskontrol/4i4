@@ -1,4 +1,4 @@
-﻿(function() {
+(function() {
   const BACKEND_URL = 'https://' + 'fouri4' + '-copilot-' + 'backend.' + 'onrender.com';
   const STORAGE_KEY = 'studio_exhibitions_data';
 
@@ -39,7 +39,7 @@
   modal.innerHTML = `
     <div class="adm-box">
       <button class="adm-close" id="adm-x">&times;</button>
-      <h3>Адмін-студія виставок</h3>
+      <h3>Адмін-студія виставок <span style="font-size:0.75rem;color:#4ade80;border:1px solid rgba(74,222,128,0.45);padding:2px 8px;border-radius:999px;vertical-align:middle;margin-left:6px;">v7</span></h3>
 
       <div id="adm-auth">
         <p style="color:#94a3b8;font-size:0.9rem;margin-bottom:12px;">Вхід через сервер Render:</p>
@@ -87,6 +87,8 @@
           </div>
           <div id="adm-thumbs-grid" class="adm-thumbs"></div>
           <div class="adm-row" style="margin-top:10px;margin-bottom:0;">
+            <input type="file" id="adm-folder-input" webkitdirectory directory multiple accept="image/*" style="display:none;">
+            <button class="adm-btn adm-btn-sec" id="adm-preview-folder" style="border-color:#22c55e;color:#4ade80;">Попередній перегляд</button>
             <button class="adm-btn" id="adm-add-pics">+ Додати картини</button><button class="adm-btn adm-btn-del" id="adm-del-pics">Видалити обрані</button>
             <button class="adm-btn adm-btn-sec" id="adm-select-all">Виділити всі</button>
           </div>
@@ -102,14 +104,25 @@
   `;
   document.body.appendChild(modal);
 
+  let memData = null;
+
   function getData() {
+    if (memData) return memData;
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) return JSON.parse(saved);
-    return (typeof EXHIBITIONS_DATA !== 'undefined') ? JSON.parse(JSON.stringify(EXHIBITIONS_DATA)) : [];
+    if (saved) {
+      try { memData = JSON.parse(saved); return memData; } catch {}
+    }
+    memData = (typeof EXHIBITIONS_DATA !== 'undefined') ? JSON.parse(JSON.stringify(EXHIBITIONS_DATA)) : [];
+    return memData;
   }
 
   function saveData(data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    memData = data;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      // Якщо розмір base64 перевищує 5 МБ ліміту localStorage, дані залишаються в memData до публікації на GitHub
+    }
   }
   const statusEl = document.getElementById('adm-status');
   const artistSel = document.getElementById('adm-artist-sel');
@@ -155,6 +168,15 @@
     const res = [];
     for (const f of files) {
       if (!f.type.startsWith('image/')) continue;
+      if (f.type === 'image/webp' || f.name.toLowerCase().endsWith('.webp')) {
+        const directUrl = await new Promise(r => {
+          const reader = new FileReader();
+          reader.onload = e => r(e.target.result);
+          reader.readAsDataURL(f);
+        });
+        res.push(directUrl);
+        continue;
+      }
       const dataUrl = await new Promise(r => {
         const reader = new FileReader();
         reader.onload = e => {
@@ -202,7 +224,7 @@
       statusEl.textContent = 'Скасовано. Введіть назву нової експозиції у поле вище.'; return;
     }
     if (!sec) { statusEl.textContent = 'Спочатку оберіть або створіть експозицію!'; return; }
-    statusEl.textContent = 'Конвертація у WebP...';
+    const allWebp = Array.from(fileList).every(f => f.type === 'image/webp' || f.name.toLowerCase().endsWith('.webp')); statusEl.textContent = allWebp ? 'Зчитування готових WebP...' : 'Конвертація у WebP...';
     const webps = await filesToWebp(fileList);
     if (!sec.customImages) {
       sec.customImages = Array.from({ length: sec.artworksCount || 0 }, (_, i) => `./${sec.folder}/${i + 1}.webp`);
@@ -303,6 +325,145 @@
 
   const dz = document.getElementById('adm-dropzone'), fi = document.getElementById('adm-file-input');
   dz.onclick = () => fi.click(); document.getElementById("adm-add-pics").onclick = () => fi.click();
+
+  const folderInput = document.getElementById('adm-folder-input');
+  document.getElementById('adm-preview-folder').onclick = () => {
+    folderInput.value = '';
+    folderInput.click();
+  };
+
+  folderInput.onchange = (e) => {
+    const rawFiles = Array.from(e.target.files || []).filter(f => f.type.startsWith('image/'));
+    if (!rawFiles.length) {
+      statusEl.textContent = 'У вибраній папці не знайдено зображень.';
+      return;
+    }
+    rawFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+
+    const oldOv = document.getElementById('adm-full-preview-overlay');
+    if (oldOv) oldOv.remove();
+
+    const ov = document.createElement('div');
+    ov.id = 'adm-full-preview-overlay';
+    ov.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;background:#07090e;z-index:99999;overflow-y:auto;font-family:"Segoe UI",system-ui,sans-serif;color:#f4f1ea;padding-bottom:80px;';
+    ov.innerHTML = `
+      <style>
+        #adm-full-preview-overlay .fp-bar {
+          position:sticky;top:0;z-index:10;background:rgba(11,15,25,0.96);backdrop-filter:blur(10px);
+          border-bottom:1px solid rgba(212,175,55,0.4);padding:14px 24px;
+          display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
+        }
+        #adm-full-preview-overlay .fp-title { font-size:1.1rem;color:#d4af37;font-weight:500; }
+        #adm-full-preview-overlay .fp-cnt { font-size:0.95rem;color:#4ade80;font-weight:600;margin-left:12px; }
+        #adm-full-preview-overlay .fp-acts { display:flex;gap:10px;align-items:center;flex-wrap:wrap; }
+        #adm-full-preview-overlay .fp-btn {
+          padding:10px 18px;border-radius:8px;font-weight:600;font-size:0.85rem;
+          text-transform:uppercase;cursor:pointer;transition:0.2s;border:1px solid transparent;
+        }
+        #adm-full-preview-overlay .fp-sec { background:transparent;color:#d4af37;border-color:rgba(212,175,55,0.5); }
+        #adm-full-preview-overlay .fp-sec:hover { background:rgba(212,175,55,0.12); }
+        #adm-full-preview-overlay .fp-close { background:rgba(239,68,68,0.18);color:#f87171;border-color:rgba(239,68,68,0.45); }
+        #adm-full-preview-overlay .fp-close:hover { background:#ef4444;color:#fff; }
+        #adm-full-preview-overlay .fp-pub {
+          background:#22c55e;color:#04130a;border-color:#4ade80;box-shadow:0 0 18px rgba(34,197,94,0.45);
+        }
+        #adm-full-preview-overlay .fp-pub:hover { background:#4ade80;box-shadow:0 0 26px rgba(74,222,128,0.8);transform:translateY(-1px); }
+        #adm-full-preview-overlay .fp-pub:disabled { opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none; }
+        #adm-full-preview-overlay .fp-grid {
+          display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;padding:22px 24px;
+        }
+        #adm-full-preview-overlay .fp-card {
+          position:relative;background:#0e121c;border-radius:12px;overflow:hidden;
+          border:3px solid rgba(255,255,255,0.12);cursor:pointer;transition:0.2s ease;display:flex;flex-direction:column;
+        }
+        #adm-full-preview-overlay .fp-card:hover { transform:translateY(-3px);border-color:rgba(255,255,255,0.35); }
+        #adm-full-preview-overlay .fp-card.selected {
+          border-color:#22c55e;box-shadow:0 0 18px rgba(34,197,94,0.55),inset 0 0 12px rgba(34,197,94,0.2);
+        }
+        #adm-full-preview-overlay .fp-card img { width:100%;aspect-ratio:1;object-fit:cover;display:block;background:#000; }
+        #adm-full-preview-overlay .fp-chk {
+          position:absolute;top:10px;left:10px;width:22px;height:22px;accent-color:#22c55e;cursor:pointer;z-index:2;
+        }
+        #adm-full-preview-overlay .fp-num {
+          position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.78);color:#d4af37;font-size:0.78rem;padding:2px 7px;border-radius:6px;
+        }
+        #adm-full-preview-overlay .fp-name {
+          padding:8px 10px;font-size:0.8rem;color:#cbd5e1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+          background:#0b0e17;border-top:1px solid rgba(255,255,255,0.06);
+        }
+        #adm-full-preview-overlay .fp-card.selected .fp-name { color:#86efac; }
+      </style>
+      <div class="fp-bar">
+        <div>
+          <span class="fp-title">Попередній перегляд картин (v7)</span>
+          <span class="fp-cnt" id="fp-sel-count">Обрано: 0 з 0</span>
+        </div>
+        <div class="fp-acts">
+          <button type="button" class="fp-btn fp-sec" id="fp-toggle-all">Зняти / Виділити всі</button>
+          <button type="button" class="fp-btn fp-pub" id="fp-publish">Публікувати на сайті</button>
+          <button type="button" class="fp-btn fp-close" id="fp-cancel">Закрити</button>
+        </div>
+      </div>
+      <div class="fp-grid" id="fp-grid"></div>
+    `;
+    document.body.appendChild(ov);
+
+    const grid = ov.querySelector('#fp-grid');
+    const countEl = ov.querySelector('#fp-sel-count');
+    const pubBtn = ov.querySelector('#fp-publish');
+    const selected = new Set();
+    const objectUrls = [];
+
+    function cleanupAndClose() {
+      objectUrls.forEach(u => URL.revokeObjectURL(u));
+      ov.remove();
+    }
+
+    function updateCounter() {
+      countEl.textContent = `Обрано: ${selected.size} з ${rawFiles.length}`;
+      pubBtn.disabled = selected.size === 0;
+    }
+
+    rawFiles.forEach((file, idx) => {
+      const url = URL.createObjectURL(file);
+      objectUrls.push(url);
+      const card = document.createElement('div');
+      card.className = 'fp-card';
+      card.innerHTML = `<input type="checkbox" class="fp-chk"><span class="fp-num">#${idx + 1}</span><img src="${url}" loading="lazy"><div class="fp-name" title="${file.name}">${file.name}</div>`;
+      const cb = card.querySelector('.fp-chk');
+      card.addEventListener('click', (ev) => {
+        if (ev.target !== cb) cb.checked = !cb.checked;
+        if (cb.checked) { selected.add(idx); card.classList.add('selected'); }
+        else { selected.delete(idx); card.classList.remove('selected'); }
+        updateCounter();
+      });
+      grid.appendChild(card);
+    });
+
+    updateCounter();
+
+    ov.querySelector('#fp-toggle-all').onclick = () => {
+      const selectAll = selected.size < rawFiles.length;
+      grid.querySelectorAll('.fp-card').forEach((card, idx) => {
+        const cb = card.querySelector('.fp-chk');
+        cb.checked = selectAll;
+        if (selectAll) { selected.add(idx); card.classList.add('selected'); }
+        else { selected.delete(idx); card.classList.remove('selected'); }
+      });
+      updateCounter();
+    };
+
+    ov.querySelector('#fp-cancel').onclick = cleanupAndClose;
+
+    pubBtn.onclick = async () => {
+      const chosen = rawFiles.filter((_, idx) => selected.has(idx));
+      if (!chosen.length) return;
+      cleanupAndClose();
+      await handleUpload(chosen);
+      const exportBtn = document.getElementById('adm-export-all');
+      if (exportBtn) exportBtn.click();
+    };
+  };
   fi.onchange = e => handleUpload(e.target.files);
   dz.ondragover = e => { e.preventDefault(); dz.classList.add('over'); };
   dz.ondragleave = () => dz.classList.remove('over');
