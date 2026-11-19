@@ -24,7 +24,7 @@
     .nav-line { display: flex; align-items: center; gap: 20px; pointer-events: auto; overflow: visible; }
     .neon-btn { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: transparent; border: 1px solid rgba(255,190,90,.45); border-radius: 30px; color: #ffe8b3; text-decoration: none; font-size: 14px; font-weight: 500; letter-spacing: .6px; text-shadow: 0 0 8px rgba(255,170,50,.9), 0 0 18px rgba(255,130,0,.7); transition: all .25s ease; white-space: nowrap; cursor: pointer; }
     .neon-btn:hover { color: #fff; border-color: #fff3d6; background: rgba(255,165,30,.08); text-shadow: 0 0 6px #fff, 0 0 14px #ffbe55, 0 0 28px #ff8800; box-shadow: 0 0 10px rgba(255,240,200,.85), 0 0 22px rgba(255,175,45,.8); transform: translateY(-2px); }
-    .neon-btn.is-flashing { animation: neonFlash .38s ease-out forwards; }
+    .neon-btn.is-flashing { animation: neonFlash 1.71s ease-out forwards; }
     @keyframes neonFlash { 0% { background: rgba(255,220,140,.9); color: #05070d; border-color: #fff; transform: scale(1.06); } 100% { background: rgba(255,180,60,.25); color: #fff; transform: scale(1); } }
     @media (max-width: 720px) { .nav-line { gap: 10px; max-width: 100%; overflow-x: auto; padding: 6px 4px; scrollbar-width: none; } .nav-line::-webkit-scrollbar { display: none; } .neon-btn { padding: 8px 14px; font-size: 13px; } }
     #video-transition-overlay { position: fixed; inset: 0; background: #000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; z-index: 99999; transition: opacity .4s ease-in-out; }
@@ -85,7 +85,7 @@
       document.querySelectorAll('.neon-btn').forEach(btn => btn.addEventListener('click', function(e) {
         e.stopPropagation(); const url = this.getAttribute('href');
         if (!url || url.startsWith('#')) { e.preventDefault(); this.classList.remove('is-flashing'); void this.offsetWidth; this.classList.add('is-flashing'); return; }
-        e.preventDefault(); this.classList.add('is-flashing'); setTimeout(() => startTransition(url), 250);
+        e.preventDefault(); this.classList.add('is-flashing'); startTransition(url);
       }));
       video.addEventListener('ended', goToPage); videoOverlay.addEventListener('click', goToPage);
       window.addEventListener('pageshow', e => { if (e.persisted) { videoOverlay.classList.remove('is-playing'); video.pause(); } });
@@ -93,6 +93,6 @@
   </script>
   <script src="email.js"></script>
   <script src="cooperation-hub.js?v=20"></script>
-  <script src="ui-neon-effects.js?v=1"></script>
+  <script src="ui-neon-effects.js?v=13"></script>
 </body>
 </html>
