@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>4і4 Studio Intercom</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", system-ui, sans-serif; }
+    body { width: 420px; min-height: 520px; background: #080e1c; color: #e2e8f0; padding: 14px; }
+    .top { display: flex; gap: 6px; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(56, 189, 248, 0.25); }
+    .brand { font-weight: 700; color: #38bdf8; font-size: 14px; margin-right: auto; }
+    select, input { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.35); color: #f8fafc; border-radius: 999px; padding: 6px 12px; font-size: 12px; outline: none; }
+    .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+    .tab { flex: 1; padding: 7px; border-radius: 999px; border: 1px solid rgba(56, 189, 248, 0.3); background: rgba(15, 23, 42, 0.75); color: #94a3b8; font-size: 12px; cursor: pointer; }
+    .tab.active { background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; border-color: #38bdf8; }
+    .pane { display: none; }
+    .pane.active { display: block; }
+    .card { background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.22); border-radius: 16px; padding: 10px; margin-bottom: 10px; }
+    .row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 6px; }
+    .btn { padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(56, 189, 248, 0.45); background: rgba(2, 132, 199, 0.25); color: #e0f2fe; font-size: 11px; cursor: pointer; }
+    .btn:hover { background: #0284c7; color: #fff; }
+    .msgs { max-height: 140px; overflow-y: auto; background: rgba(2, 6, 23, 0.6); border-radius: 10px; padding: 8px; margin-top: 8px; font-size: 11px; }
+    .msg { margin-bottom: 5px; line-height: 1.35; }
+    .msg.staff { color: #38bdf8; }
+    label { display: block; font-size: 11px; color: #94a3b8; margin: 8px 0 4px; }
+  </style>
+  <script src="peerjs.min.js"></script>
+</head>
+<body>
+  <div class="top">
+    <div class="brand">4і4 INTERCOM</div>
+    <select id="staff-select">
+      <option value="staff_01">staff_01</option>
+      <option value="staff_02">staff_02</option>
+      <option value="staff_03">staff_03</option>
+    </select>
+    <select id="status-select">
+      <option value="online">🟢 В мережі</option>
+      <option value="busy">🔴 Зайнятий</option>
+      <option value="offline">⚫ Офлайн</option>
+    </select>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-t="clients">Клієнти</button>
+    <button class="tab" data-t="team">Команда (Intercom)</button>
+    <button class="tab" data-t="cfg">Налаштування</button>
+  </div>
+  <div id="pane-clients" class="pane active"><div id="sessions-box"></div></div>
+  <div id="pane-team" class="pane"><div id="team-box"></div><audio id="team-audio" autoplay></audio></div>
+  <div id="pane-cfg" class="pane">
+    <label>SUPABASE_URL</label><input id="sb-url" style="width:100%;" placeholder="https://supabase.co">
+    <label>SUPABASE_ANON_KEY</label><input id="sb-key" style="width:100%;" placeholder="eyJhbGciOi...">
+    <div class="row" style="margin-top:12px;"><button id="save-cfg" class="btn" style="width:100%;">Зберегти ключі</button></div>
+    <div id="cfg-info" style="font-size:11px; color:#38bdf8; margin-top:8px;"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

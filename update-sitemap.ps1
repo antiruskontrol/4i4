@@ -1,4 +1,4 @@
-﻿[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = "Stop"
 
 $baseUrl = "https://antiruskontrol.github.io/4i4"
@@ -44,7 +44,8 @@ if (Test-Path (Join-Path $PSScriptRoot "poster1.png")) {
 # 2. Додаткові сторінки студії (Копілот та Каталог виставок)
 $extraPages = @(
     @{ file = "copilot.html"; priority = "0.95" },
-    @{ file = "exhibitions.html"; priority = "0.95" }
+    @{ file = "exhibitions.html"; priority = "0.95" },
+    @{ file = "projects.html"; priority = "0.95" }
 )
 
 foreach ($p in $extraPages) {
@@ -96,9 +97,36 @@ foreach ($artist in $exhibitions) {
     [void]$xml.AppendLine('  </url>')
 }
 
-[void]$xml.AppendLine('</urlset>')
 
+
+# 4. Окремі SEO-сторінки кейсів (projects/*.html)
+$projJsPath = Join-Path $PSScriptRoot "projects-data.js"
+if (Test-Path $projJsPath) {
+    $rawProj = Get-Content -Path $projJsPath -Raw -Encoding UTF8
+    $jsonProj = $rawProj -replace '^\s*(window\.)?PROJECTS_DATA\s*=\s*', '' -replace ';\s*$', ''
+    $projectsList = $jsonProj | ConvertFrom-Json
+    foreach ($pr in $projectsList) {
+        $caseFile = "projects/$($pr.id).html"
+        if (Test-Path (Join-Path $PSScriptRoot $caseFile)) {
+            [void]$xml.AppendLine("  <url>")
+            [void]$xml.AppendLine("    <loc>$baseUrl/$caseFile</loc>")
+            [void]$xml.AppendLine("    <lastmod>$today</lastmod>")
+            [void]$xml.AppendLine("    <changefreq>weekly</changefreq>")
+            [void]$xml.AppendLine("    <priority>0.85</priority>")
+            if ($pr.logo) {
+                $logoLoc = Encode-UrlPath $pr.logo
+                $safeProjTitle = [System.Security.SecurityElement]::Escape($pr.title)
+                [void]$xml.AppendLine("    <image:image>")
+                [void]$xml.AppendLine("      <image:loc>$baseUrl/$logoLoc</image:loc>")
+                [void]$xml.AppendLine("      <image:title>$safeProjTitle</image:title>")
+                [void]$xml.AppendLine("    </image:image>")
+            }
+            [void]$xml.AppendLine("  </url>")
+        }
+    }
+}
+
+[void]$xml.AppendLine("</urlset>")
 $utf8NoBom = New-Object System.Text.UTF8Encoding $false
 [System.IO.File]::WriteAllText($sitemapPath, $xml.ToString(), $utf8NoBom)
-
 Write-Host "OK: sitemap.xml generated ($today)" -ForegroundColor Green

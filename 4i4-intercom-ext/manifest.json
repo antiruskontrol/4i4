@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "4i4 Studio Intercom",
+  "version": "1.0.0",
+  "description": "Пульт зв'язку студії 4і4: клієнтські чати, сповіщення та WebRTC-дзвінки.",
+  "permissions": ["notifications", "storage", "offscreen", "alarms"],
+  "host_permissions": ["https://*.supabase.co/*", "wss://*.supabase.co/*"],
+  "background": { "service_worker": "background.js" },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": { "128": "icon128.png" }
+  },
+  "icons": { "128": "icon128.png" }
+}
