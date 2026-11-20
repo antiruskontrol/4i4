@@ -1,13 +1,20 @@
 const STAFF_LIST = ["staff_01", "staff_02", "staff_03"];
 let localPeer = null;
 
-document.querySelectorAll(".tab").forEach(function(b) {
-  b.addEventListener("click", function() {
-    document.querySelectorAll(".tab").forEach(function(x) { x.classList.remove("active"); });
-    document.querySelectorAll(".pane").forEach(function(x) { x.classList.remove("active"); });
-    b.classList.add("active");
-    document.getElementById("pane-" + b.getAttribute("data-t")).classList.add("active");
+function switchTab(tabName) {
+  document.querySelectorAll(".tab").forEach(function(x) {
+    x.classList.toggle("active", x.getAttribute("data-t") === tabName);
   });
+  document.querySelectorAll(".pane").forEach(function(x) {
+    x.classList.toggle("active", x.id === "pane-" + tabName);
+  });
+  if (tabName === "clients") {
+    chrome.storage.local.get(["sbUrl", "sbKey"], function(cfg) { loadClients(cfg); });
+  }
+}
+
+document.querySelectorAll(".tab").forEach(function(b) {
+  b.addEventListener("click", function() { switchTab(b.getAttribute("data-t")); });
 });
 
 function setBadge(status) {
@@ -42,56 +49,78 @@ function renderTeam(myId) {
 }
 
 async function loadMessages(cfg, sid, container) {
-  const r = await fetch(cfg.sbUrl + "/rest/v1/chat_messages?session_id=eq." + sid + "&order=created_at.asc", {
-    headers: { apikey: cfg.sbKey, Authorization: "Bearer " + cfg.sbKey }
-  });
-  const rows = await r.json();
-  container.innerHTML = "";
-  (rows || []).forEach(function(m) {
-    const p = document.createElement("div");
-    p.className = "msg " + (m.sender === "staff" ? "staff" : "");
-    p.textContent = "[" + (m.sender || "client") + "]: " + (m.content || m.text || "");
-    container.appendChild(p);
-  });
+  try {
+    const r = await fetch(cfg.sbUrl + "/rest/v1/chat_messages?session_id=eq." + sid + "&order=created_at.asc", {
+      headers: { apikey: cfg.sbKey }
+    });
+    const rows = await r.json();
+    container.innerHTML = "";
+    if (!Array.isArray(rows) || rows.length === 0) {
+      container.innerHTML = "<div class=\"msg\" style=\"color:#64748b;\">Повідомлень поки немає...</div>";
+      return;
+    }
+    rows.forEach(function(m) {
+      const p = document.createElement("div");
+      p.className = "msg " + (m.sender === "staff" ? "staff" : "");
+      p.textContent = "[" + (m.sender || "client") + "]: " + (m.content || m.text || "");
+      container.appendChild(p);
+    });
+  } catch (e) {
+    container.innerHTML = "<div class=\"msg\" style=\"color:#f87171;\">Помилка читання чату</div>";
+  }
 }
 
 async function loadClients(cfg) {
   const box = document.getElementById("sessions-box");
   if (!cfg.sbUrl || !cfg.sbKey) {
-    box.innerHTML = "<div class=\"card\">Вкажіть SUPABASE_URL та SUPABASE_ANON_KEY у вкладці «Налаштування».</div>";
+    box.innerHTML = "<div class=\"card\"><strong>Supabase ще не підключено</strong><div style=\"font-size:11px;color:#94a3b8;margin-top:6px;\">Перейдіть у вкладку «Налаштування», вставте SUPABASE_URL та SUPABASE_ANON_KEY і натисніть «Зберегти ключі».</div><div class=\"row\"><button class=\"btn\" id=\"go-cfg-btn\">Відкрити налаштування</button></div></div>";
+    document.getElementById("go-cfg-btn").addEventListener("click", function() { switchTab("cfg"); });
     return;
   }
-  const res = await fetch(cfg.sbUrl + "/rest/v1/chat_sessions?select=*&order=created_at.desc&limit=10", {
-    headers: { apikey: cfg.sbKey, Authorization: "Bearer " + cfg.sbKey }
-  });
-  const sessions = await res.json();
-  box.innerHTML = "";
-  (sessions || []).forEach(function(s) {
-    const card = document.createElement("div");
-    card.className = "card";
-    const proj = s.project_id || "ai-copilot-4i4";
-    const magic = "https://github.io" + encodeURIComponent(proj) + "&room=" + encodeURIComponent(s.id);
-    card.innerHTML = "<div><strong>" + (s.client_name || "Клієнт") + "</strong> (" + proj + ")</div>" +
-      "<div class=\"msgs\"></div>" +
-      "<div class=\"row\"><input style=\"flex:1;\" placeholder=\"Відповідь...\"><button class=\"btn\" data-send=\"1\">Надіслати</button></div>" +
-      "<div class=\"row\"><button class=\"btn\" data-call=\"1\">📞 Виклик</button><button class=\"btn\" data-link=\"1\">🔗 Magic Call Link</button></div>";
-    const msgsEl = card.querySelector(".msgs");
-    const inp = card.querySelector("input");
-    loadMessages(cfg, s.id, msgsEl);
-    card.querySelector("[data-send]").addEventListener("click", async function() {
-      if (!inp.value.trim()) return;
-      await fetch(cfg.sbUrl + "/rest/v1/chat_messages", {
-        method: "POST",
-        headers: { apikey: cfg.sbKey, Authorization: "Bearer " + cfg.sbKey, "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: s.id, sender: "staff", content: inp.value.trim() })
-      });
-      inp.value = "";
-      loadMessages(cfg, s.id, msgsEl);
+  box.innerHTML = "<div class=\"card\" style=\"color:#38bdf8;\">Оновлення списку клієнтів із Supabase...</div>";
+  try {
+    const res = await fetch(cfg.sbUrl + "/rest/v1/chat_sessions?select=*&order=updated_at.desc&limit=10", {
+      headers: { apikey: cfg.sbKey }
     });
-    card.querySelector("[data-call]").addEventListener("click", function() { callPeer("4i4_client_" + s.id); });
-    card.querySelector("[data-link]").addEventListener("click", function() { navigator.clipboard.writeText(magic); });
-    box.appendChild(card);
-  });
+    if (!res.ok) {
+      box.innerHTML = "<div class=\"card\" style=\"color:#f87171;\">Помилка Supabase (" + res.status + "). Перевірте, чи виконано supabase-setup.sql та чи правильні ключі.</div>";
+      return;
+    }
+    const sessions = await res.json();
+    if (!Array.isArray(sessions) || sessions.length === 0) {
+      box.innerHTML = "<div class=\"card\"><strong>Активних діалогів поки немає</strong><div style=\"font-size:11px;color:#94a3b8;margin-top:4px;\">Напишіть тестове повідомлення у віджеті чату на сторінці projects.html, а потім натисніть «Клієнти» ще раз.</div></div>";
+      return;
+    }
+    box.innerHTML = "";
+    sessions.forEach(function(s) {
+      const card = document.createElement("div");
+      card.className = "card";
+      const proj = s.project_id || "ai-copilot-4i4";
+      const magic = "https://github.io" + encodeURIComponent(proj) + "&room=" + encodeURIComponent(s.id);
+      card.innerHTML = "<div><strong>" + (s.client_name || "Клієнт") + "</strong> (" + proj + ")</div>" +
+        "<div class=\"msgs\"></div>" +
+        "<div class=\"row\"><input style=\"flex:1;\" placeholder=\"Відповідь...\"><button class=\"btn\" data-send=\"1\">Надіслати</button></div>" +
+        "<div class=\"row\"><button class=\"btn\" data-call=\"1\">📞 Виклик</button><button class=\"btn\" data-link=\"1\">🔗 Magic Call Link</button></div>";
+      const msgsEl = card.querySelector(".msgs");
+      const inp = card.querySelector("input");
+      loadMessages(cfg, s.id, msgsEl);
+      card.querySelector("[data-send]").addEventListener("click", async function() {
+        if (!inp.value.trim()) return;
+        await fetch(cfg.sbUrl + "/rest/v1/chat_messages", {
+          method: "POST",
+          headers: { apikey: cfg.sbKey, "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: s.id, sender: "staff", text: inp.value.trim() })
+        });
+        inp.value = "";
+        loadMessages(cfg, s.id, msgsEl);
+      });
+      card.querySelector("[data-call]").addEventListener("click", function() { callPeer("4i4_client_" + s.id); });
+      card.querySelector("[data-link]").addEventListener("click", function() { navigator.clipboard.writeText(magic); });
+      box.appendChild(card);
+    });
+  } catch (err) {
+    box.innerHTML = "<div class=\"card\" style=\"color:#f87171;\">Немає з'єднання із Supabase. Перевірте SUPABASE_URL.</div>";
+  }
 }
 
 chrome.storage.local.get(["staffId", "status", "sbUrl", "sbKey"], function(cfg) {
@@ -108,7 +137,7 @@ chrome.storage.local.get(["staffId", "status", "sbUrl", "sbKey"], function(cfg) 
 
 document.getElementById("staff-select").addEventListener("change", function(e) {
   chrome.storage.local.set({ staffId: e.target.value });
-  chrome.runtime.sendMessage({ type: "REINIT_PEER", staffId: e.target.value });
+  chrome.runtime.sendMessage({ type: "REINIT_PEER", staffId: e.target.value }).catch(function() {});
   renderTeam(e.target.value);
 });
 
@@ -122,6 +151,6 @@ document.getElementById("save-cfg").addEventListener("click", function() {
   const sbKey = document.getElementById("sb-key").value.trim();
   chrome.storage.local.set({ sbUrl: sbUrl, sbKey: sbKey }, function() {
     document.getElementById("cfg-info").textContent = "Ключі збережено!";
-    loadClients({ sbUrl: sbUrl, sbKey: sbKey });
+    switchTab("clients");
   });
 });

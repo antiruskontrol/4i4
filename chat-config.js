@@ -1,6 +1,6 @@
 window.CHAT_CONFIG = {
-  supabaseUrl: localStorage.getItem("4i4_sb_url") || "",
-  supabaseAnonKey: localStorage.getItem("4i4_sb_key") || "",
+  supabaseUrl: localStorage.getItem("4i4_sb_url") || "https://yaayswqunsgtimxnvgnc.supabase.co",
+  supabaseAnonKey: localStorage.getItem("4i4_sb_key") || "sb_publishable_RoJhAV7fKgo2XsK8sWTKQQ_Pok8i6oK",
   storageBucket: "chat-files",
   peerHost: "0.peerjs.com",
   emailjs: {
