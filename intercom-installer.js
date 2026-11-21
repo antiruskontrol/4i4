@@ -66,9 +66,9 @@
   var pinInput = document.createElement("input");
   pinInput.type = "password";
   pinInput.className = "i4-ext-pin";
-  pinInput.placeholder = "ADMIN_PIN";
+  pinInput.placeholder = "LOAD_PIN";
   pinInput.inputMode = "numeric";
-  pinInput.value = localStorage.getItem("adminPin") || "";
+  pinInput.value = localStorage.getItem("loadPin") || "";
 
   var installBtn = document.createElement("button");
   installBtn.type = "button";
@@ -110,27 +110,27 @@
     var pin = pinInput.value.trim();
     if (!pin) {
       statusEl.style.color = "#f87171";
-      statusEl.textContent = "Введіть ADMIN_PIN для завантаження.";
+      statusEl.textContent = "Введіть LOAD_PIN для завантаження.";
       pinInput.focus();
       return;
     }
     installBtn.disabled = true;
     statusEl.style.color = "#38bdf8";
-    statusEl.textContent = "Перевірка ADMIN_PIN через Render...";
+    statusEl.textContent = "Перевірка LOAD_PIN через Render...";
 
     try {
-      var res = await fetch(BACKEND_URL + "/api/verify-admin", {
+      var res = await fetch(BACKEND_URL + "/api/verify-load", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adminPin: pin })
+        body: JSON.stringify({ loadPin: pin })
       });
       if (!res.ok) {
         statusEl.style.color = "#f87171";
-        statusEl.textContent = "Доступ заборонено: невірний ADMIN_PIN.";
+        statusEl.textContent = "Доступ заборонено: невірний LOAD_PIN.";
         installBtn.disabled = false;
         return;
       }
-      localStorage.setItem("adminPin", pin);
+      localStorage.setItem("loadPin", pin);
 
       if (!currentExtVersion) {
         try {
@@ -155,20 +155,17 @@
       }
       if (!zipRes.ok) throw new Error("ZIP not found");
 
-      var rawBlob = await zipRes.blob();
-      var zipBlob = new Blob([rawBlob], { type: "application/zip" });
-      var blobUrl = URL.createObjectURL(zipBlob);
+      var directHref = zipRes.ok ? fileName : "4i4-intercom-ext.zip";
+      var downloadName = zipRes.ok ? fileName : ("4i4-intercom-ext-v" + (currentExtVersion || "1.0.0") + ".zip");
       var a = document.createElement("a");
       a.style.display = "none";
-      a.href = blobUrl;
-      a.setAttribute("download", fileName);
+      a.href = directHref;
+      a.download = downloadName;
       document.body.appendChild(a);
-      a.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
-
+      a.click();
       setTimeout(function () {
         if (a.parentNode) a.parentNode.removeChild(a);
-        URL.revokeObjectURL(blobUrl);
-      }, 15000);
+      }, 3000);
 
       statusEl.textContent = "✅ Архів " + fileName + " завантажено! Розпакуйте його → відкрийте chrome://extensions → увімкніть «Режим розробника» → «Завантажити розпаковане».";
     } catch (e) {
