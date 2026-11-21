@@ -192,6 +192,16 @@
       });
       if (activeId) select(activeId);
     };
+    if (!window._i4BtnFlashBound) {
+      window._i4BtnFlashBound = true;
+      document.addEventListener("pointerdown", function (ev) {
+        const target = ev.target && ev.target.closest(".action-pill-btn, .neon-btn, button, .project-tile");
+        if (!target) return;
+        target.classList.remove("i4-btn-flashing");
+        void target.offsetWidth;
+        target.classList.add("i4-btn-flashing");
+      }, true);
+    }
     window.rebuildProjectsShowcase();
   </script>  <script src="projects-admin.js?v=20261121171908"></script><script src="intercom-installer.js?v=20261121163227"></script>
   <script src="cooperation-hub.js?v=20"></script>
