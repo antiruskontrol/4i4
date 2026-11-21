@@ -144,10 +144,10 @@
         </div>
         <div id="admin-dialogs-list" style="display:grid;gap:5px;max-height:140px;overflow-y:auto;padding:4px;background:rgba(2,6,23,0.55);border-radius:10px;"></div>
         <div class="row" style="margin-top:8px;">
-          <div style="display:grid;gap:6px;width:100%;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;">
             <button id="restore-dialogs-btn" class="btn" disabled style="width:100%;border-color:#475569;color:#64748b;opacity:0.5;cursor:not-allowed;">♻ Відновити у вікно клієнтів</button>
             <button id="hide-dialogs-btn" class="btn" style="width:100%;border-color:#38bdf8;color:#bae6fd;">👁 Прибрати з вікна клієнтів (у всіх)</button>
-            <div style="display:flex;gap:6px;width:100%;"><button id="del-dialogs-btn" class="btn" disabled style="flex:1;border-color:#475569;color:#64748b;opacity:0.55;cursor:not-allowed;">🗑 Видалити обрані (0)</button><button id="del-dialogs-cancel-btn" type="button" class="btn" style="display:none;border-color:#64748b;color:#cbd5e1;padding:0 10px;" title="Скасувати видалення">✕</button></div>
+            <div style="grid-column:1 / -1;display:flex;gap:6px;width:100%;"><button id="del-dialogs-btn" class="btn" disabled style="flex:1;border-color:#475569;color:#64748b;opacity:0.55;cursor:not-allowed;">🗑 Видалити обрані (0)</button><button id="del-dialogs-cancel-btn" type="button" class="btn" style="display:none;border-color:#64748b;color:#cbd5e1;padding:0 10px;" title="Скасувати видалення">✕</button></div>
           </div>
         </div>
         <div id="dialogs-admin-status" style="font-size:11px;margin-top:6px;color:#6ee7b7;"></div>
