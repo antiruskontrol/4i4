@@ -96,12 +96,31 @@
     .inspector-close-btn { position: sticky; top: 0; align-self: flex-end; margin-bottom: -40px; z-index: 30; width: 40px; height: 40px; padding: 0 !important; border-radius: 999px; font-size: 1.15rem; font-weight: 700; opacity: 0; transform: scale(0.75); pointer-events: none; transition: opacity 0.6s ease, transform 0.6s var(--spring) !important; }
     .showcase-layout.is-fullscreen .inspector-close-btn { opacity: 1; transform: scale(1); pointer-events: auto; }
     #open-projects-admin { position: fixed; bottom: 20px; right: 20px; z-index: 960; width: 48px; height: 48px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.35rem; color: #38bdf8; background: rgba(6,11,25,0.92); border: 1px solid rgba(56,189,248,0.55); cursor: pointer; }
-  @keyframes i4NeonBtnFlash {
-  0% { background: rgba(255, 235, 175, 0.96) !important; border-color: #ffffff !important; color: #060b19 !important; box-shadow: 0 0 26px #ffffff, 0 0 58px 14px var(--btn-glow, rgba(56, 189, 248, 0.95)) !important; transform: scale(1.06) !important; }
-  45% { background: var(--btn-tint, rgba(56, 189, 248, 0.35)) !important; border-color: #ffffff !important; color: #ffffff !important; box-shadow: 0 0 18px rgba(255, 255, 255, 0.7), 0 0 42px 8px var(--btn-glow, rgba(56, 189, 248, 0.8)) !important; transform: scale(1.025) !important; }
-  100% { box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); transform: scale(1); }
-}
-.i4-btn-flashing { animation: i4NeonBtnFlash 1.71s ease-out forwards !important; }
+  @keyframes i4OverlayFlashWave {
+    0% {
+      opacity: 1;
+      transform: scale(1.04);
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.95) 0%, var(--btn-neon, #38bdf8) 70%, transparent 100%);
+      box-shadow: 0 0 28px #ffffff, 0 0 60px 14px var(--btn-glow, rgba(56, 189, 248, 0.95));
+    }
+    35% {
+      opacity: 0.72;
+      transform: scale(1.015);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1);
+    }
+  }
+  .i4-btn-flashing::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: -2px !important;
+    border-radius: inherit !important;
+    pointer-events: none !important;
+    z-index: 20 !important;
+    animation: i4OverlayFlashWave 1.45s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  }
 </style>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b1221'/%3E%3Ctext x='32' y='41' font-family='sans-serif' font-size='26' font-weight='bold' fill='%2338bdf8' text-anchor='middle'%3E4i4%3C/text%3E%3C/svg%3E">
 </head>
@@ -141,8 +160,7 @@
         if (!p) return;
         activeId = id;
         document.querySelectorAll(".project-tile").forEach(el => el.classList.toggle("is-active", el.dataset.id === id));
-        if (!instant) if (!instant) if (!instant) view.classList.add("is-switching");
-        setTimeout(() => {
+        const finishRender = () => {
           const blocks = (p.blocks || []).map(b => {
             if (b.type === "text") return '<div class="block-text"><h3>' + (b.title || "") + '</h3><p>' + (b.content || "") + '</p></div>';
             if (b.type === "metrics") return '<div class="block-metrics">' + (b.items || []).map(m => '<div class="metric-card"><div class="metric-value">' + m.value + '</div><div class="metric-label">' + m.label + '</div></div>').join("") + '</div>';
@@ -181,7 +199,7 @@
               b.onclick = function (e) { e.preventDefault(); if (typeof window.mountProjectChat === "function") window.mountProjectChat(p, true); };
             }
           });
-        }, instant ? 0 : 210);
+        }; if (instant) { finishRender(); } else { view.classList.add("is-switching"); setTimeout(finishRender, 210); }
       }
 
       list.innerHTML = "";
