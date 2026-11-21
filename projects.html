@@ -141,7 +141,7 @@
         if (!p) return;
         activeId = id;
         document.querySelectorAll(".project-tile").forEach(el => el.classList.toggle("is-active", el.dataset.id === id));
-        if (!instant) if (!instant) view.classList.add("is-switching");
+        if (!instant) if (!instant) if (!instant) view.classList.add("is-switching");
         setTimeout(() => {
           const blocks = (p.blocks || []).map(b => {
             if (b.type === "text") return '<div class="block-text"><h3>' + (b.title || "") + '</h3><p>' + (b.content || "") + '</p></div>';
