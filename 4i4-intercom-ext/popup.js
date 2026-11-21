@@ -1,9 +1,91 @@
-const STAFF_LIST = ["staff_01", "staff_02", "staff_03"];
+const DEFAULT_SB_URL = "https://supabase.co";
+const DEFAULT_SB_KEY = "sb_publishable_RoJhAV7fKgo2XsK8sWTKQQ_Pok8i6oK";
+const ADMIN_BACKEND_URL = "https://" + "fouri4" + "-copilot-" + "backend." + "onrender.com";
+let STAFF_SLOTS = [
+  { id: "staff_01", name: "" },
+  { id: "staff_02", name: "" },
+  { id: "staff_03", name: "" }
+];
+let isAdminUnlocked = false;
 let localPeer = null;
 let selectedSessionId = null;
 let clearedAfterId = {};
 let activePollTimer = null;
 
+function normalizeSlots(raw) {
+  if (!Array.isArray(raw) || raw.length === 0) return STAFF_SLOTS;
+  return raw.map(function (item) {
+    if (typeof item === "string") return { id: item, name: "" };
+    return { id: item.id || "staff_01", name: item.name || "" };
+  });
+}
+
+function resolveSbCfg(cfg) {
+  return {
+    sbUrl: (cfg && cfg.sbUrl) ? cfg.sbUrl : DEFAULT_SB_URL,
+    sbKey: (cfg && cfg.sbKey) ? cfg.sbKey : DEFAULT_SB_KEY
+  };
+}
+
+function rebuildStaffUI(selectedId) {
+  var topSel = document.getElementById("staff-select");
+  var cfgSel = document.getElementById("cfg-slot-select");
+  var cur = selectedId || (topSel ? topSel.value : "staff_01") || "staff_01";
+  if (!STAFF_SLOTS.some(function (s) { return s.id === cur; })) {
+    cur = STAFF_SLOTS[0] ? STAFF_SLOTS[0].id : "staff_01";
+  }
+
+  if (topSel) {
+    topSel.innerHTML = "";
+    STAFF_SLOTS.forEach(function (s) {
+      var opt = document.createElement("option");
+      opt.value = s.id;
+      opt.textContent = s.name ? (s.name + " (" + s.id + ")") : s.id;
+      topSel.appendChild(opt);
+    });
+    topSel.value = cur;
+  }
+
+  if (cfgSel) {
+    cfgSel.innerHTML = "";
+    STAFF_SLOTS.forEach(function (s) {
+      var opt = document.createElement("option");
+      opt.value = s.id;
+      var isMine = (s.id === cur);
+      if (isMine) {
+        opt.textContent = s.id + " — ваш поточний" + (s.name ? " (" + s.name + ")" : "");
+      } else if (s.name) {
+        opt.textContent = s.id + " — зайнято (" + s.name + ")";
+      } else {
+        opt.textContent = s.id + " — вільний стаф";
+      }
+      cfgSel.appendChild(opt);
+    });
+    cfgSel.value = cur;
+  }
+
+  renderAdminSlotsList(); if (typeof loadAdminDialogs === 'function' && isAdminUnlocked) loadAdminDialogs();
+  updateStaffSelectLabels();
+}
+
+function renderAdminSlotsList() {
+  var box = document.getElementById("admin-slots-list");
+  if (!box) return;
+  box.innerHTML = "";
+  STAFF_SLOTS.forEach(function (s) {
+    var row = document.createElement("label");
+    row.style.cssText = "display:flex;align-items:center;gap:8px;margin:0;padding:5px 8px;border-radius:8px;background:rgba(15,23,42,0.85);color:#e2e8f0;font-size:11px;cursor:pointer;";
+    var cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.value = s.id;
+    cb.disabled = (s.id === "staff_01");
+    var lbl = document.createElement("span");
+    lbl.textContent = s.id + " — " + (s.name ? s.name : "вільний") + (s.id === "staff_01" ? " (базовий)" : "");
+    row.appendChild(cb);
+    row.appendChild(lbl);
+    box.appendChild(row);
+  });
+}
 function switchTab(tabName) {
   document.querySelectorAll(".tab").forEach(function(x) {
     x.classList.toggle("active", x.getAttribute("data-t") === tabName);
@@ -12,7 +94,7 @@ function switchTab(tabName) {
     x.classList.toggle("active", x.id === "pane-" + tabName);
   });
   if (tabName === "clients") {
-    chrome.storage.local.get(["sbUrl", "sbKey"], function(cfg) { loadClients(cfg); });
+    chrome.storage.local.get(["sbUrl", "sbKey"], function(cfg) { loadClients(resolveSbCfg(cfg)); });
   }
 }
 
@@ -62,7 +144,7 @@ function callPeer(targetId) {
 function renderTeam(myId) {
   const box = document.getElementById("team-box");
   box.innerHTML = "";
-  STAFF_LIST.forEach(function(id) {
+  STAFF_SLOTS.forEach(function(slotObj) { var id = slotObj.id;
     if (id === myId) return;
     const div = document.createElement("div");
     div.className = "card";
@@ -328,39 +410,280 @@ renderActiveSessionCard(cfg, activeSession, sessions);
   }
 }
 
-chrome.storage.local.get(["staffId", "staffName", "status", "sbUrl", "sbKey"], function(cfg) {
-const st = cfg.staffId || "staff_01";
-const md = cfg.status || "online";
-document.getElementById("staff-select").value = st;
-document.getElementById("status-select").value = md;
-document.getElementById("sb-url").value = cfg.sbUrl || "";
-document.getElementById("sb-key").value = cfg.sbKey || "";
-if (document.getElementById("staff-name")) {
-document.getElementById("staff-name").value = cfg.staffName || "";
-}
-updateStaffSelectLabels();
-setBadge(md);
-renderTeam(st);
-loadClients(cfg);
+chrome.storage.local.get(["staffId", "staffName", "status", "sbUrl", "sbKey", "staffList"], function(rawCfg) {
+  STAFF_SLOTS = normalizeSlots(rawCfg.staffList);
+  const cfg = resolveSbCfg(rawCfg);
+  if (!rawCfg.sbUrl || !rawCfg.sbKey) {
+    chrome.storage.local.set({ sbUrl: cfg.sbUrl, sbKey: cfg.sbKey });
+  }
+  const st = rawCfg.staffId || "staff_01";
+  const md = rawCfg.status || "online";
+  if (rawCfg.staffName) {
+    STAFF_SLOTS = STAFF_SLOTS.map(function (s) {
+      return s.id === st ? { id: s.id, name: rawCfg.staffName } : s;
+    });
+  }
+  rebuildStaffUI(st);
+  document.getElementById("status-select").value = md;
+  document.getElementById("sb-url").value = cfg.sbUrl;
+  document.getElementById("sb-key").value = cfg.sbKey;
+  if (document.getElementById("staff-name")) {
+    document.getElementById("staff-name").value = rawCfg.staffName || "";
+  }
+  updateStaffSelectLabels();
+  setBadge(md);
+  renderTeam(document.getElementById("staff-select").value);
+  loadClients(cfg);
 });
+
 document.getElementById("staff-select").addEventListener("change", function(e) {
-chrome.storage.local.set({ staffId: e.target.value });
-chrome.runtime.sendMessage({ type: "REINIT_PEER", staffId: e.target.value }).catch(function() {});
-updateStaffSelectLabels();
-renderTeam(e.target.value);
+  var newId = e.target.value;
+  var slot = STAFF_SLOTS.find(function (s) { return s.id === newId; });
+  var nm = slot ? slot.name : "";
+  if (document.getElementById("staff-name")) document.getElementById("staff-name").value = nm;
+  chrome.storage.local.set({ staffId: newId, staffName: nm });
+  chrome.runtime.sendMessage({ type: "REINIT_PEER", staffId: newId }).catch(function() {});
+  rebuildStaffUI(newId);
+  renderTeam(newId);
 });
+
 document.getElementById("status-select").addEventListener("change", function(e) {
-chrome.storage.local.set({ status: e.target.value });
-setBadge(e.target.value);
+  chrome.storage.local.set({ status: e.target.value });
+  setBadge(e.target.value);
 });
+
 document.getElementById("save-cfg").addEventListener("click", function() {
-var sbUrl = document.getElementById("sb-url").value.trim();
+  var chosenId = document.getElementById("cfg-slot-select") ? document.getElementById("cfg-slot-select").value : document.getElementById("staff-select").value;
+  var staffName = document.getElementById("staff-name") ? document.getElementById("staff-name").value.trim() : "";
+  STAFF_SLOTS = STAFF_SLOTS.map(function (s) {
+    return s.id === chosenId ? { id: s.id, name: staffName } : s;
+});
+chrome.storage.local.set({ staffId: chosenId, staffName: staffName, staffList: STAFF_SLOTS }, function() {
+chrome.runtime.sendMessage({ type: "REINIT_PEER", staffId: chosenId }).catch(function() {});
+rebuildStaffUI(chosenId);
+renderTeam(chosenId);
+document.getElementById("cfg-info").textContent = "✅ Профіль збережено!";
+setTimeout(function () { document.getElementById("cfg-info").textContent = ""; switchTab("clients"); }, 550);
+});
+});
+document.getElementById("toggle-admin-login").addEventListener("click", function () {
+var authBox = document.getElementById("admin-auth-box");
+var panelBox = document.getElementById("admin-panel-box");
+if (isAdminUnlocked) {
+panelBox.style.display = (panelBox.style.display === "none") ? "block" : "none";
+return;
+}
+authBox.style.display = (authBox.style.display === "none") ? "block" : "none";
+if (authBox.style.display === "block") document.getElementById("admin-pin-input").focus();
+});
+async function verifyAndUnlockAdmin() {
+var pinInp = document.getElementById("admin-pin-input");
+var statusEl = document.getElementById("admin-auth-status");
+var btn = document.getElementById("admin-login-btn");
+var pin = pinInp ? pinInp.value.trim() : "";
+if (!pin) { statusEl.textContent = "Введіть ADMIN_PIN."; return; }
+btn.disabled = true;
+statusEl.style.color = "#38bdf8";
+statusEl.textContent = "Перевірка через Render...";
+try {
+var res = await fetch(ADMIN_BACKEND_URL + "/api/verify-admin", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({ adminPin: pin })
+});
+if (!res.ok) {
+statusEl.style.color = "#f87171";
+statusEl.textContent = "Невірний ADMIN_PIN.";
+btn.disabled = false;
+return;
+}
+isAdminUnlocked = true;
+pinInp.value = "";
+statusEl.textContent = "";
+document.getElementById("admin-auth-box").style.display = "none";
+document.getElementById("admin-panel-box").style.display = "block";
+renderAdminSlotsList(); if (typeof loadAdminDialogs === 'function' && isAdminUnlocked) loadAdminDialogs();
+} catch (e) {
+statusEl.style.color = "#f87171";
+statusEl.textContent = "Помилка з'єднання з Render.";
+} finally {
+btn.disabled = false;
+}
+}
+document.getElementById("admin-login-btn").addEventListener("click", verifyAndUnlockAdmin);
+document.getElementById("admin-pin-input").addEventListener("keydown", function (e) { if (e.key === "Enter") verifyAndUnlockAdmin(); });
+document.getElementById("admin-logout-btn").addEventListener("click", function () {
+isAdminUnlocked = false;
+document.getElementById("admin-panel-box").style.display = "none";
+});
+document.getElementById("add-slot-btn").addEventListener("click", function () {
+if (!isAdminUnlocked) return;
+var maxNum = 0;
+STAFF_SLOTS.forEach(function (s) {
+var m = /^staff_(\d+)$/.exec(s.id);
+if (m) maxNum = Math.max(maxNum, parseInt(m[1], 10));
+});
+var nextNum = maxNum + 1;
+var nextId = "staff_" + (nextNum < 10 ? "0" + nextNum : String(nextNum));
+STAFF_SLOTS.push({ id: nextId, name: "" });
+chrome.storage.local.set({ staffList: STAFF_SLOTS }, function () {
+var cur = document.getElementById("staff-select").value;
+rebuildStaffUI(cur);
+renderTeam(cur);
+document.getElementById("slot-status").textContent = "✅ Додано слот: " + nextId;
+});
+});
+document.getElementById("del-slot-btn").addEventListener("click", function () {
+if (!isAdminUnlocked) return;
+var checked = Array.from(document.querySelectorAll("#admin-slots-list input[type='checkbox']:checked")).map(function (c) { return c.value; });
+if (checked.length === 0) {
+document.getElementById("slot-status").textContent = "Позначте чекбоксами слоти для видалення.";
+return;
+}
+STAFF_SLOTS = STAFF_SLOTS.filter(function (s) { return s.id === "staff_01" || checked.indexOf(s.id) === -1; });
+chrome.storage.local.set({ staffList: STAFF_SLOTS }, function () {
+var cur = document.getElementById("staff-select").value;
+if (!STAFF_SLOTS.some(function (s) { return s.id === cur; })) cur = "staff_01";
+rebuildStaffUI(cur);
+renderTeam(cur);
+document.getElementById("slot-status").textContent = "🗑 Видалено слотів: " + checked.length;
+});
+});
+document.getElementById("save-sb-btn").addEventListener("click", function () {
+var sbUrl = document.getElementById("sb-url").value.trim() || DEFAULT_SB_URL;
 while (sbUrl.endsWith("/")) { sbUrl = sbUrl.slice(0, -1); }
-const sbKey = document.getElementById("sb-key").value.trim();
-const staffName = document.getElementById("staff-name") ? document.getElementById("staff-name").value.trim() : "";
-chrome.storage.local.set({ sbUrl: sbUrl, sbKey: sbKey, staffName: staffName }, function() {
-updateStaffSelectLabels();
-document.getElementById("cfg-info").textContent = "Налаштування збережено!";
-switchTab("clients");
+var sbKey = document.getElementById("sb-key").value.trim() || DEFAULT_SB_KEY;
+chrome.storage.local.set({ sbUrl: sbUrl, sbKey: sbKey }, function () {
+document.getElementById("slot-status").textContent = "✅ Ключі Supabase оновлено!";
 });
-});
+});(function bindHelpAndQuickAdmin() {
+  var helpBtn = document.getElementById("help-toggle-btn");
+  var closeBtn = document.getElementById("help-close-btn");
+  var quickBtn = document.getElementById("quick-admin-call");
+  var staffSel = document.getElementById("staff-select");
+  var prevTab = "clients";
+
+  function syncQuickBtn() {
+    if (!quickBtn || !staffSel) return;
+    quickBtn.style.display = (staffSel.value === "staff_01") ? "none" : "inline-flex";
+  }
+  if (staffSel) {
+    staffSel.addEventListener("change", syncQuickBtn);
+    setTimeout(syncQuickBtn, 200);
+  }
+  if (quickBtn) {
+    quickBtn.addEventListener("click", function () {
+      if (typeof callPeer === "function") callPeer("4i4_staff_staff_01");
+    });
+  }
+  if (helpBtn) {
+    helpBtn.addEventListener("click", function () {
+      var helpPane = document.getElementById("pane-help");
+      if (helpPane && helpPane.classList.contains("active")) {
+        switchTab(prevTab);
+        return;
+      }
+      var activeTab = document.querySelector(".tab.active");
+      if (activeTab) prevTab = activeTab.getAttribute("data-t") || "clients";
+      document.querySelectorAll(".tab").forEach(function (x) { x.classList.remove("active"); });
+      document.querySelectorAll(".pane").forEach(function (x) { x.classList.remove("active"); });
+      if (helpPane) helpPane.classList.add("active");
+    });
+  }
+  if (closeBtn) {
+    closeBtn.addEventListener("click", function () { switchTab(prevTab); });
+  }
+})();
+async function loadAdminDialogs() {
+  var box = document.getElementById("admin-dialogs-list");
+  var stEl = document.getElementById("dialogs-admin-status");
+  if (!box) return;
+  box.innerHTML = "<div style='font-size:11px;color:#94a3b8;padding:4px;'>Завантаження діалогів...</div>";
+  chrome.storage.local.get(["sbUrl", "sbKey"], async function (rawCfg) {
+    var cfg = resolveSbCfg(rawCfg);
+    try {
+      var res = await fetch(cfg.sbUrl + "/rest/v1/chat_sessions?select=id,client_name,project_id,updated_at&order=updated_at.desc&limit=50", {
+        headers: { apikey: cfg.sbKey }
+      });
+      var rows = await res.json();
+      box.innerHTML = "";
+      if (!Array.isArray(rows) || rows.length === 0) {
+        box.innerHTML = "<div style='font-size:11px;color:#64748b;padding:4px;'>Діалогів у базі немає.</div>";
+        return;
+      }
+      rows.forEach(function (s) {
+        var row = document.createElement("label");
+        row.style.cssText = "display:flex;align-items:center;gap:8px;margin:0;padding:5px 8px;border-radius:8px;background:rgba(15,23,42,0.85);color:#e2e8f0;font-size:11px;cursor:pointer;";
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.value = s.id;
+        var lbl = document.createElement("span");
+        lbl.style.cssText = "overflow:hidden;text-overflow:ellipsis;white-space:nowrap;";
+        lbl.textContent = (s.client_name || "Клієнт") + " • " + (s.project_id || "проєкт");
+        lbl.title = s.id;
+        row.appendChild(cb);
+        row.appendChild(lbl);
+        box.appendChild(row);
+      });
+      if (stEl) stEl.textContent = "";
+    } catch (e) {
+      box.innerHTML = "<div style='font-size:11px;color:#f87171;padding:4px;'>Помилка читання діалогів.</div>";
+    }
+  });
+}
+
+(function bindAdminDialogsManager() {
+  var refBtn = document.getElementById("refresh-admin-dialogs-btn");
+  var delBtn = document.getElementById("del-dialogs-btn");
+  var stEl = document.getElementById("dialogs-admin-status");
+
+  if (refBtn) {
+    refBtn.addEventListener("click", function () {
+      if (isAdminUnlocked) loadAdminDialogs();
+    });
+  }
+
+  if (delBtn) {
+    delBtn.addEventListener("click", function () {
+      if (!isAdminUnlocked) return;
+      var checked = Array.from(document.querySelectorAll("#admin-dialogs-list input[type='checkbox']:checked")).map(function (c) { return c.value; });
+      if (checked.length === 0) {
+        stEl.style.color = "#f87171";
+        stEl.textContent = "Позначте чекбоксами діалоги для видалення.";
+        return;
+      }
+      delBtn.disabled = true;
+      stEl.style.color = "#38bdf8";
+      stEl.textContent = "Видалення з Supabase...";
+
+      chrome.storage.local.get(["sbUrl", "sbKey"], async function (rawCfg) {
+        var cfg = resolveSbCfg(rawCfg);
+        var inFilter = "(" + checked.map(function (id) { return '"' + id.replace(/"/g, "") + '"'; }).join(",") + ")";
+        try {
+          await fetch(cfg.sbUrl + "/rest/v1/chat_messages?session_id=in." + encodeURIComponent(inFilter), {
+            method: "DELETE",
+            headers: { apikey: cfg.sbKey, Prefer: "return=minimal" }
+          });
+          var delSessRes = await fetch(cfg.sbUrl + "/rest/v1/chat_sessions?id=in." + encodeURIComponent(inFilter), {
+            method: "DELETE",
+            headers: { apikey: cfg.sbKey, Prefer: "return=minimal" }
+          });
+          if (!delSessRes.ok) throw new Error("HTTP " + delSessRes.status);
+
+          if (checked.indexOf(selectedSessionId) !== -1) {
+            selectedSessionId = null;
+          }
+          stEl.style.color = "#6ee7b7";
+          stEl.textContent = "✅ Видалено діалогів: " + checked.length;
+          await loadAdminDialogs();
+          loadClients(cfg);
+        } catch (err) {
+          stEl.style.color = "#f87171";
+          stEl.textContent = "Помилка видалення: " + err.message;
+        } finally {
+          delBtn.disabled = false;
+        }
+      });
+    });
+  }
+})();
