@@ -39,133 +39,62 @@
     .action-pill-btn[data-color="gold"] { border-color: #fbbf24; color: #fef08a; }
     .action-pill-btn[data-color="orange"] { border-color: #f97316; color: #fed7aa; }
     .action-pill-btn[data-color="green"] { border-color: #10b981; color: #a7f3d0; }
-        :root { --spring: cubic-bezier(0.22, 1.55, 0.36, 1); --smooth: cubic-bezier(0.22, 1, 0.36, 1); }
-    .neon-btn, button:not(.pchat-close):not(.icon-btn) {
-      --btn-neon: #38bdf8; --btn-glow: rgba(56, 189, 248, 0.42); --btn-tint: rgba(56, 189, 248, 0.14);
-      position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        :root { --spring: cubic-bezier(0.22, 1.28, 0.36, 1); --smooth: cubic-bezier(0.16, 1, 0.3, 1); }
+    .action-pill-btn, .neon-btn, button:not(.pchat-close):not(.icon-btn) {
+      --btn-neon: #38bdf8; --btn-glow: rgba(56, 189, 248, 0.45); --btn-tint: rgba(56, 189, 248, 0.15);
+      position: relative; overflow: visible !important; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       padding: 10px 22px; border-radius: 999px; font-size: 0.92rem; font-weight: 600; text-decoration: none;
       color: #f0f9ff; background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(7, 13, 28, 0.97) 100%);
-      border: 1.5px solid var(--btn-neon); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      border: 1.5px solid var(--btn-neon); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.14);
       backdrop-filter: blur(10px); cursor: pointer; user-select: none;
-      transition: transform 0.44s var(--spring), box-shadow 0.35s var(--smooth), background 0.3s ease, border-color 0.3s ease, color 0.25s ease;
+      transition: transform 0.62s var(--spring), box-shadow 0.52s var(--smooth), background 0.42s ease, border-color 0.38s ease, color 0.32s ease !important;
     }
-    .neon-btn:hover, button:not(.pchat-close):not(.icon-btn):hover {
-      transform: translateY(-3px) scale(1.03);
-      background: linear-gradient(180deg, var(--btn-tint) 0%, rgba(10, 18, 36, 0.96) 100%);
-      box-shadow: 0 10px 26px -4px var(--btn-glow), 0 0 18px var(--btn-glow), inset 0 1px 0 rgba(255, 255, 255, 0.24);
-      color: #ffffff;
+    .action-pill-btn::after, .neon-btn::after, button:not(.pchat-close):not(.icon-btn)::after {
+      content: ""; position: absolute; inset: -6px; border-radius: inherit; pointer-events: none; opacity: 0;
+      box-shadow: 0 0 42px 10px var(--btn-glow); transition: opacity 0.48s var(--smooth);
     }
-    .neon-btn:active, button:not(.pchat-close):not(.icon-btn):active {
-      transform: translateY(1px) scale(0.965); transition-duration: 0.11s;
-      box-shadow: 0 0 0 5px var(--btn-tint), 0 0 30px 7px var(--btn-glow), inset 0 0 16px var(--btn-glow);
+    .action-pill-btn:hover, .neon-btn:hover, button:not(.pchat-close):not(.icon-btn):hover {
+      transform: translateY(-3px) scale(1.028) !important;
+      box-shadow: 0 18px 46px -4px var(--btn-glow), 0 0 36px 6px var(--btn-glow), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+      color: #ffffff !important;
     }
-    [data-color="gold"] { --btn-neon: #fbbf24; --btn-glow: rgba(251, 191, 36, 0.45); --btn-tint: rgba(251, 191, 36, 0.15); color: #fef3c7; }
-    [data-color="orange"] { --btn-neon: #f97316; --btn-glow: rgba(249, 115, 22, 0.45); --btn-tint: rgba(249, 115, 22, 0.15); color: #ffedd5; }
-    [data-color="green"] { --btn-neon: #10b981; --btn-glow: rgba(16, 185, 129, 0.45); --btn-tint: rgba(16, 185, 129, 0.15); color: #d1fae5; }
+    .action-pill-btn:hover::after, .neon-btn:hover::after, button:not(.pchat-close):not(.icon-btn):hover::after { opacity: 1 !important; }
+    .action-pill-btn:active, .neon-btn:active, button:not(.pchat-close):not(.icon-btn):active {
+      transform: translateY(1px) scale(0.972) !important; transition-duration: 0.09s !important; border-color: #ffffff !important;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.28) 0%, var(--btn-tint) 48%, rgba(15, 23, 42, 0.96) 95%) !important;
+      box-shadow: 0 0 0 7px var(--btn-tint), 0 0 48px 14px var(--btn-glow), inset 0 0 22px rgba(255, 255, 255, 0.42) !important;
+    }
+    [data-color="gold"] { --btn-neon: #fbbf24; --btn-glow: rgba(251, 191, 36, 0.48); --btn-tint: rgba(251, 191, 36, 0.16); color: #fef3c7; }
+    [data-color="orange"] { --btn-neon: #f97316; --btn-glow: rgba(249, 115, 22, 0.48); --btn-tint: rgba(249, 115, 22, 0.16); color: #ffedd5; }
+    [data-color="green"] { --btn-neon: #10b981; --btn-glow: rgba(16, 185, 129, 0.48); --btn-tint: rgba(16, 185, 129, 0.16); color: #d1fae5; }
+    [data-color="red"] { --btn-neon: #f87171; --btn-glow: rgba(239, 68, 68, 0.52); --btn-tint: rgba(239, 68, 68, 0.18); color: #fecaca; }
     input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), textarea, select {
-      outline: none; transition: transform 0.4s var(--spring), box-shadow 0.32s var(--smooth), border-color 0.28s ease;
+      outline: none; transition: transform 0.5s var(--spring), box-shadow 0.4s var(--smooth), border-color 0.32s ease;
     }
     input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):hover, textarea:hover, select:hover {
       transform: translateY(-1.5px) scale(1.008); border-color: rgba(56, 189, 248, 0.72) !important;
-      box-shadow: 0 6px 18px -4px rgba(56, 189, 248, 0.32), 0 0 12px rgba(56, 189, 248, 0.24);
+      box-shadow: 0 8px 22px -4px rgba(56, 189, 248, 0.34), 0 0 14px rgba(56, 189, 248, 0.24);
     }
     input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus, textarea:focus, select:focus {
       transform: translateY(-2px) scale(1.014); border-color: #38bdf8 !important;
-      box-shadow: 0 10px 28px -3px rgba(56, 189, 248, 0.54), 0 0 22px 4px rgba(56, 189, 248, 0.45), inset 0 0 10px rgba(56, 189, 248, 0.22);
+      box-shadow: 0 12px 32px -3px rgba(56, 189, 248, 0.56), 0 0 24px 5px rgba(56, 189, 248, 0.48), inset 0 0 12px rgba(56, 189, 248, 0.24);
     }
-    .project-tile { transition: transform 0.45s var(--spring), border-color 0.32s ease, background 0.32s ease, box-shadow 0.36s var(--smooth) !important; }
-    .project-tile:hover { transform: translateY(-4px) scale(1.018) !important; box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.55), 0 0 20px color-mix(in srgb, var(--tile-accent, #38bdf8) 42%, transparent) !important; }
-    .project-tile:active { transform: translateY(1px) scale(0.98) !important; transition-duration: 0.12s !important; }
-    .project-inspector { transition: opacity 0.34s var(--smooth), transform 0.48s var(--spring), border-color 0.35s ease, box-shadow 0.4s ease !important; }
-    .project-inspector.is-switching { opacity: 0.18 !important; transform: translateY(10px) scale(0.985) !important; }
-    .project-inspector.is-flash { border-color: rgba(56, 189, 248, 0.65) !important; box-shadow: 0 16px 44px rgba(0, 0, 0, 0.45), 0 0 28px rgba(56, 189, 248, 0.24) !important; }
-        /* Правка 1: Плавніше спливання опису (+200%), зовнішній ховер (+100%), м'яка пружина та виразний спалах при кліку */
-    :root {
-      --spring: cubic-bezier(0.22, 1.28, 0.36, 1);
-      --smooth: cubic-bezier(0.16, 1, 0.3, 1);
+    .showcase-layout { transition: gap 1.2s var(--smooth) !important; }
+    .showcase-layout.is-fullscreen { gap: 0px !important; }
+    .projects-sidebar {
+      transition: opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1), filter 1.5s cubic-bezier(0.22, 1, 0.36, 1), transform 1.5s cubic-bezier(0.22, 1, 0.36, 1), width 1.35s var(--smooth), padding 1.35s var(--smooth) !important;
     }
-    .action-pill-btn,
-    .neon-btn,
-    button:not(.pchat-close):not(.icon-btn) {
-      overflow: visible !important;
-      transition:
-        transform 0.62s var(--spring),
-        box-shadow 0.52s var(--smooth),
-        background 0.42s ease,
-        border-color 0.38s ease,
-        color 0.32s ease !important;
+    .showcase-layout.is-fullscreen .projects-sidebar {
+      width: 0% !important; padding: 0 !important; opacity: 0 !important; transform: scale(0.92) translateX(-24px) !important; filter: blur(14px) !important; pointer-events: none !important; overflow: hidden !important;
     }
-    .action-pill-btn::after,
-    .neon-btn::after,
-    button:not(.pchat-close):not(.icon-btn)::after {
-      content: "";
-      position: absolute;
-      inset: -6px;
-      border-radius: inherit;
-      pointer-events: none;
-      opacity: 0;
-      box-shadow: 0 0 42px 10px var(--btn-glow);
-      transition: opacity 0.48s var(--smooth);
-    }
-    .action-pill-btn:hover,
-    .neon-btn:hover,
-    button:not(.pchat-close):not(.icon-btn):hover {
-      transform: translateY(-3px) scale(1.028) !important;
-      box-shadow:
-        0 18px 46px -4px var(--btn-glow),
-        0 0 36px 6px var(--btn-glow),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
-    }
-    .action-pill-btn:hover::after,
-    .neon-btn:hover::after,
-    button:not(.pchat-close):not(.icon-btn):hover::after {
-      opacity: 1 !important;
-    }
-    .action-pill-btn:active,
-    .neon-btn:active,
-    button:not(.pchat-close):not(.icon-btn):active {
-      transform: translateY(1px) scale(0.972) !important;
-      transition-duration: 0.09s !important;
-      border-color: #ffffff !important;
-      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.28) 0%, var(--btn-tint) 48%, rgba(15, 23, 42, 0.96) 95%) !important;
-      box-shadow:
-        0 0 0 7px var(--btn-tint),
-        0 0 48px 14px var(--btn-glow),
-        inset 0 0 22px rgba(255, 255, 255, 0.42) !important;
-    }
-    .project-tile {
-      transition:
-        transform 0.65s var(--spring),
-        border-color 0.42s ease,
-        background 0.42s ease,
-        box-shadow 0.52s var(--smooth) !important;
-    }
-    .project-tile:hover {
-      transform: translateY(-4px) scale(1.016) !important;
-      box-shadow:
-        0 18px 42px -6px rgba(0, 0, 0, 0.6),
-        0 0 34px 4px color-mix(in srgb, var(--tile-accent, #38bdf8) 52%, transparent) !important;
-    }
-    .project-tile:active {
-      transform: translateY(1px) scale(0.985) !important;
-      transition-duration: 0.1s !important;
-      border-color: #ffffff !important;
-      box-shadow:
-        0 0 0 6px color-mix(in srgb, var(--tile-accent, #38bdf8) 28%, transparent),
-        0 0 44px 10px color-mix(in srgb, var(--tile-accent, #38bdf8) 68%, transparent),
-        inset 0 0 18px rgba(255, 255, 255, 0.25) !important;
-    }
-    .project-inspector {
-      transition:
-        opacity 0.95s var(--smooth),
-        transform 1.05s var(--spring),
-        border-color 0.55s ease,
-        box-shadow 0.65s ease !important;
-    }
-    .project-inspector.is-switching {
-      opacity: 0.08 !important;
-      transform: translateY(16px) scale(0.982) !important;
-    }
+    .project-tile { transition: transform 0.62s var(--spring), border-color 0.4s ease, background 0.4s ease, box-shadow 0.5s var(--smooth) !important; }
+    .project-tile:hover { transform: translateY(-4px) scale(1.018) !important; box-shadow: 0 18px 42px -6px rgba(0, 0, 0, 0.6), 0 0 34px 4px color-mix(in srgb, var(--tile-accent, #38bdf8) 52%, transparent) !important; }
+    .project-tile:active { transform: translateY(1px) scale(0.978) !important; transition-duration: 0.09s !important; border-color: #ffffff !important; box-shadow: 0 0 0 7px color-mix(in srgb, var(--tile-accent, #38bdf8) 28%, transparent), 0 0 46px 12px color-mix(in srgb, var(--tile-accent, #38bdf8) 68%, transparent), inset 0 0 20px rgba(255, 255, 255, 0.3) !important; }
+    .project-inspector { position: relative; transition: width 1.35s var(--smooth), padding 1.2s var(--smooth), opacity 0.95s var(--smooth), transform 1.05s var(--spring), box-shadow 0.65s ease !important; }
+    .project-inspector.is-switching { opacity: 0.08 !important; transform: translateY(16px) scale(0.982) !important; }
+    .showcase-layout.is-fullscreen .project-inspector { width: 100% !important; padding: 36px 56px !important; box-shadow: 0 24px 68px rgba(0, 0, 0, 0.68), 0 0 38px rgba(56, 189, 248, 0.22) !important; }
+    .inspector-close-btn { position: sticky; top: 0; align-self: flex-end; margin-bottom: -40px; z-index: 30; width: 40px; height: 40px; padding: 0 !important; border-radius: 999px; font-size: 1.15rem; font-weight: 700; opacity: 0; transform: scale(0.75); pointer-events: none; transition: opacity 0.6s ease, transform 0.6s var(--spring) !important; }
+    .showcase-layout.is-fullscreen .inspector-close-btn { opacity: 1; transform: scale(1); pointer-events: auto; }
     #open-projects-admin { position: fixed; bottom: 20px; right: 20px; z-index: 960; width: 48px; height: 48px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.35rem; color: #38bdf8; background: rgba(6,11,25,0.92); border: 1px solid rgba(56,189,248,0.55); cursor: pointer; }
   </style>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b1221'/%3E%3Ctext x='32' y='41' font-family='sans-serif' font-size='26' font-weight='bold' fill='%2338bdf8' text-anchor='middle'%3E4i4%3C/text%3E%3C/svg%3E">
@@ -220,14 +149,33 @@
             return '<a href="' + href + '" class="neon-btn action-pill-btn" data-color="' + (a.color || "cyan") + '">' + a.label + '</a>';
           }).join("");
           view.innerHTML = '<div class="inspector-head"><span class="inspector-badge">' + (p.category || "") + '</span><h2>' + p.title + '</h2></div>' + blocks + '<div class="inspector-actions">' + actions + '</div>';
-          requestAnimationFrame(() => { view.classList.remove("is-switching"); view.classList.add("is-flash"); setTimeout(() => view.classList.remove("is-flash"), 420); });
+          if (!document.getElementById("close-project-inspector")) {
+            const cb = document.createElement("button");
+            cb.type = "button"; cb.id = "close-project-inspector"; cb.textContent = "✕";
+            cb.setAttribute("data-color", "red"); cb.className = "action-pill-btn inspector-close-btn";
+            cb.title = "Повернутися до зали проєктів (Esc)";
+            cb.onclick = () => { const l = document.querySelector(".showcase-layout"); if (l) l.classList.remove("is-fullscreen"); };
+            view.prepend(cb);
+          }
+          if (!window._i4EscBound) {
+            window._i4EscBound = true;
+            document.addEventListener("keydown", (ev) => {
+              if (ev.key === "Escape") {
+                const adm = document.getElementById("projects-admin-modal");
+                if (adm && adm.style.display !== "none") return;
+                const l = document.querySelector(".showcase-layout");
+                if (l && l.classList.contains("is-fullscreen")) l.classList.remove("is-fullscreen");
+              }
+            });
+          }
+          view.classList.remove("is-switching");
           if (typeof window.mountProjectChat === "function") window.mountProjectChat(p, false);
           view.querySelectorAll("[data-color]").forEach(function (b) {
             if (b.getAttribute("href") === "#chat") {
               b.onclick = function (e) { e.preventDefault(); if (typeof window.mountProjectChat === "function") window.mountProjectChat(p, true); };
             }
           });
-        }, 220);
+        }, 210);
       }
 
       list.innerHTML = "";
@@ -237,9 +185,9 @@
         el.dataset.id = p.id;
         el.style.setProperty("--tile-accent", p.accentColor || "#38bdf8");
         el.innerHTML = '<div class="tile-logo-box"><img src="' + p.logo + '" alt=""></div><div class="tile-info"><h2>' + p.title + '</h2><span>' + (p.category || "") + '</span></div>';
-        el.addEventListener("mouseenter", () => { clearTimeout(timer); timer = setTimeout(() => select(p.id), 180); });
+        el.addEventListener("mouseenter", () => { clearTimeout(timer); timer = setTimeout(() => { const l = document.querySelector(".showcase-layout"); if (!l || !l.classList.contains("is-fullscreen")) select(p.id); }, 170); });
         el.addEventListener("mouseleave", () => clearTimeout(timer));
-        el.addEventListener("click", () => { clearTimeout(timer); select(p.id); });
+        el.addEventListener("click", () => { clearTimeout(timer); select(p.id); const l = document.querySelector(".showcase-layout"); if (l) l.classList.add("is-fullscreen"); });
         list.appendChild(el);
       });
       if (activeId) select(activeId);
