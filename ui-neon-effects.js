@@ -107,7 +107,7 @@
         }
       }
       .ui-btn-host.ui-do-flash::after {
-        animation: uiOverlayFlash 1.71s ease-out forwards !important;
+        animation: uiOverlayFlash 5.13s ease-out forwards !important;
       }
     `;
     document.head.appendChild(style);
@@ -168,7 +168,7 @@
       btn.classList.remove('ui-do-flash');
       void btn.offsetWidth;
       btn.classList.add('ui-do-flash');
-      setTimeout(() => btn.classList.remove('ui-do-flash'), 1800);
+      setTimeout(() => btn.classList.remove('ui-do-flash'), 5300);
     }
 
     // Логіка карток і плиток повністю недоторканна — працюємо тільки з окремими кнопками
