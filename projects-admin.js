@@ -210,14 +210,28 @@ a.href = URL.createObjectURL(new Blob(["window.PROJECTS_DATA = " + JSON.stringif
 a.download = "projects-data.js"; a.click();
 };
 document.getElementById("adm-publish-btn").onclick = function () {
-var st = document.getElementById("adm-status-msg"); st.style.color = "#38bdf8"; st.textContent = "Генерація SEO та публікація...";
+var st = document.getElementById("adm-status-msg"); if (!st) { st = document.createElement("div"); st.id = "adm-status-msg"; st.style.cssText = "padding:6px 14px;font-size:12px;font-weight:600;"; var pubBtn = document.getElementById("adm-publish-btn"); if (pubBtn && pubBtn.parentElement) pubBtn.parentElement.appendChild(st); else document.body.appendChild(st); } st.style.color = "#38bdf8"; st.textContent = "Збереження карток та публікація в GitHub...";
 var files = [{ path: "projects-data.js", content: "window.PROJECTS_DATA = " + JSON.stringify(memProjects, null, 2) + ";\n" }];
 memProjects.forEach(function (pr) {
 files.push({ path: "projects/" + pr.id + ".html", content: buildCaseSeoHtml(pr) });
 });
-Object.keys(memMediaFiles).forEach(function (path) { var b64 = memMediaFiles[path].split(","); if (b64) files.push({ path: path, contentBase64: b64 }); });
-fetch(apiBase + "/api/publish", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: adminToken, message: "feat(seo): оновлення кейсів та SEO-сторінок 4і4", files: files }) })
-.then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); st.style.color = "#6ee7b7"; st.textContent = "✓ Опубліковано (" + memProjects.length + " SEO-сторінок)!"; })
+Object.keys(memMediaFiles).forEach(function (path) { var parts = memMediaFiles[path].split(","); var b64 = parts[1] || parts[0]; if (b64) files.push({ path: path, contentBase64: b64 }); });
+var commitMsg = "feat(seo): оновлення кейсів та SEO-сторінок 4і4";
+var isLocal = (location.hostname === "127.0.0.1" || location.hostname === "localhost");
+var targetUrl = isLocal ? "/api/local-publish" : (apiBase + "/api/publish");
+var reqBody = isLocal ? { message: commitMsg, files: files } : { password: adminToken, message: commitMsg, files: files };
+
+fetch(targetUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(reqBody) })
+.then(function (r) { return r.json().catch(function () { return {}; }).then(function (data) { if (!r.ok || data.ok === false) throw new Error(data.error || data.push || ("HTTP " + r.status)); return data; }); })
+.then(function () {
+  window.PROJECTS_DATA = JSON.parse(JSON.stringify(memProjects));
+  try { localStorage.removeItem("4i4_projects_draft"); } catch (e) {}
+  if (typeof window.rebuildProjectsShowcase === "function") window.rebuildProjectsShowcase(memProjects[editingIndex].id);
+  st.style.color = "#6ee7b7";
+  st.textContent = isLocal
+    ? ("✓ Збережено локально і запушено в GitHub (" + memProjects.length + " карток)!")
+    : ("✓ Опубліковано (" + memProjects.length + " SEO-сторінок)!");
+})
 .catch(function (e) { st.style.color = "#f87171"; st.textContent = "Помилка: " + e.message; });
 };
 renderWorkspace();
