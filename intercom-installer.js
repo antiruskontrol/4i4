@@ -90,6 +90,17 @@
   dock.appendChild(pop);
   document.body.appendChild(dock);
 
+  var currentExtVersion = "";
+  fetch("4i4-intercom-ext/manifest.json?v=" + Date.now())
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (m) {
+      if (m && m.version) {
+        currentExtVersion = String(m.version).trim();
+        badge.textContent = "CHROME EXTENSION • MV3 • v" + currentExtVersion;
+      }
+    })
+    .catch(function () {});
+
   trigger.addEventListener("click", function () {
     dock.classList.toggle("open");
     if (dock.classList.contains("open")) pinInput.focus();
@@ -120,32 +131,55 @@
         return;
       }
       localStorage.setItem("adminPin", pin);
+
+      if (!currentExtVersion) {
+        try {
+          var mRes = await fetch("4i4-intercom-ext/manifest.json?v=" + Date.now());
+          if (mRes.ok) {
+            var mData = await mRes.json();
+            if (mData && mData.version) currentExtVersion = String(mData.version).trim();
+          }
+        } catch (err) {}
+      }
+
+      var fileName = currentExtVersion
+        ? ("4i4-intercom-ext-v" + currentExtVersion + ".zip")
+        : "4i4-intercom-ext.zip";
+
       statusEl.style.color = "#6ee7b7";
-      statusEl.textContent = "PIN підтверджено! Завантажуємо архів...";
+      statusEl.textContent = "PIN підтверджено! Завантажуємо " + fileName + "...";
 
-      var zipRes = await fetch("4i4-intercom-ext.zip?v=" + Date.now());
+      var zipRes = await fetch(fileName + "?t=" + Date.now());
+      if (!zipRes.ok) {
+        zipRes = await fetch("4i4-intercom-ext.zip?t=" + Date.now());
+      }
       if (!zipRes.ok) throw new Error("ZIP not found");
-      var blob = await zipRes.blob();
-      var url = URL.createObjectURL(blob);
+
+      var rawBlob = await zipRes.blob();
+      var zipBlob = new Blob([rawBlob], { type: "application/zip" });
+      var blobUrl = URL.createObjectURL(zipBlob);
       var a = document.createElement("a");
-      a.href = url;
-      a.download = "4i4-intercom-ext.zip";
+      a.style.display = "none";
+      a.href = blobUrl;
+      a.setAttribute("download", fileName);
       document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+      a.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
 
-      statusEl.textContent = "✅ Архів завантажено! Розпакуйте його → відкрийте chrome://extensions → увімкніть «Режим розробника» → «Завантажити розпаковане».";
+      setTimeout(function () {
+        if (a.parentNode) a.parentNode.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+      }, 15000);
+
+      statusEl.textContent = "✅ Архів " + fileName + " завантажено! Розпакуйте його → відкрийте chrome://extensions → увімкніть «Режим розробника» → «Завантажити розпаковане».";
     } catch (e) {
-      statusEl.style.color = "#f87171";
-      statusEl.textContent = "Помилка з'єднання з сервером перевірки. Спробуйте ще раз.";
-    } finally {
-      installBtn.disabled = false;
-    }
-  }
-
-  installBtn.addEventListener("click", handleInstall);
-  pinInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") handleInstall();
-  });
-})();
+statusEl.style.color = "#f87171";
+statusEl.textContent = "Помилка з'єднання з сервером перевірки. Спробуйте ще раз.";
+} finally {
+installBtn.disabled = false;
+}
+}
+installBtn.addEventListener("click", handleInstall);
+pinInput.addEventListener("keydown", function (e) {
+if (e.key === "Enter") handleInstall();
+});
+})();rn

@@ -67,9 +67,135 @@
     document.getElementById("pchat-rej-btn").onclick = function () { call.close(); box.style.display = "none"; };
   }
 
+  function computeSessionId(projId, clientName, staffOverride) {
+    var st = staffOverride || getSelectedStaffId() || "staff_01";
+    var raw = (projId || "proj") + "_" + (clientName || "guest").trim().toLowerCase() + "_" + st;
+    var hash = 0;
+    for (var i = 0; i < raw.length; i++) {
+      hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+      hash |= 0;
+    }
+    var sid = "sess_" + Math.abs(hash).toString(36) + "_" + st;
+    localStorage.setItem("4i4_chat_session", sid);
+    return sid;
+  }
+
+  function getSelectedStaffId() {
+    var sel = document.getElementById("pchat-staff-select");
+    if (sel && sel.value) return sel.value;
+    if (currentProject && currentProject.id) {
+      var saved = localStorage.getItem("4i4_selected_staff_" + currentProject.id);
+      if (saved) return saved;
+    }
+    var fb = (currentProject && currentProject.assignedStaffId && currentProject.assignedStaffId !== "staff_01") ? currentProject.assignedStaffId : "staff_02"; return fb;
+  }
+
+  var latestStaffDirectory = [];
+
+  function formatStaffPresence(st) {
+    if (!st) return { dot: "⚫", label: "не в мережі", color: "#94a3b8", online: false };
+    var fresh = false;
+    if (st.last_seen) {
+      var diffMs = Date.now() - new Date(st.last_seen).getTime();
+      fresh = !isNaN(diffMs) && diffMs < 90000;
+    }
+    if (fresh && st.status === "online") {
+      return { dot: "🟢", label: "в мережі", color: "#34d399", online: true };
+    }
+    if (fresh && st.status === "busy") {
+      return { dot: "🟡", label: "зайнятий", color: "#fbbf24", online: true };
+    }
+    return { dot: "⚫", label: "не в мережі", color: "#94a3b8", online: false };
+  }
+
+  function updateDialogPresenceBadge() {
+    var badge = document.getElementById("pchat-presence-badge");
+    var sel = document.getElementById("pchat-staff-select");
+    if (!badge || !sel) return;
+    var curId = sel.value;
+    var st = latestStaffDirectory.find(function (x) { return x && x.id === curId; });
+    var pr = formatStaffPresence(st);
+    var titleName = st && st.name ? (st.name + " (" + curId + ")") : curId;
+    badge.style.color = pr.color;
+    badge.style.borderColor = pr.online ? "rgba(16,185,129,0.45)" : "rgba(148,163,184,0.3)";
+    badge.style.background = pr.online ? "rgba(16,185,129,0.12)" : "rgba(15,23,42,0.75)";
+    badge.textContent = pr.dot + " " + titleName + " • " + pr.label;
+  }
+
+  function populateStaffSelector(selEl) {
+    if (!selEl) return;
+    var rawDefault = (currentProject && currentProject.assignedStaffId && currentProject.assignedStaffId !== "staff_01")
+      ? currentProject.assignedStaffId
+      : "staff_02";
+    var savedId = (currentProject && currentProject.id) ? localStorage.getItem("4i4_selected_staff_" + currentProject.id) : "";
+    if (savedId === "staff_01") savedId = "";
+    var activeVal = savedId || rawDefault;
+
+    function applyList(list) {
+      latestStaffDirectory = Array.isArray(list) ? list : [];
+      var clean = latestStaffDirectory.filter(function (x) { return x && x.id && x.id !== "staff_01"; });
+      if (clean.length === 0) {
+        clean = [{ id: rawDefault, name: "", status: "offline" }];
+      }
+      var prev = (selEl.value && selEl.value !== "staff_01") ? selEl.value : activeVal;
+      selEl.innerHTML = "";
+
+      var sysOpt = document.createElement("option");
+      sysOpt.value = "staff_01";
+      sysOpt.disabled = true;
+      sysOpt.style.color = "#64748b";
+      sysOpt.textContent = "🔒 staff_01 (системний)";
+      selEl.appendChild(sysOpt);
+
+      clean.forEach(function (st) {
+        var opt = document.createElement("option");
+        opt.value = st.id;
+        var pr = formatStaffPresence(st);
+        var baseLabel = st.name ? (st.name + " (" + st.id + ")") : st.id;
+        opt.textContent = pr.dot + " " + baseLabel + " — " + pr.label;
+        selEl.appendChild(opt);
+      });
+
+      if (clean.some(function (x) { return x.id === prev; })) {
+        selEl.value = prev;
+      } else {
+        selEl.value = clean[0].id;
+      }
+      if (currentProject && currentProject.id && selEl.value && selEl.value !== "staff_01") {
+        localStorage.setItem("4i4_selected_staff_" + currentProject.id, selEl.value);
+      }
+      updateDialogPresenceBadge();
+    }
+
+    applyList([{ id: rawDefault, name: "", status: "offline" }]);
+
+    var cfg = window.CHAT_CONFIG || {};
+    if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) return;
+
+    function fetchDirectory() {
+      fetch(cfg.supabaseUrl + "/rest/v1/chat_sessions?id=eq.4i4_team_directory&select=client_name&limit=1", {
+        headers: { apikey: cfg.supabaseAnonKey }
+      }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+        if (Array.isArray(rows) && rows.length > 0 && rows[0].client_name) {
+          var parsed = JSON.parse(rows[0].client_name);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            applyList(parsed);
+            return;
+          }
+        }
+        if (Array.isArray(cfg.staffList) && cfg.staffList.length > 0) {
+          applyList(cfg.staffList);
+        }
+      }).catch(function () {});
+    }
+
+    fetchDirectory();
+    if (window._4i4DirPoll) clearInterval(window._4i4DirPoll);
+    window._4i4DirPoll = setInterval(fetchDirectory, 15000);
+  }
   function startCall(withVideo) {
     if (!currentProject) return;
-    var staffPeerId = "4i4_staff_" + (currentProject.assignedStaffId || "staff_01");
+    var staffPeerId = "4i4_staff_" + getSelectedStaffId();
     initPeer(function (peer) {
       navigator.mediaDevices.getUserMedia({ audio: true, video: !!withVideo }).then(function (stream) {
         localStream = stream;
@@ -206,7 +332,7 @@
     sb.from("chat_sessions").upsert({
       id: activeSessionId,
       project_id: currentProject.id,
-      staff_id: currentProject.assignedStaffId || "staff_01",
+      staff_id: getSelectedStaffId(),
       client_name: name,
       client_email: email,
       updated_at: new Date().toISOString()
@@ -259,7 +385,7 @@ function sendMessage(text, fileUrl, fileName) {
     var isNewBranch = false;
     if (typedName && typedName !== sessionOwnerName) {
       sessionOwnerName = typedName;
-      activeSessionId = "sess_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
+      activeSessionId = computeSessionId(currentProject.id, typedName, getSelectedStaffId());
       localStorage.setItem("4i4_chat_session", activeSessionId);
       localStorage.setItem("4i4_client_name", typedName);
       var fBox = document.getElementById("pchat-feed");
@@ -281,7 +407,7 @@ created_at: new Date().toISOString()
     appendMsgBubble(msg);
     var cfg = window.CHAT_CONFIG || {};
     if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) { saveLocalMsg(msg); return; }
-    var sessPayload = { id: activeSessionId, project_id: currentProject.id, staff_id: currentProject.assignedStaffId || "staff_01", client_name: localStorage.getItem("4i4_client_name") || "Гість", client_email: localStorage.getItem("4i4_client_email") || "", updated_at: new Date().toISOString() };
+    var sessPayload = { id: activeSessionId, project_id: currentProject.id, staff_id: getSelectedStaffId(), client_name: localStorage.getItem("4i4_client_name") || "Гість", client_email: localStorage.getItem("4i4_client_email") || "", updated_at: new Date().toISOString() };
     fetch(cfg.supabaseUrl + "/rest/v1/chat_sessions", { method: "POST", headers: { apikey: cfg.supabaseAnonKey, "Content-Type": "application/json", Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify(sessPayload) }).then(function (r1) {
       if (!r1.ok) throw new Error("chat_sessions HTTP " + r1.status);
       return fetch(cfg.supabaseUrl + "/rest/v1/chat_messages", { method: "POST", headers: { apikey: cfg.supabaseAnonKey, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(dbMsg) });
@@ -315,7 +441,7 @@ wrap.innerHTML = "";
     hRow.style.cssText = "display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;";
     var hTitle = document.createElement("strong");
     hTitle.style.cssText = "color:#6ee7b7;font-size:1rem;";
-    hTitle.textContent = "💬 Живий діалог зі спеціалістом";
+    hTitle.innerHTML = '💬 Живий діалог зі спеціалістом <span id="pchat-presence-badge" style="display:inline-block;margin-left:8px;padding:3px 10px;border-radius:999px;font-size:0.76rem;font-weight:600;border:1px solid rgba(148,163,184,0.3);background:rgba(15,23,42,0.75);color:#94a3b8;vertical-align:middle;">⚫ перевірка статусу...</span>';
     var btnBox = document.createElement("div");
     btnBox.style.cssText = "display:flex;gap:8px;";
     var vBtn = document.createElement("button");
@@ -324,7 +450,30 @@ wrap.innerHTML = "";
     var vidBtn = document.createElement("button");
     vidBtn.type = "button"; vidBtn.id = "pchat-video-btn"; vidBtn.textContent = "📹 Відеодзвінок";
     vidBtn.style.cssText = "padding:7px 14px;border-radius:999px;background:rgba(16,185,129,0.2);border:1px solid #10b981;color:#6ee7b7;font-size:0.85rem;cursor:pointer;";
-    btnBox.append(vBtn, vidBtn); hRow.append(hTitle, btnBox);
+    btnBox.style.flexWrap = "wrap";
+    btnBox.style.alignItems = "center";
+    var staffSel = document.createElement("select");
+    staffSel.id = "pchat-staff-select";
+    staffSel.title = "Оберіть спеціаліста для чату та дзвінка";
+    staffSel.style.cssText = "padding:7px 12px;border-radius:999px;background:#0b132b;border:1px solid rgba(56,189,248,0.45);color:#e2e8f0;font-size:0.85rem;cursor:pointer;outline:none;";
+    populateStaffSelector(staffSel);
+    staffSel.onchange = function () {
+      var chosen = this.value; updateDialogPresenceBadge();
+      if (currentProject && currentProject.id) {
+        localStorage.setItem("4i4_selected_staff_" + currentProject.id, chosen);
+      }
+      if (!isRoomLink && currentProject && currentProject.id) {
+        var curName = (document.getElementById("pchat-name") ? document.getElementById("pchat-name").value.trim() : "") || localStorage.getItem("4i4_client_name") || "Гість";
+        activeSessionId = computeSessionId(currentProject.id, curName, chosen);
+        var fBox = document.getElementById("pchat-feed");
+        if (fBox) fBox.innerHTML = "";
+        window.ensureCommsSdk().then(function (sb) {
+          syncSessionAndLoad(sb);
+          initPeer();
+        });
+      }
+    };
+    btnBox.append(staffSel, vBtn, vidBtn); hRow.append(hTitle, btnBox);
 
     var stage = document.createElement("div");
     stage.id = "pchat-call-stage"; stage.style.cssText = "display:none;margin-bottom:12px;";
@@ -399,9 +548,13 @@ r.readAsDataURL(file);
 });
 });
 };
+if (!isRoomLink && currentProject && currentProject.id) {
+  var initClientName = (document.getElementById("pchat-name") ? document.getElementById("pchat-name").value.trim() : "") || localStorage.getItem("4i4_client_name") || "Гість";
+  activeSessionId = computeSessionId(currentProject.id, initClientName, getSelectedStaffId());
+}
 window.ensureCommsSdk().then(function (sb) {
-syncSessionAndLoad(sb);
-initPeer();
+  syncSessionAndLoad(sb);
+  initPeer();
 });
 };
 if (bc) {
