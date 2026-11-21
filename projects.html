@@ -6,61 +6,73 @@
   <title>Наші проєкти — Студія «4і4»</title>
   <script src="page-transition.js"></script>
   <style>
-    :root { --bg-deep: #060b19; --bg-panel: rgba(13, 22, 45, 0.75); --nav-h: 74px; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100vw; height: 100vh; overflow: hidden; background: radial-gradient(circle at 15% 20%, #0f1f42 0%, var(--bg-deep) 65%); color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
-    .top-navbar { position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-h); padding: 0 28px; display: flex; align-items: center; justify-content: space-between; background: rgba(6, 11, 25, 0.85); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,0.08); z-index: 900; }
-    .nav-group { display: flex; align-items: center; gap: 14px; }
-    .nav-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 999px; font-size: 0.92rem; font-weight: 600; text-decoration: none; color: #f8fafc; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148, 163, 184, 0.35); cursor: pointer; }
-    .nav-btn-active { border-color: #10b981; color: #6ee7b7; box-shadow: 0 0 18px rgba(16, 185, 129, 0.35); }
-    .nav-btn-coop { border-color: rgba(251, 191, 36, 0.65); color: #fde68a; }
-    .showcase-layout { display: flex; width: 100vw; height: calc(100vh - var(--nav-h)); margin-top: var(--nav-h); padding: 20px 28px; gap: 24px; }
-    .projects-sidebar { width: 35%; height: 100%; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; padding-right: 8px; }
-    .project-tile { display: flex; align-items: center; gap: 16px; padding: 18px 20px; border-radius: 20px; background: var(--bg-panel); border: 1px solid rgba(148, 163, 184, 0.2); cursor: pointer; transition: transform 0.25s cubic-bezier(0.22, 1.35, 0.36, 1), border-color 0.25s ease, box-shadow 0.25s ease; user-select: none; }
-    .project-tile:hover { transform: translateY(-4px) scale(1.015); border-color: var(--tile-accent, #38bdf8); box-shadow: 0 10px 26px rgba(0,0,0,0.38); }
-    .project-tile.is-active { background: rgba(20, 34, 68, 0.92); border-color: var(--tile-accent, #10b981); box-shadow: 0 0 24px rgba(16, 185, 129, 0.24); }
-    .tile-logo-box { width: 54px; height: 54px; border-radius: 14px; background: rgba(6,11,25,0.85); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
-    .tile-logo-box img { width: 100%; height: 100%; object-fit: cover; }
-    .tile-info h2 { font-size: 1.05rem; color: #f8fafc; margin-bottom: 4px; }
-    .tile-info span { font-size: 0.8rem; color: #94a3b8; }
-    .project-inspector { width: 65%; height: 100%; background: var(--bg-panel); backdrop-filter: blur(16px); border: 1px solid rgba(56, 189, 248, 0.22); border-radius: 24px; padding: 32px 36px; overflow-y: auto; display: flex; flex-direction: column; gap: 22px; transition: opacity 0.2s ease; }
-    .project-inspector.is-switching { opacity: 0.45; }
-    .inspector-badge { display: inline-flex; align-self: flex-start; padding: 5px 14px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; background: rgba(16,185,129,0.14); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.35); }
-    .inspector-head h2 { font-size: 1.8rem; margin-top: 8px; }
-    .block-text h3, .block-video h3 { font-size: 1.1rem; color: #bae6fd; margin-bottom: 8px; }
-    .block-text p { line-height: 1.65; color: #cbd5e1; }
-    .block-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
-    .metric-card { padding: 16px; border-radius: 16px; background: rgba(6,11,25,0.65); border: 1px solid rgba(56,189,248,0.22); }
-    .metric-value { font-size: 1.4rem; font-weight: 700; color: #38bdf8; }
-    .metric-label { font-size: 0.82rem; color: #94a3b8; margin-top: 4px; }
-    .video-wrapper video { width: 100%; max-height: 320px; border-radius: 16px; background: #000; }
-    .inspector-actions {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 14px;
-      margin-top: auto;
-      padding-top: 22px;
-      border-top: 1px solid rgba(56, 189, 248, 0.16);
+    :root {
+      --bg-deep: #060b19;
+      --bg-panel: rgba(13, 22, 45, 0.78);
+      --nav-h: 76px;
+      --spring: cubic-bezier(0.22, 1.55, 0.36, 1);
+      --smooth: cubic-bezier(0.22, 1, 0.36, 1);
     }
-    .action-pill-btn {
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: radial-gradient(circle at 15% 20%, #0f1f42 0%, var(--bg-deep) 65%);
+      color: #f1f5f9;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* Верхня навігація з неоновими кнопками */
+    .top-navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--nav-h);
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(6, 11, 25, 0.86);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(56, 189, 248, 0.18);
+      z-index: 900;
+    }
+    .nav-line {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      width: 100%;
+      justify-content: space-between;
+    }
+    .nav-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Єдина неонова фізика для всіх кнопок */
+    .action-pill-btn,
+    .neon-btn,
+    button:not(.pchat-close):not(.icon-btn) {
       --btn-neon: #38bdf8;
       --btn-glow: rgba(56, 189, 248, 0.42);
-      --btn-tint: rgba(56, 189, 248, 0.12);
+      --btn-tint: rgba(56, 189, 248, 0.14);
       position: relative;
       overflow: visible;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 12px 26px;
+      padding: 11px 24px;
       border-radius: 999px;
-      font-size: 0.95rem;
+      font-size: 0.93rem;
       font-weight: 600;
       letter-spacing: 0.015em;
       text-decoration: none;
       color: #f0f9ff;
-      background: linear-gradient(180deg, rgba(15, 23, 42, 0.88) 0%, rgba(7, 13, 28, 0.96) 100%);
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(7, 13, 28, 0.97) 100%);
       border: 1.5px solid var(--btn-neon);
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
       backdrop-filter: blur(10px);
@@ -68,143 +80,347 @@
       user-select: none;
       will-change: transform, box-shadow;
       transition:
-        transform 0.42s cubic-bezier(0.22, 1.55, 0.36, 1),
-        box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.44s var(--spring),
+        box-shadow 0.35s var(--smooth),
         background 0.3s ease,
         border-color 0.3s ease,
         color 0.25s ease;
     }
-    .action-pill-btn::after {
+    .nav-pill-btn {
+      padding: 9px 20px;
+      font-size: 0.9rem;
+    }
+    .action-pill-btn::after,
+    .neon-btn::after {
       content: "";
       position: absolute;
-      inset: -2px;
+      inset: -3px;
       border-radius: inherit;
       pointer-events: none;
       opacity: 0;
-      box-shadow: 0 0 22px 4px var(--btn-glow);
-      transition: opacity 0.38s ease;
+      box-shadow: 0 0 24px 5px var(--btn-glow);
+      transition: opacity 0.36s ease;
     }
-    .action-pill-btn:hover {
+    .action-pill-btn:hover,
+    .neon-btn:hover,
+    button:not(.pchat-close):not(.icon-btn):hover {
       transform: translateY(-3px) scale(1.03);
-      background: linear-gradient(180deg, var(--btn-tint) 0%, rgba(10, 18, 36, 0.95) 100%);
+      background: linear-gradient(180deg, var(--btn-tint) 0%, rgba(10, 18, 36, 0.96) 100%);
       box-shadow:
         0 10px 26px -4px var(--btn-glow),
         0 0 18px var(--btn-glow),
-        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        inset 0 1px 0 rgba(255, 255, 255, 0.24);
       color: #ffffff;
     }
-    .action-pill-btn:hover::after {
+    .action-pill-btn:hover::after,
+    .neon-btn:hover::after {
       opacity: 1;
     }
-    .action-pill-btn:active {
+    .action-pill-btn:active,
+    .neon-btn:active,
+    button:not(.pchat-close):not(.icon-btn):active {
       transform: translateY(1px) scale(0.965);
       transition-duration: 0.11s;
       transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-      background: radial-gradient(circle at center, var(--btn-tint) 0%, rgba(15, 23, 42, 0.96) 85%);
+      background: radial-gradient(circle at center, var(--btn-tint) 0%, rgba(15, 23, 42, 0.97) 85%);
       box-shadow:
         0 0 0 5px var(--btn-tint),
-        0 0 28px 6px var(--btn-glow),
-        inset 0 0 14px var(--btn-glow);
+        0 0 30px 7px var(--btn-glow),
+        inset 0 0 16px var(--btn-glow);
     }
-    .action-pill-btn[data-color="gold"] {
+    [data-color="gold"] {
       --btn-neon: #fbbf24;
-      --btn-glow: rgba(251, 191, 36, 0.44);
-      --btn-tint: rgba(251, 191, 36, 0.14);
+      --btn-glow: rgba(251, 191, 36, 0.45);
+      --btn-tint: rgba(251, 191, 36, 0.15);
       color: #fef3c7;
     }
-    .action-pill-btn[data-color="orange"] {
+    [data-color="orange"] {
       --btn-neon: #f97316;
-      --btn-glow: rgba(249, 115, 22, 0.44);
-      --btn-tint: rgba(249, 115, 22, 0.14);
+      --btn-glow: rgba(249, 115, 22, 0.45);
+      --btn-tint: rgba(249, 115, 22, 0.15);
       color: #ffedd5;
     }
-    .action-pill-btn[data-color="green"] {
+    [data-color="green"] {
       --btn-neon: #10b981;
-      --btn-glow: rgba(16, 185, 129, 0.44);
-      --btn-tint: rgba(16, 185, 129, 0.14);
+      --btn-glow: rgba(16, 185, 129, 0.45);
+      --btn-tint: rgba(16, 185, 129, 0.15);
       color: #d1fae5;
     }
-    #open-projects-admin { position: fixed; bottom: 20px; right: 20px; z-index: 960; width: 48px; height: 48px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.35rem; color: #38bdf8; background: rgba(6,11,25,0.92); border: 1px solid rgba(56,189,248,0.55); cursor: pointer; }
-  </style>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b1221'/%3E%3Ctext x='32' y='41' font-family='sans-serif' font-size='26' font-weight='bold' fill='%2338bdf8' text-anchor='middle'%3E4i4%3C/text%3E%3C/svg%3E">
-</head>
-<body>
-  <header class="top-navbar">
-    <nav class="nav-line" aria-label="Навігація проєктів" style="display:flex;gap:14px;align-items:center;width:100%;justify-content:space-between;">
-      <div style="display:flex;gap:14px;align-items:center;">
-        <a href="index.html" data-transition="back" class="neon-btn"><span>← На головну</span></a>
-        <a href="exhibitions.html" class="neon-btn"><span>Виставки</span></a>
-        <a href="copilot.html" class="neon-btn"><span>Копілот</span></a>
-      </div>
-      <a href="#cooperation" class="neon-btn"><span>Співпраця</span></a>
-    </nav>
-  </header>
-  <main class="showcase-layout">
-    <aside class="projects-sidebar"><div id="projects-tiles-list"></div></aside>
-    <section class="project-inspector" id="project-inspector"></section>
-  </main>
-  <button type="button" id="open-projects-admin" title="Адмін-студія">⚙</button>
-  <script src="chat-config.js"></script>
-  <script src="project-chat.js?v=11"></script>
-  <script src="projects-data.js"></script>
-  <script>
-    try { var d = localStorage.getItem("4i4_projects_draft"); if (d) window.PROJECTS_DATA = JSON.parse(d); } catch (e) {}
-    window.rebuildProjectsShowcase = function (preferredId) {
-      const projects = window.PROJECTS_DATA || [];
-      const list = document.getElementById("projects-tiles-list");
-      const view = document.getElementById("project-inspector");
-      if (!list || !view) return;
-      const urlProj = new URLSearchParams(window.location.search).get("project");
-      let activeId = preferredId || urlProj || (projects[0] ? projects[0].id : null);
-      if (!projects.some(x => x.id === activeId) && projects[0]) activeId = projects[0].id;
-      let timer = null;
 
-      function select(id) {
-        const p = projects.find(x => x.id === id);
-        if (!p) return;
-        activeId = id;
-        document.querySelectorAll(".project-tile").forEach(el => el.classList.toggle("is-active", el.dataset.id === id));
-        view.classList.add("is-switching");
-        setTimeout(() => {
-          const blocks = (p.blocks || []).map(b => {
-            if (b.type === "text") return '<div class="block-text"><h3>' + (b.title || "") + '</h3><p>' + (b.content || "") + '</p></div>';
-            if (b.type === "metrics") return '<div class="block-metrics">' + (b.items || []).map(m => '<div class="metric-card"><div class="metric-value">' + m.value + '</div><div class="metric-label">' + m.label + '</div></div>').join("") + '</div>';
-            if (b.type === "video") return '<div class="block-video"><h3>' + (b.label || "") + '</h3><div class="video-wrapper"><video src="' + b.src + '" poster="' + (b.poster || "") + '" controls></video></div></div>';
-            if (b.type === "gallery") return '<div class="block-gallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin:14px 0;">' + (b.items || []).map(it => '<img src="' + it.src + '" alt="' + (it.alt || "") + '" style="width:100%;border-radius:12px;border:1px solid rgba(56,189,248,0.25);">').join("") + '</div>';
-            return "";
-          }).join("");
-          const actions = (p.actions || []).map(a => {
-            const href = a.type === "coop" ? "#cooperation" : (a.type === "copilot" ? "copilot.html" : (a.type === "chat" ? "#chat" : (a.url || "#")));
-            return '<a href="' + href + '" class="neon-btn action-pill-btn" data-color="' + (a.color || "cyan") + '">' + a.label + '</a>';
-          }).join("");
-          view.innerHTML = '<div class="inspector-head"><span class="inspector-badge">' + (p.category || "") + '</span><h2>' + p.title + '</h2></div>' + blocks + '<div class="inspector-actions">' + actions + '</div>';
-          view.classList.remove("is-switching");
-          if (typeof window.mountProjectChat === "function") window.mountProjectChat(p, false);
-          view.querySelectorAll("[data-color]").forEach(function (b) {
-            if (b.getAttribute("href") === "#chat") {
-              b.onclick = function (e) { e.preventDefault(); if (typeof window.mountProjectChat === "function") window.mountProjectChat(p, true); };
-            }
-          });
-        }, 80);
-      }
+    /* Підпружинені поля вводу (+50% свічення при активації) */
+    input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+    textarea,
+    select {
+      outline: none;
+      will-change: transform, box-shadow;
+      transition:
+        transform 0.4s var(--spring),
+        box-shadow 0.32s var(--smooth),
+        border-color 0.28s ease,
+        background 0.28s ease;
+    }
+    input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):hover,
+    textarea:hover,
+    select:hover {
+      transform: translateY(-1.5px) scale(1.008);
+      border-color: rgba(56, 189, 248, 0.72) !important;
+      box-shadow: 0 6px 18px -4px rgba(56, 189, 248, 0.32), 0 0 12px rgba(56, 189, 248, 0.24);
+    }
+    input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
+    textarea:focus,
+    select:focus {
+      transform: translateY(-2px) scale(1.014);
+      border-color: #38bdf8 !important;
+      box-shadow:
+        0 10px 28px -3px rgba(56, 189, 248, 0.54),
+        0 0 22px 4px rgba(56, 189, 248, 0.45),
+        inset 0 0 10px rgba(56, 189, 248, 0.22);
+    }
 
-      list.innerHTML = "";
-      projects.forEach(p => {
-        const el = document.createElement("div");
-        el.className = "project-tile" + (p.id === activeId ? " is-active" : "");
-        el.dataset.id = p.id;
-        el.style.setProperty("--tile-accent", p.accentColor || "#38bdf8");
-        el.innerHTML = '<div class="tile-logo-box"><img src="' + p.logo + '" alt=""></div><div class="tile-info"><h2>' + p.title + '</h2><span>' + (p.category || "") + '</span></div>';
-        el.addEventListener("mouseenter", () => { clearTimeout(timer); timer = setTimeout(() => select(p.id), 120); });
-        el.addEventListener("mouseleave", () => clearTimeout(timer));
-        el.addEventListener("click", () => { clearTimeout(timer); select(p.id); });
-        list.appendChild(el);
-      });
-      if (activeId) select(activeId);
-    };
-    window.rebuildProjectsShowcase();
-  </script>  <script src="projects-admin.js?v=20261121171908"></script><script src="intercom-installer.js?v=20261121163227"></script>
-  <script src="cooperation-hub.js?v=20"></script>
-  <script src="ui-neon-effects.js?v=19"></script>
-</body>
-</html>
+    /* Вітрина проєктів і плитки */
+    .showcase-layout {
+      display: flex;
+      width: 100vw;
+      height: calc(100vh - var(--nav-h));
+      margin-top: var(--nav-h);
+      padding: 20px 28px;
+      gap: 24px;
+    }
+    .projects-sidebar {
+      width: 35%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+      padding: 4px 10px 16px 4px;
+    }
+    .project-tile {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: var(--bg-panel);
+      border: 1.5px solid rgba(148, 163, 184, 0.22);
+      cursor: pointer;
+      user-select: none;
+      will-change: transform, box-shadow;
+      transition:
+        transform 0.45s var(--spring),
+        border-color 0.32s ease,
+        background 0.32s ease,
+        box-shadow 0.36s var(--smooth);
+    }
+    .project-tile:hover {
+      transform: translateY(-4px) scale(1.018);
+      border-color: var(--tile-accent, #38bdf8);
+      background: rgba(18, 31, 62, 0.9);
+      box-shadow:
+        0 12px 28px -6px rgba(0, 0, 0, 0.55),
+        0 0 20px color-mix(in srgb, var(--tile-accent, #38bdf8) 42%, transparent);
+    }
+    .project-tile:active {
+      transform: translateY(1px) scale(0.98);
+      transition-duration: 0.12s;
+      box-shadow:
+        0 0 0 4px color-mix(in srgb, var(--tile-accent, #38bdf8) 22%, transparent),
+        0 0 28px color-mix(in srgb, var(--tile-accent, #38bdf8) 55%, transparent);
+    }
+    .project-tile.is-active {
+      background: rgba(20, 34, 68, 0.95);
+      border-color: var(--tile-accent, #10b981);
+      box-shadow:
+        0 8px 24px -4px rgba(0, 0, 0, 0.48),
+        0 0 24px color-mix(in srgb, var(--tile-accent, #10b981) 38%, transparent),
+        inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    }
+    .tile-logo-box {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: rgba(6, 11, 25, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+      transition: transform 0.4s var(--spring), border-color 0.3s ease;
+    }
+    .project-tile:hover .tile-logo-box {
+      transform: scale(1.06);
+      border-color: var(--tile-accent, #38bdf8);
+    }
+    .tile-logo-box img { width: 100%; height: 100%; object-fit: cover; }
+    .tile-info h2 { font-size: 1.05rem; color: #f8fafc; margin-bottom: 4px; }
+    .tile-info span { font-size: 0.8rem; color: #94a3b8; }
+
+    /* Плавне підпружинене вікно опису проєкту */
+    .project-inspector {
+      width: 65%;
+      height: 100%;
+      background: var(--bg-panel);
+      backdrop-filter: blur(18px);
+      border: 1.5px solid rgba(56, 189, 248, 0.26);
+      border-radius: 24px;
+      padding: 32px 36px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      box-shadow: 0 16px 42px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      will-change: transform, opacity, box-shadow;
+      transition:
+        opacity 0.34s var(--smooth),
+        transform 0.48s var(--spring),
+        border-color 0.35s ease,
+        box-shadow 0.4s ease;
+    }
+    .project-inspector.is-switching {
+      opacity: 0.18;
+      transform: translateY(10px) scale(0.985);
+    }
+    .project-inspector.is-flash {
+      border-color: rgba(56, 189, 248, 0.65);
+      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.45), 0 0 28px rgba(56, 189, 248, 0.24);
+    }
+    .inspector-badge {
+      display: inline-flex;
+      align-self: flex-start;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.14);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.38);
+    }
+    .inspector-head h2 { font-size: 1.8rem; margin-top: 8px; }
+    .block-text h3, .block-video h3 { font-size: 1.1rem; color: #bae6fd; margin-bottom: 8px; }
+    .block-text p { line-height: 1.65; color: #cbd5e1; }
+.block-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+.metric-card {
+padding: 16px;
+border-radius: 16px;
+background: rgba(6, 11, 25, 0.68);
+border: 1px solid rgba(56, 189, 248, 0.24);
+transition: transform 0.38s var(--spring), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.metric-card:hover {
+transform: translateY(-3px) scale(1.02);
+border-color: #38bdf8;
+box-shadow: 0 8px 20px rgba(56, 189, 248, 0.22);
+}
+.metric-value { font-size: 1.4rem; font-weight: 700; color: #38bdf8; }
+.metric-label { font-size: 0.82rem; color: #94a3b8; margin-top: 4px; }
+.video-wrapper video { width: 100%; max-height: 320px; border-radius: 16px; background: #000; }
+.inspector-actions {
+display: flex;
+flex-wrap: wrap;
+align-items: center;
+gap: 14px;
+margin-top: auto;
+padding-top: 22px;
+border-top: 1px solid rgba(56, 189, 248, 0.18);
+}
+#open-projects-admin {
+position: fixed;
+bottom: 20px;
+right: 20px;
+z-index: 960;
+width: 48px;
+height: 48px;
+padding: 0;
+border-radius: 999px;
+font-size: 1.35rem;
+}
+← На головну
+Виставки
+Копілот
+
+✨ Співпраця
+
+
+
+⚙
+
+
+
+
+try { var d = localStorage.getItem("4i4_projects_draft"); if (d) window.PROJECTS_DATA = JSON.parse(d); } catch (e) {}
+window.rebuildProjectsShowcase = function (preferredId) {
+const projects = window.PROJECTS_DATA || [];
+const list = document.getElementById("projects-tiles-list");
+const view = document.getElementById("project-inspector");
+if (!list || !view) retu
+;
+const urlProj = new URLSearchParams(window.location.search).get("project");
+let activeId = preferredId || urlProj || (projects[0] ? projects[0].id : null);
+if (!projects.some(x => x.id === activeId) && projects[0]) activeId = projects[0].id;
+let timer = null;
+let switchSeq = 0;
+function select(id) {
+const p = projects.find(x => x.id === id);
+if (!p) retu
+;
+activeId = id;
+const seq = ++switchSeq;
+document.querySelectorAll(".project-tile").forEach(el => el.classList.toggle("is-active", el.dataset.id === id));
+view.classList.add("is-switching");
+setTimeout(() => {
+if (seq !== switchSeq) retu
+;
+const blocks = (p.blocks || []).map(b => {
+if (b.type === "text") retu
+ '' + (b.title || "") + '' + (b.content || "") + '';
+if (b.type === "metrics") retu
+ '' + (b.items || []).map(m => '' + m.value + '' + m.label + '').join("") + '';
+if (b.type === "video") retu
+ '' + (b.label || "") + '<video src="' + b.src + '" poster="' + (b.poster || "") + '" controls>';
+if (b.type === "gallery") retu
+ '' + (b.items || []).map(it => '<img src="' + it.src + '" alt="' + (it.alt || "") + '" style="width:100%;border-radius:12px;border:1px solid rgba(56,189,248,0.25);">').join("") + '';
+retu
+ "";
+}).join("");
+const actions = (p.actions || []).map(a => {
+const href = a.type === "coop" ? "#cooperation" : (a.type === "copilot" ? "copilot.html" : (a.type === "chat" ? "#chat" : (a.url || "#")));
+retu
+ '<a href="' + href + '" class="neon-btn action-pill-btn" data-color="' + (a.color || "cyan") + '">' + a.label + '';
+}).join("");
+view.innerHTML = '' + (p.category || "") + '' + p.title + '' + blocks + '' + actions + '';
+requestAnimationFrame(() => {
+view.classList.remove("is-switching");
+view.classList.add("is-flash");
+setTimeout(() => view.classList.remove("is-flash"), 420);
+});
+if (typeof window.mountProjectChat === "function") window.mountProjectChat(p, false);
+view.querySelectorAll("[data-color]").forEach(function (b) {
+if (b.getAttribute("href") === "#chat") {
+b.onclick = function (e) { e.preventDefault(); if (typeof window.mountProjectChat === "function") window.mountProjectChat(p, true); };
+}
+});
+}, 115);
+}
+list.innerHTML = "";
+projects.forEach(p => {
+const el = document.createElement("div");
+el.className = "project-tile" + (p.id === activeId ? " is-active" : "");
+el.dataset.id = p.id;
+el.style.setProperty("--tile-accent", p.accentColor || "#38bdf8");
+el.innerHTML = '' + p.title + '' + (p.category || "") + '';
+el.addEventListener("mouseenter", () => { clearTimeout(timer); timer = setTimeout(() => select(p.id), 140); });
+el.addEventListener("mouseleave", () => clearTimeout(timer));
+el.addEventListener("click", () => { clearTimeout(timer); select(p.id); });
+list.appendChild(el);
+});
+if (activeId) select(activeId);
+};
+window.rebuildProjectsShowcase();
+
+
+
+
+
+
