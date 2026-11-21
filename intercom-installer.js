@@ -179,4 +179,4 @@ installBtn.addEventListener("click", handleInstall);
 pinInput.addEventListener("keydown", function (e) {
 if (e.key === "Enter") handleInstall();
 });
-})();rn
+})();
