@@ -26,7 +26,14 @@
   }
 
   function initPeer(onReady) {
-    if (peerInstance && !peerInstance.destroyed) { if (onReady) onReady(peerInstance); return; }
+    if (peerInstance && !peerInstance.destroyed) {
+      if (peerInstance.open) {
+        if (onReady) onReady(peerInstance);
+      } else if (onReady) {
+        peerInstance.on("open", function () { onReady(peerInstance); });
+      }
+      return;
+    }
     window.ensureCommsSdk().then(function () {
       if (!window.Peer) return;
       var myPeerId = "4i4_client_" + activeSessionId;
@@ -67,6 +74,11 @@
       navigator.mediaDevices.getUserMedia({ audio: true, video: !!withVideo }).then(function (stream) {
         localStream = stream;
         var call = peer.call(staffPeerId, stream);
+        if (!call) {
+          stream.getTracks().forEach(function (t) { t.stop(); });
+          alert("З'єднання WebRTC ще встановлюється. Спробуйте ще раз через 2 секунди.");
+          return;
+        }
         bindCallStream(call, stream);
       }).catch(function (err) {
         alert("Не вдалося отримати доступ до мікрофона/камери: " + err.message);
@@ -145,9 +157,13 @@
         fileHtml = '<div style="margin-top:6px;"><a href="' + esc(m.file_url) + '" target="_blank" style="color:#38bdf8;text-decoration:underline;">📎 ' + esc(m.file_name || "Файл") + '</a></div>';
       }
     }
+    var clientName = m._authorName || localStorage.getItem("4i4_client_name") || "Ви";
+    var staffName = (!m.file_url && m.file_name) ? m.file_name : "Спеціаліст";
+    var authorLabel = isClient ? clientName : staffName;
     var row = document.createElement("div");
     row.style.cssText = "display:flex;flex-direction:column;align-items:" + (isClient ? "flex-end" : "flex-start") + ";margin-bottom:8px;";
-    row.innerHTML = '<div style="max-width:82%;padding:9px 14px;border-radius:16px;font-size:0.9rem;line-height:1.45;background:' +
+    row.innerHTML = '<div style="font-size:0.74rem;font-weight:600;color:#10b981;text-shadow:0 0 8px rgba(16,185,129,0.55);margin:0 8px 3px;">' + esc(authorLabel) + '</div>' +
+      '<div style="max-width:82%;padding:9px 14px;border-radius:16px;font-size:0.9rem;line-height:1.45;background:' +
       (isClient ? "rgba(16,185,129,0.22);border:1px solid rgba(16,185,129,0.45);color:#ecfdf5;" : "rgba(30,41,59,0.9);border:1px solid rgba(56,189,248,0.3);color:#f1f5f9;") +
       '">' + (m.text ? '<div>' + esc(m.text) + '</div>' : '') + fileHtml + '</div>';
     feed.appendChild(row);
@@ -176,7 +192,31 @@
     }).then(function () {
       return sb.from("chat_messages").select("*").eq("session_id", activeSessionId).order("created_at", { ascending: true });
     }).then(function (res) {
-      if (res && Array.isArray(res.data)) res.data.forEach(appendMsgBubble);
+      var seenIds = {};
+      if (res && Array.isArray(res.data)) {
+        res.data.forEach(function (m) {
+          if (m.id) seenIds[m.id] = true;
+          appendMsgBubble(m);
+        });
+      }
+      if (window._4i4ClientPoll) clearInterval(window._4i4ClientPoll);
+      window._4i4ClientPoll = setInterval(function () {
+        var curFeed = document.getElementById("pchat-feed");
+        if (!curFeed) { clearInterval(window._4i4ClientPoll); return; }
+        var cfg = window.CHAT_CONFIG || {};
+        if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) return;
+        fetch(cfg.supabaseUrl + "/rest/v1/chat_messages?session_id=eq." + encodeURIComponent(activeSessionId) + "&order=id.asc", {
+          headers: { apikey: cfg.supabaseAnonKey }
+        }).then(function (resp) { return resp.json(); }).then(function (rows) {
+          if (Array.isArray(rows)) {
+            rows.forEach(function (m) {
+              if (m.id && seenIds[m.id]) return;
+              if (m.id) seenIds[m.id] = true;
+              if (m.sender !== "client") appendMsgBubble(m);
+            });
+          }
+        }).catch(function () {});
+      }, 2000);
     });
 
     if (rtChannel) { try { sb.removeChannel(rtChannel); } catch (e) {} }
@@ -192,10 +232,22 @@
       });
   }
 
-  function sendMessage(text, fileUrl, fileName) {
+  var sessionOwnerName = localStorage.getItem("4i4_client_name") || "";
+function sendMessage(text, fileUrl, fileName) {
+    var typedName = (document.getElementById("pchat-name") ? document.getElementById("pchat-name").value.trim() : "") || localStorage.getItem("4i4_client_name") || "";
+    var isNewBranch = false;
+    if (typedName && typedName !== sessionOwnerName) {
+      sessionOwnerName = typedName;
+      activeSessionId = "sess_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
+      localStorage.setItem("4i4_chat_session", activeSessionId);
+      localStorage.setItem("4i4_client_name", typedName);
+      var fBox = document.getElementById("pchat-feed");
+      if (fBox) fBox.innerHTML = "";
+      isNewBranch = true;
+    }
     if (!text && !fileUrl) return;
-    var msg = {
-      session_id: activeSessionId,
+    var msg = { session_id: activeSessionId,
+
       project_id: currentProject.id,
 sender: "client",
 text: text || "",
@@ -203,21 +255,27 @@ file_url: fileUrl || "",
 file_name: fileName || "",
 created_at: new Date().toISOString()
 };
-appendMsgBubble(msg);
-window.ensureCommsSdk().then(function (sb) {
-if (!sb) { saveLocalMsg(msg); return; }
-sb.from("chat_sessions").upsert({
-id: activeSessionId,
-project_id: currentProject.id,
-staff_id: currentProject.assignedStaffId || "staff_01",
-client_name: localStorage.getItem("4i4_client_name") || "Гість",
-client_email: localStorage.getItem("4i4_client_email") || "",
-updated_at: new Date().toISOString()
-}).then(function () {
-return sb.from("chat_messages").insert(msg);
-});
-});
-}
+    var dbMsg = Object.assign({}, msg);
+    msg._authorName = localStorage.getItem("4i4_client_name") || "Ви";
+    appendMsgBubble(msg);
+    var cfg = window.CHAT_CONFIG || {};
+    if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) { saveLocalMsg(msg); return; }
+    var sessPayload = { id: activeSessionId, project_id: currentProject.id, staff_id: currentProject.assignedStaffId || "staff_01", client_name: localStorage.getItem("4i4_client_name") || "Гість", client_email: localStorage.getItem("4i4_client_email") || "", updated_at: new Date().toISOString() };
+    fetch(cfg.supabaseUrl + "/rest/v1/chat_sessions", { method: "POST", headers: { apikey: cfg.supabaseAnonKey, "Content-Type": "application/json", Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify(sessPayload) }).then(function (r1) {
+      if (!r1.ok) throw new Error("chat_sessions HTTP " + r1.status);
+      return fetch(cfg.supabaseUrl + "/rest/v1/chat_messages", { method: "POST", headers: { apikey: cfg.supabaseAnonKey, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(dbMsg) });
+    }).then(function (r2) {
+      if (!r2.ok) throw new Error("chat_messages HTTP " + r2.status);
+      if (isNewBranch) {
+        var fBox = document.getElementById("pchat-feed");
+        if (fBox) fBox.innerHTML = "";
+        window.ensureCommsSdk().then(function (sb) { syncSessionAndLoad(sb); initPeer(); });
+      }
+    }).catch(function (err) {
+      console.error("[4i4 Chat] Send failed:", err);
+      saveLocalMsg(msg);
+    });
+  }
 window.mountProjectChat = function (project, autoOpen) {
 currentProject = project;
 var inspector = document.getElementById("project-inspector");
@@ -283,7 +341,10 @@ wrap.innerHTML = "";
     wrap.append(hRow, stage, uRow, feed, fRow);
 inspector.appendChild(wrap);
 if (autoOpen || isRoomLink) wrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
-document.getElementById("pchat-name").oninput = function () { localStorage.setItem("4i4_client_name", this.value); };
+var lastBoundName = localStorage.getItem("4i4_client_name") || "";
+document.getElementById("pchat-name").oninput = function () {
+  localStorage.setItem("4i4_client_name", this.value);
+};
 document.getElementById("pchat-email").oninput = function () { localStorage.setItem("4i4_client_email", this.value); };
 document.getElementById("pchat-voice-btn").onclick = function () { startCall(false); };
 document.getElementById("pchat-video-btn").onclick = function () { startCall(true); };
