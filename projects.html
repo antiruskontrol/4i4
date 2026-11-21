@@ -34,11 +34,96 @@
     .metric-value { font-size: 1.4rem; font-weight: 700; color: #38bdf8; }
     .metric-label { font-size: 0.82rem; color: #94a3b8; margin-top: 4px; }
     .video-wrapper video { width: 100%; max-height: 320px; border-radius: 16px; background: #000; }
-    .inspector-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); }
-    .action-pill-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 24px; border-radius: 999px; font-size: 0.95rem; font-weight: 600; text-decoration: none; color: #fff; background: rgba(15,23,42,0.9); border: 1px solid #38bdf8; cursor: pointer; }
-    .action-pill-btn[data-color="gold"] { border-color: #fbbf24; color: #fef08a; }
-    .action-pill-btn[data-color="orange"] { border-color: #f97316; color: #fed7aa; }
-    .action-pill-btn[data-color="green"] { border-color: #10b981; color: #a7f3d0; }
+    .inspector-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+      margin-top: auto;
+      padding-top: 22px;
+      border-top: 1px solid rgba(56, 189, 248, 0.16);
+    }
+    .action-pill-btn {
+      --btn-neon: #38bdf8;
+      --btn-glow: rgba(56, 189, 248, 0.42);
+      --btn-tint: rgba(56, 189, 248, 0.12);
+      position: relative;
+      overflow: visible;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 26px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.015em;
+      text-decoration: none;
+      color: #f0f9ff;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.88) 0%, rgba(7, 13, 28, 0.96) 100%);
+      border: 1.5px solid var(--btn-neon);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      user-select: none;
+      will-change: transform, box-shadow;
+      transition:
+        transform 0.42s cubic-bezier(0.22, 1.55, 0.36, 1),
+        box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+        background 0.3s ease,
+        border-color 0.3s ease,
+        color 0.25s ease;
+    }
+    .action-pill-btn::after {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+      box-shadow: 0 0 22px 4px var(--btn-glow);
+      transition: opacity 0.38s ease;
+    }
+    .action-pill-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      background: linear-gradient(180deg, var(--btn-tint) 0%, rgba(10, 18, 36, 0.95) 100%);
+      box-shadow:
+        0 10px 26px -4px var(--btn-glow),
+        0 0 18px var(--btn-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+    }
+    .action-pill-btn:hover::after {
+      opacity: 1;
+    }
+    .action-pill-btn:active {
+      transform: translateY(1px) scale(0.965);
+      transition-duration: 0.11s;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      background: radial-gradient(circle at center, var(--btn-tint) 0%, rgba(15, 23, 42, 0.96) 85%);
+      box-shadow:
+        0 0 0 5px var(--btn-tint),
+        0 0 28px 6px var(--btn-glow),
+        inset 0 0 14px var(--btn-glow);
+    }
+    .action-pill-btn[data-color="gold"] {
+      --btn-neon: #fbbf24;
+      --btn-glow: rgba(251, 191, 36, 0.44);
+      --btn-tint: rgba(251, 191, 36, 0.14);
+      color: #fef3c7;
+    }
+    .action-pill-btn[data-color="orange"] {
+      --btn-neon: #f97316;
+      --btn-glow: rgba(249, 115, 22, 0.44);
+      --btn-tint: rgba(249, 115, 22, 0.14);
+      color: #ffedd5;
+    }
+    .action-pill-btn[data-color="green"] {
+      --btn-neon: #10b981;
+      --btn-glow: rgba(16, 185, 129, 0.44);
+      --btn-tint: rgba(16, 185, 129, 0.14);
+      color: #d1fae5;
+    }
     #open-projects-admin { position: fixed; bottom: 20px; right: 20px; z-index: 960; width: 48px; height: 48px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.35rem; color: #38bdf8; background: rgba(6,11,25,0.92); border: 1px solid rgba(56,189,248,0.55); cursor: pointer; }
   </style>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b1221'/%3E%3Ctext x='32' y='41' font-family='sans-serif' font-size='26' font-weight='bold' fill='%2338bdf8' text-anchor='middle'%3E4i4%3C/text%3E%3C/svg%3E">
