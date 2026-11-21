@@ -27,18 +27,33 @@ function openFileSmartPreview(url, rawLabel) {
   modal.innerHTML =
     '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid rgba(56,189,248,0.3);">' +
       '<strong style="font-size:12px;color:#38bdf8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">👁 ' + cleanName + '</strong>' +
-      '<div style="display:flex;gap:6px;flex-shrink:0;">' +
+      '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">' +
         '<a href="' + url + '" download="' + cleanName + '" class="btn" style="text-decoration:none;border-color:#10b981;color:#6ee7b7;">⬇ Зберегти</a>' +
-        '<button type="button" id="i4-prev-close" class="icon-btn" style="width:26px;height:26px;">✕</button>' +
+        '<button type="button" id="i4-prev-close" title="Закрити превʼю (Esc)" aria-label="Закрити превʼю" style="width:28px;height:28px;border-radius:8px;border:1px solid rgba(248,113,113,0.65);background:rgba(239,68,68,0.22);color:#fecaca;font-size:15px;font-weight:700;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">✕</button>' +
       '</div>' +
     '</div>' +
-    '<div id="i4-prev-body" style="flex:1;overflow:auto;margin-top:10px;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,0.75);border-radius:12px;padding:8px;">' +
-      '<span style="color:#94a3b8;font-size:11px;">Завантаження попереднього перегляду...</span>' +
+    '<div style="position:relative;flex:1;overflow:hidden;margin-top:10px;display:flex;background:rgba(15,23,42,0.75);border-radius:12px;">' +
+      '<button type="button" id="i4-prev-close-corner" title="Закрити превʼю" aria-label="Закрити превʼю" style="position:absolute;top:8px;right:8px;z-index:5;width:30px;height:30px;border-radius:999px;border:1px solid rgba(248,113,113,0.7);background:rgba(15,23,42,0.88);color:#fca5a5;font-size:15px;font-weight:700;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.45);">✕</button>' +
+      '<div id="i4-prev-body" style="flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;padding:8px;">' +
+        '<span style="color:#94a3b8;font-size:11px;">Завантаження попереднього перегляду...</span>' +
+      '</div>' +
     '</div>';
 
-  document.getElementById("i4-prev-close").onclick = function () {
+  var closePreview = function () {
+    var vid = modal.querySelector("video");
+    if (vid) { try { vid.pause(); vid.src = ""; } catch (e) {} }
     modal.style.display = "none";
     modal.innerHTML = "";
+    document.removeEventListener("keydown", onEscClose);
+  };
+  var onEscClose = function (ev) {
+    if (ev.key === "Escape") closePreview();
+  };
+  document.addEventListener("keydown", onEscClose);
+  document.getElementById("i4-prev-close").onclick = closePreview;
+  document.getElementById("i4-prev-close-corner").onclick = closePreview;
+  document.getElementById("i4-prev-body").onclick = function (ev) {
+    if (ev.target === this) closePreview();
   };
 
   var bodyEl = document.getElementById("i4-prev-body");
