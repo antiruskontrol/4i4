@@ -27,20 +27,38 @@
 
   function initPeer(onReady) {
     if (peerInstance && !peerInstance.destroyed) {
-      if (peerInstance.open) {
-        if (onReady) onReady(peerInstance);
-      } else if (onReady) {
-        peerInstance.on("open", function () { onReady(peerInstance); });
+      if (peerInstance.disconnected) {
+        try { peerInstance.reconnect(); } catch (e) {}
       }
+      if (peerInstance.open && !peerInstance.disconnected) {
+        if (onReady) onReady(peerInstance);
+        return;
+      }
+      var waited = false;
+      var onceOpen = function () {
+        if (waited) return;
+        waited = true;
+        if (onReady) onReady(peerInstance);
+      };
+      peerInstance.once("open", onceOpen);
+      setTimeout(function () {
+        if (!waited && peerInstance && peerInstance.open) onceOpen();
+      }, 1200);
       return;
     }
     window.ensureCommsSdk().then(function () {
-      if (!window.Peer) return;
-      var myPeerId = "4i4_client_" + activeSessionId;
-      peerInstance = new window.Peer(myPeerId);
+      if (!window.Peer) { alert("Модуль WebRTC (PeerJS) не завантажився. Перевірте lib/peerjs.min.js або інтернет."); return; }
+      peerInstance = new window.Peer();
       peerInstance.on("open", function () { if (onReady) onReady(peerInstance); });
       peerInstance.on("call", function (call) {
         showIncomingCallBanner(call);
+      });
+      peerInstance.on("error", function (err) {
+        if (err && err.type === "unavailable-id") {
+          try { peerInstance.destroy(); } catch (e) {}
+          peerInstance = null;
+          setTimeout(function () { initPeer(onReady); }, 300);
+        }
       });
     });
   }
@@ -193,21 +211,193 @@
     if (window._4i4DirPoll) clearInterval(window._4i4DirPoll);
     window._4i4DirPoll = setInterval(fetchDirectory, 15000);
   }
+  var hasRealMic = false;
+
+  function createSilentFallbackStream() {
+    try {
+      var AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        var ctx = new AudioCtx();
+        var dst = ctx.createMediaStreamDestination();
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        gain.gain.value = 0.00001;
+        osc.connect(gain);
+        gain.connect(dst);
+        osc.start();
+        var st = dst.stream;
+        st._isSilentFallback = true;
+        return st;
+      }
+    } catch (e) {}
+    var empty = new MediaStream();
+    empty._isSilentFallback = true;
+    return empty;
+  }
+
+  function acquireClientMediaStream(withVideo) {
+    hasRealMic = false;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      return Promise.resolve(createSilentFallbackStream());
+    }
+    var primary = { audio: true, video: !!withVideo };
+    return navigator.mediaDevices.getUserMedia(primary).then(function (s) {
+      hasRealMic = s.getAudioTracks().length > 0;
+      return s;
+    }).catch(function () {
+      if (withVideo) {
+        return navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(function (s) {
+          hasRealMic = s.getAudioTracks().length > 0;
+          return s;
+        });
+      }
+      throw new Error("no-audio");
+    }).catch(function () {
+      if (withVideo) {
+        return navigator.mediaDevices.getUserMedia({ audio: false, video: true }).then(function (vidStream) {
+          var silent = createSilentFallbackStream();
+          silent.getAudioTracks().forEach(function (t) { vidStream.addTrack(t); });
+          return vidStream;
+        });
+      }
+      throw new Error("no-devices");
+    }).catch(function () {
+      return createSilentFallbackStream();
+    });
+  }
+
+  function renderMicWarningBanner(call, myStream) {
+    var oldWarn = document.getElementById("pchat-mic-warn");
+    if (oldWarn) oldWarn.remove();
+    if (hasRealMic) return;
+    var stage = document.getElementById("pchat-call-stage");
+    if (!stage) return;
+
+    var warn = document.createElement("div");
+    warn.id = "pchat-mic-warn";
+    warn.style.cssText = "margin-bottom:10px;padding:10px 12px;border-radius:12px;background:rgba(245,158,11,0.14);border:1px solid rgba(251,191,36,0.55);color:#fef3c7;font-size:0.82rem;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;";
+    warn.innerHTML = '<span>🎙️ <b>Мікрофон не знайдено або вимкнено в системі</b> — співрозмовник вас не чує.</span>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+      '<a href="ms-settings:sound" id="pchat-win-mic-btn" style="padding:5px 11px;border-radius:999px;background:rgba(251,191,36,0.22);border:1px solid #fbbf24;color:#fef08a;text-decoration:none;font-weight:600;cursor:pointer;">⚙️ Налаштування звуку</a>' +
+      '<button type="button" id="pchat-retry-mic-btn" style="padding:5px 11px;border-radius:999px;background:rgba(16,185,129,0.22);border:1px solid #10b981;color:#6ee7b7;font-weight:600;cursor:pointer;">🔄 Підключити</button>' +
+      '</div>';
+    stage.prepend(warn);
+
+    var retryBtn = document.getElementById("pchat-retry-mic-btn");
+    if (retryBtn) {
+      retryBtn.onclick = function () {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(function (micStream) {
+          var newTrack = micStream.getAudioTracks()[0];
+          if (!newTrack) return;
+          myStream.getAudioTracks().forEach(function (t) { t.stop(); myStream.removeTrack(t); });
+          myStream.addTrack(newTrack);
+          if (call && call.peerConnection) {
+            var sender = call.peerConnection.getSenders().find(function (s) { return s.track && s.track.kind === "audio"; });
+            if (sender) { sender.replaceTrack(newTrack); }
+            else { call.peerConnection.addTrack(newTrack, myStream); }
+          }
+          hasRealMic = true;
+          warn.remove();
+        }).catch(function () {
+          alert("Мікрофон усе ще вимкнений у Windows або заблокований у браузері.");
+        });
+      };
+    }
+  }
+
+  var clientManualHangup = false;
+
+  function showCallNoticeBanner(msgText, isWarn) {
+    var host = document.getElementById("pchat-call-stage") || document.getElementById("pchat-box") || document.body;
+    var old = document.getElementById("pchat-reject-notice");
+    if (old) old.remove();
+    var banner = document.createElement("div");
+    banner.id = "pchat-reject-notice";
+    banner.style.cssText = "margin:8px 0;padding:10px 14px;border-radius:12px;background:rgba(153,27,27,0.88);border:1.5px solid #f87171;color:#fef2f2;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,0.45);z-index:9999;";
+    var txt = document.createElement("span");
+    txt.textContent = msgText || "📵 Оператор відхилив виклик або зараз зайнятий.";
+    var closeX = document.createElement("button");
+    closeX.type = "button";
+    closeX.textContent = "✖";
+    closeX.style.cssText = "background:rgba(255,255,255,0.15);border:none;color:#fff;border-radius:999px;width:24px;height:24px;cursor:pointer;font-weight:700;flex-shrink:0;";
+    closeX.onclick = function () { banner.remove(); };
+    banner.appendChild(txt);
+    banner.appendChild(closeX);
+    if (host.parentNode && host.id === "pchat-call-stage") {
+      host.parentNode.insertBefore(banner, host);
+    } else {
+      host.insertBefore(banner, host.firstChild);
+    }
+    setTimeout(function () { if (banner && banner.parentNode) banner.remove(); }, 9000);
+  }
+
   function startCall(withVideo) {
     if (!currentProject) return;
-    var staffPeerId = "4i4_staff_" + getSelectedStaffId();
-    initPeer(function (peer) {
-      navigator.mediaDevices.getUserMedia({ audio: true, video: !!withVideo }).then(function (stream) {
+    clientManualHangup = false;
+    var oldNotice = document.getElementById("pchat-reject-notice");
+    if (oldNotice) oldNotice.remove();
+    var targetStaffRole = getSelectedStaffId();
+    var staffPeerId = "4i4_staff_" + targetStaffRole;
+    window.ensureCommsSdk().then(function () {
+      var cfg = window.CHAT_CONFIG || {};
+      if (!window.FourI4RtcBridge) {
+        alert("Модуль WebRTC не завантажився. Оновіть сторінку.");
+        return;
+      }
+      window.FourI4RtcBridge.init({
+        roleId: "client_" + activeSessionId,
+        supabaseUrl: cfg.supabaseUrl,
+        supabaseAnonKey: cfg.supabaseAnonKey
+      });
+      acquireClientMediaStream(withVideo).then(function (stream) {
         localStream = stream;
-        var call = peer.call(staffPeerId, stream);
-        if (!call) {
-          stream.getTracks().forEach(function (t) { t.stop(); });
-          alert("З'єднання WebRTC ще встановлюється. Спробуйте ще раз через 2 секунди.");
-          return;
-        }
-        bindCallStream(call, stream);
+        var callId = "call_" + Date.now() + "_" + Math.floor(1000 + Math.random() * 9000);
+        window._activeCallId = callId;
+        window._activeStaffPeerId = staffPeerId;
+        var clientNameInp = document.getElementById("pchat-name");
+        var clientLabel = (clientNameInp && clientNameInp.value.trim()) ? clientNameInp.value.trim() : ("Клієнт (" + activeSessionId.slice(0, 8) + ")");
+        var wasAnswered = false;
+        var fakeCall = {
+          peer: staffPeerId,
+          _callId: callId,
+          peerConnection: null, on: function () {},
+          close: function () {
+            if (this._rtcHandle) {
+              try { this._rtcHandle.close("hangup"); } catch (e) {}
+              this._rtcHandle = null;
+            }
+          }
+        };
+        bindCallStream(fakeCall, stream);
+        setTimeout(function () {
+          var rtcHandle = window.FourI4RtcBridge.startOutgoingCall({
+            callId: callId,
+            from: "client_" + activeSessionId,
+            callerLabel: clientLabel,
+            to: targetStaffRole,
+            withVideo: withVideo,
+            localStream: stream,
+            onRemoteStream: function (remStream) {
+              wasAnswered = true;
+              var remVid = document.getElementById("pchat-remote-vid");
+              if (remVid) remVid.srcObject = remStream;
+            },
+            onRemoteClose: function (reason) {
+              var shouldNotifyReject = !wasAnswered && !clientManualHangup;
+              endCall();
+              if (shouldNotifyReject) {
+                showCallNoticeBanner(reason === "rejected"
+                  ? "📵 Оператор відхилив виклик або зараз зайнятий. Спробуйте зателефонувати трохи пізніше або напишіть у чат."
+                  : "📵 Виклик завершено оператором або лінія тимчасово зайнята.", true);
+              }
+            }
+          });
+          fakeCall._rtcHandle = rtcHandle;
+          fakeCall.peerConnection = rtcHandle.pc;
+          renderMicWarningBanner(fakeCall, stream);
+        }, window.FourI4RtcBridge.isReady() ? 50 : 450);
       }).catch(function (err) {
-        alert("Не вдалося отримати доступ до мікрофона/камери: " + err.message);
+        alert("Не вдалося встановити виклик: " + err.message);
       });
     });
   }
@@ -233,18 +423,147 @@
 
     var locVid = document.getElementById("pchat-local-vid");
     if (locVid) locVid.srcObject = myStream;
+    var wasAnswered = false;
+
+    if (peerInstance && !peerInstance._hasRejectListener) {
+      peerInstance._hasRejectListener = true;
+      peerInstance.on("connection", function (conn) {
+        conn.on("data", function (data) {
+          if (data && data.type === "CALL_REJECTED") {
+            clientManualHangup = true;
+            endCall();
+            showCallNoticeBanner("📵 Оператор відхилив виклик або зараз зайнятий. Спробуйте зателефонувати трохи пізніше або напишіть у чат.", true);
+          }
+        });
+      });
+    }
 
     call.on("stream", function (remStream) {
+      wasAnswered = true;
       var remVid = document.getElementById("pchat-remote-vid");
       if (remVid) remVid.srcObject = remStream;
     });
-    call.on("close", endCall);
+    call.on("close", function () {
+      var shouldNotifyReject = !wasAnswered && !clientManualHangup;
+      endCall();
+      if (shouldNotifyReject) {
+        showCallNoticeBanner("📵 Виклик відхилено оператором або лінія тимчасово зайнята.", true);
+      }
+    });
 
-    document.getElementById("pchat-mute-btn").onclick = function () {
-      isMuted = !isMuted;
-      myStream.getAudioTracks().forEach(function (t) { t.enabled = !isMuted; });
-      this.style.opacity = isMuted ? "0.5" : "1";
-    };
+    var muteBtn = document.getElementById("pchat-mute-btn");
+    var micMeterTimer = null;
+    var micAudioCtx = null;
+
+    function syncAudioTracksMuteState(muted) {
+      if (myStream) {
+        myStream.getAudioTracks().forEach(function (t) { t.enabled = !muted; });
+      }
+      if (localStream) {
+        localStream.getAudioTracks().forEach(function (t) { t.enabled = !muted; });
+      }
+      if (call && call.peerConnection && typeof call.peerConnection.getSenders === "function") {
+        call.peerConnection.getSenders().forEach(function (sender) {
+          if (sender.track && sender.track.kind === "audio") {
+            sender.track.enabled = !muted;
+          }
+        });
+      }
+    }
+
+    function startMicLevelMeter(stream) {
+      if (micMeterTimer) { clearInterval(micMeterTimer); micMeterTimer = null; }
+      if (micAudioCtx) { try { micAudioCtx.close(); } catch (e) {} micAudioCtx = null; }
+      try {
+        var tracks = stream.getAudioTracks();
+        if (!tracks || !tracks.length) return;
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        micAudioCtx = new AC();
+        if (micAudioCtx.state === "suspended") micAudioCtx.resume();
+        var src = micAudioCtx.createMediaStreamSource(new MediaStream([tracks]));
+        var analyser = micAudioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        src.connect(analyser);
+        var data = new Uint8Array(analyser.frequencyBinCount);
+        micMeterTimer = setInterval(function () {
+          var b = document.getElementById("pchat-mute-btn");
+          if (!b) { clearInterval(micMeterTimer); return; }
+          if (isMuted || !hasRealMic) return;
+          analyser.getByteFrequencyData(data);
+          var sum = 0;
+          for (var i = 0; i < data.length; i++) sum += data[i];
+          var avg = sum / data.length;
+          var glow = Math.min(34, Math.round(avg * 1.4));
+          if (glow > 2) {
+            b.style.setProperty("box-shadow", "0 0 " + glow + "px 4px rgba(16, 185, 129, 0.95)", "important");
+          } else {
+            b.style.setProperty("box-shadow", "0 0 12px rgba(16, 185, 129, 0.45)", "important");
+          }
+        }, 100);
+      } catch (e) {}
+    }
+
+    function applyMuteBtnVisual() {
+      var b = document.getElementById("pchat-mute-btn");
+      if (!b) return;
+      if (!hasRealMic) {
+        b.style.setProperty("opacity", "0.75", "important");
+        b.style.setProperty("border-color", "#f59e0b", "important");
+        b.textContent = "🎙️ Підключити мікрофон";
+        return;
+      }
+      if (isMuted) {
+        b.style.setProperty("opacity", "0.85", "important");
+        b.style.setProperty("border-color", "#ef4444", "important");
+        b.style.setProperty("background", "rgba(127, 29, 29, 0.75)", "important");
+        b.style.setProperty("box-shadow", "0 0 14px rgba(239, 68, 68, 0.55)", "important");
+        b.textContent = "🔇 Мікрофон вимкн.";
+      } else {
+        b.style.setProperty("opacity", "1", "important");
+        b.style.setProperty("border-color", "#10b981", "important");
+        b.style.setProperty("background", "rgba(16, 185, 129, 0.25)", "important");
+        b.style.setProperty("box-shadow", "0 0 14px rgba(16, 185, 129, 0.55)", "important");
+        b.textContent = "🎙️ Мікрофон (вкл)";
+      }
+    }
+
+    applyMuteBtnVisual();
+    if (hasRealMic) startMicLevelMeter(myStream);
+
+    if (muteBtn) {
+      muteBtn.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (!hasRealMic) {
+          navigator.mediaDevices.getUserMedia({ audio: true }).then(function (micStream) {
+            var newTrack = micStream.getAudioTracks();
+            if (!newTrack) return;
+            myStream.getAudioTracks().forEach(function (t) { t.stop(); myStream.removeTrack(t); });
+            myStream.addTrack(newTrack);
+            if (call && call.peerConnection) {
+              var sender = call.peerConnection.getSenders().find(function (s) { return s.track && s.track.kind === "audio"; });
+              if (sender) { sender.replaceTrack(newTrack); }
+              else { call.peerConnection.addTrack(newTrack, myStream); }
+            }
+            hasRealMic = true;
+            isMuted = false;
+            syncAudioTracksMuteState(false);
+            applyMuteBtnVisual();
+            startMicLevelMeter(myStream);
+            var oldWarn = document.getElementById("pchat-mic-warn");
+            if (oldWarn) oldWarn.remove();
+          }).catch(function () {
+            alert("Мікрофон вимкнений у Windows або заблокований у браузері.");
+          });
+          return;
+        }
+        isMuted = !isMuted;
+        syncAudioTracksMuteState(isMuted);
+        applyMuteBtnVisual();
+      });
+    }
+
     document.getElementById("pchat-cam-btn").onclick = function () {
       var btn = this;
       var vTracks = myStream.getVideoTracks();
@@ -282,17 +601,94 @@
         }
       });
     };
-    document.getElementById("pchat-end-btn").onclick = endCall;
+    document.getElementById("pchat-end-btn").onclick = function () {
+      clientManualHangup = true;
+      endCall();
+    };
+  }
+
+  function sendSupabaseCallCancel(callId) { return;
+    try {
+      var cfg = window.CHAT_CONFIG || {};
+      if (!cfg.supabaseUrl || !cfg.supabaseAnonKey || !currentProject) return;
+      var payload = {
+        session_id: activeSessionId,
+        project_id: currentProject.id || String(currentProject),
+        sender: "client",
+        text: "[CALL_CANCEL:" + (callId || "any") + "]"
+      };
+      fetch(cfg.supabaseUrl + "/rest/v1/chat_messages", {
+        method: "POST",
+        headers: {
+          "apikey": cfg.supabaseAnonKey,
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
+  function notifyOperatorCallEnded(callId, targetPeer) {
+    sendSupabaseCallCancel(callId);
+    try {
+      var sent = false;
+      if (window._activeDataConn && window._activeDataConn.open) {
+        window._activeDataConn.send({ type: "CALL_ENDED", callId: callId });
+        sent = true;
+      }
+      if (!sent && peerInstance && !peerInstance.destroyed && targetPeer) {
+        var dc = peerInstance.connect(targetPeer, { reliable: true });
+        if (dc) {
+          dc.on("open", function () {
+            try { dc.send({ type: "CALL_ENDED", callId: callId }); } catch (e) {}
+            setTimeout(function () { try { dc.close(); } catch (e) {} }, 150);
+          });
+        }
+      }
+    } catch (e) {}
   }
 
   function endCall() {
-    if (activeCall) { try { activeCall.close(); } catch (e) {} activeCall = null; }
+    var c = activeCall;
+    var callId = (c && c._callId) || window._activeCallId || "";
+    var targetPeer = (c && c.peer) || window._activeStaffPeerId || "";
+    if (c || callId) {
+      notifyOperatorCallEnded(callId, targetPeer);
+    }
+    window._activeCallId = null;
+    if (window._activeDataConn) {
+      var oldDc = window._activeDataConn;
+      window._activeDataConn = null;
+      setTimeout(function () { try { oldDc.close(); } catch (e) {} }, 250);
+    }
+    if (c) {
+      activeCall = null;
+      try { c.close(); } catch (e) {}
+      setTimeout(function () { try { c.close(); } catch (e) {} }, 220);
+    }
     if (localStream) { localStream.getTracks().forEach(function (t) { t.stop(); }); localStream = null; }
     var stage = document.getElementById("pchat-call-stage");
     if (stage) { stage.style.display = "none"; stage.innerHTML = ""; }
+    if (peerInstance && !peerInstance.destroyed && peerInstance.disconnected) {
+      try { peerInstance.reconnect(); } catch (e) {}
+    }
   }
 
+  window.addEventListener("beforeunload", function () {
+    if (activeCall || window._activeCallId) {
+      var cid = (activeCall && activeCall._callId) || window._activeCallId || "";
+      var tpeer = (activeCall && activeCall.peer) || window._activeStaffPeerId || "";
+      notifyOperatorCallEnded(cid, tpeer);
+    }
+    if (peerInstance && !peerInstance.destroyed) {
+      try { peerInstance.destroy(); } catch (e) {}
+    }
+  });
+
   function appendMsgBubble(m) {
+    if (m && typeof m.text === "string" && m.text.indexOf("[CALL_CANCEL:") === 0) return;
     var feed = document.getElementById("pchat-feed");
     if (!feed) return;
     var isClient = m.sender === "client";

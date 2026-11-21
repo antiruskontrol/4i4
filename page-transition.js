@@ -47,11 +47,17 @@
   backAudio.preload = 'auto';
   backAudio.style.display = 'none';
 
+  // Монтуємо завісу миттєво в <html> ще до рендеру <body>, щоб виключити спалах 1-го кадру
+  if (document.documentElement && !veil.parentNode) {
+    document.documentElement.appendChild(veil);
+  }
+
   function mountAndReveal() {
-    if (document.body) {
-      if (!veil.parentNode) document.body.appendChild(veil);
-      if (!posterLayer.parentNode) document.body.appendChild(posterLayer);
-      if (!backAudio.parentNode) document.body.appendChild(backAudio);
+    const host = document.body || document.documentElement;
+    if (host) {
+      if (!veil.parentNode) host.appendChild(veil);
+      if (!posterLayer.parentNode) host.appendChild(posterLayer);
+      if (!backAudio.parentNode) host.appendChild(backAudio);
     }
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {

@@ -119,7 +119,7 @@ function rebuildStaffUI(selectedId) {
 
   if (topSel) {
     topSel.innerHTML = "";
-    STAFF_SLOTS.forEach(function (s) {
+    STAFF_SLOTS.forEach(function (s) { if (s && typeof s.text === "string" && s.text.indexOf("[CALL_CANCEL:") === 0) return;
       var opt = document.createElement("option");
       opt.value = s.id;
       if (s.id === "staff_01") {
@@ -136,7 +136,7 @@ function rebuildStaffUI(selectedId) {
 
   if (cfgSel) {
     cfgSel.innerHTML = "";
-    STAFF_SLOTS.forEach(function (s) {
+    STAFF_SLOTS.forEach(function (s) { if (s && typeof s.text === "string" && s.text.indexOf("[CALL_CANCEL:") === 0) return;
       var opt = document.createElement("option");
       opt.value = s.id;
       if (s.id === "staff_01") {
@@ -166,7 +166,7 @@ function renderAdminSlotsList() {
   var box = document.getElementById("admin-slots-list");
   if (!box) return;
   box.innerHTML = "";
-  STAFF_SLOTS.forEach(function (s) {
+  STAFF_SLOTS.forEach(function (s) { if (s && typeof s.text === "string" && s.text.indexOf("[CALL_CANCEL:") === 0) return;
     var row = document.createElement("label");
     row.style.cssText = "display:flex;align-items:center;gap:8px;margin:0;padding:5px 8px;border-radius:8px;background:rgba(15,23,42,0.85);color:#e2e8f0;font-size:11px;cursor:pointer;";
     var cb = document.createElement("input");
@@ -181,10 +181,10 @@ function renderAdminSlotsList() {
   });
 }
 function switchTab(tabName) {
-  document.querySelectorAll(".tab").forEach(function(x) {
+  document.querySelectorAll(".tab").forEach(function(x) { if (x && typeof x.text === "string" && x.text.indexOf("[CALL_CANCEL:") === 0) return;
     x.classList.toggle("active", x.getAttribute("data-t") === tabName);
   });
-  document.querySelectorAll(".pane").forEach(function(x) {
+  document.querySelectorAll(".pane").forEach(function(x) { if (x && typeof x.text === "string" && x.text.indexOf("[CALL_CANCEL:") === 0) return;
     x.classList.toggle("active", x.id === "pane-" + tabName);
   });
   if (tabName === "clients") {
@@ -192,7 +192,7 @@ function switchTab(tabName) {
   }
 }
 
-document.querySelectorAll(".tab").forEach(function(b) {
+document.querySelectorAll(".tab").forEach(function(b) { if (b && typeof b.text === "string" && b.text.indexOf("[CALL_CANCEL:") === 0) return;
   b.addEventListener("click", function() { switchTab(b.getAttribute("data-t")); });
 });
 
@@ -216,7 +216,7 @@ function getStaffDisplay() {
 function updateStaffSelectLabels() {
   var sel = document.getElementById("staff-select");
   if (!sel) return;
-  Array.from(sel.options).forEach(function(opt) {
+  Array.from(sel.options).forEach(function(opt) { if (opt && typeof opt.text === "string" && opt.text.indexOf("[CALL_CANCEL:") === 0) return;
     if (opt.value === "staff_01") {
       opt.disabled = true;
       opt.style.color = "#64748b";
@@ -236,7 +236,7 @@ var teamDmPollTimer = null;
 
 function endTeamCall() {
   if (activeTeamCall) { try { activeTeamCall.close(); } catch (e) {} activeTeamCall = null; }
-  if (activeTeamStream) { activeTeamStream.getTracks().forEach(function (t) { t.stop(); }); activeTeamStream = null; }
+  if (activeTeamStream) { activeTeamStream.getTracks().forEach(function (t) { if (t && typeof t.text === "string" && t.text.indexOf("[CALL_CANCEL:") === 0) return; t.stop(); }); activeTeamStream = null; }
   var banner = document.getElementById("team-call-banner");
   var vid = document.getElementById("team-remote-vid");
   if (vid) { vid.srcObject = null; vid.style.display = "none"; }
@@ -356,7 +356,7 @@ function openTeamDm(myId, peerSlot, triggerFilePicker) {
           msgsEl.innerHTML = "<div style='color:#64748b;'>Повідомлень поки немає. Напишіть колезі!</div>";
           return;
         }
-        rows.forEach(function (m) {
+        rows.forEach(function (m) { if (m && typeof m.text === "string" && m.text.indexOf("[CALL_CANCEL:") === 0) return; if (m && typeof m.text === "string" && m.text.indexOf("[CALL_CANCEL:") === 0) return;
           var div = document.createElement("div");
           div.className = "msg staff";
           var author = m.file_name || "Колега";
@@ -489,11 +489,11 @@ setTimeout(function () { fInp.value = ""; fInp.click(); }, 120);
       if (Array.isArray(rows) && rows.length > 0 && rows.at(0) && rows.at(0).client_name) {
         try {
           var arr = JSON.parse(rows.at(0).client_name);
-          if (Array.isArray(arr)) arr.forEach(function (x) { if (x && x.id) dirMap[x.id] = x; });
+          if (Array.isArray(arr)) arr.forEach(function (x) { if (x && typeof x.text === "string" && x.text.indexOf("[CALL_CANCEL:") === 0) return; if (x && x.id) dirMap[x.id] = x; });
         } catch (e) {}
       }
       box.innerHTML = "";
-      STAFF_SLOTS.forEach(function (slotObj) {
+      STAFF_SLOTS.forEach(function (slotObj) { if (slotObj && typeof slotObj.text === "string" && slotObj.text.indexOf("[CALL_CANCEL:") === 0) return;
         var id = slotObj.id;
         if (id === myId) return;
         const div = document.createElement("div");
@@ -565,7 +565,7 @@ async function loadMessages(cfg, sid, container, clientLabel, forceHistory) {
       return;
     }
 
-    visibleRows.forEach(function(m) {
+    visibleRows.forEach(function(m) { if (m && typeof m.text === "string" && m.text.indexOf("[CALL_CANCEL:") === 0) return;
       const p = document.createElement("div");
       p.className = "msg " + (m.sender === "staff" ? "staff" : "");
       const stName = (!m.file_url && m.file_name) ? m.file_name : getStaffDisplay();
@@ -753,7 +753,7 @@ if (!Array.isArray(sessions) || sessions.length === 0) {
 dd.innerHTML = "Немає активних клієнтів";
 return;
 }
-sessions.forEach(function(s) {
+sessions.forEach(function(s) { if (s && typeof s.text === "string" && s.text.indexOf("[CALL_CANCEL:") === 0) return;
 const item = document.createElement("div");
 item.className = "client-dd-item" + (s.id === selectedSessionId ? " active" : "");
 const cName = s.client_name || "Клієнт";
@@ -912,7 +912,7 @@ document.getElementById("admin-panel-box").style.display = "none";
 document.getElementById("add-slot-btn").addEventListener("click", function () {
 if (!isAdminUnlocked) return;
 var maxNum = 0;
-STAFF_SLOTS.forEach(function (s) {
+STAFF_SLOTS.forEach(function (s) { if (s && typeof s.text === "string" && s.text.indexOf("[CALL_CANCEL:") === 0) return;
 var m = /^staff_(\d+)$/.exec(s.id);
 if (m) maxNum = Math.max(maxNum, parseInt(m[1], 10));
 });
@@ -978,8 +978,8 @@ document.getElementById("slot-status").textContent = "✅ Ключі Supabase о
       }
       var activeTab = document.querySelector(".tab.active");
       if (activeTab) prevTab = activeTab.getAttribute("data-t") || "clients";
-      document.querySelectorAll(".tab").forEach(function (x) { x.classList.remove("active"); });
-      document.querySelectorAll(".pane").forEach(function (x) { x.classList.remove("active"); });
+      document.querySelectorAll(".tab").forEach(function (x) { if (x && typeof x.text === "string" && x.text.indexOf("[CALL_CANCEL:") === 0) return; x.classList.remove("active"); });
+      document.querySelectorAll(".pane").forEach(function (x) { if (x && typeof x.text === "string" && x.text.indexOf("[CALL_CANCEL:") === 0) return; x.classList.remove("active"); });
       if (helpPane) helpPane.classList.add("active");
     });
   }
@@ -1005,7 +1005,7 @@ function syncTeamDirectoryToSupabase(slots) {
         try {
           var prevArr = JSON.parse(rows[0].client_name);
           if (Array.isArray(prevArr)) {
-            prevArr.forEach(function (item) { if (item && item.id) prevMap[item.id] = item; });
+            prevArr.forEach(function (item) { if (item && typeof item.text === "string" && item.text.indexOf("[CALL_CANCEL:") === 0) return; if (item && item.id) prevMap[item.id] = item; });
           }
         } catch (e) {}
       }
@@ -1123,7 +1123,7 @@ async function loadAdminDialogs() {
         updateRestoreBtnState();
         return;
       }
-      rows.forEach(function (s) {
+      rows.forEach(function (s) { if (s && typeof s.text === "string" && s.text.indexOf("[CALL_CANCEL:") === 0) return;
         var row = document.createElement("label");
         row.style.cssText = "display:flex;align-items:center;gap:8px;margin:0;padding:5px 8px;border-radius:8px;background:rgba(15,23,42,0.85);color:#e2e8f0;font-size:11px;cursor:pointer;";
         var isArchived = s.staff_id === "archived";
@@ -1255,7 +1255,7 @@ async function loadAdminDialogs() {
   if (selAllChk) {
     selAllChk.addEventListener("change", function () {
       var boxes = document.querySelectorAll("#admin-dialogs-list input[type='checkbox']");
-      boxes.forEach(function (b) { b.checked = selAllChk.checked; });
+      boxes.forEach(function (b) { if (b && typeof b.text === "string" && b.text.indexOf("[CALL_CANCEL:") === 0) return; b.checked = selAllChk.checked; });
       resetDelConfirmState();
     });
   }
@@ -1417,7 +1417,7 @@ async function loadAdminDialogs() {
             return;
           }
 
-          validRows.forEach(function (s) {
+          validRows.forEach(function (s) { if (s && typeof s.text === "string" && s.text.indexOf("[CALL_CANCEL:") === 0) return;
             var isRecent = s.updated_at && (Date.now() - new Date(s.updated_at).getTime() < 300000);
             var dot = isRecent ? "🟢" : "⚫";
             var item = document.createElement("div");

@@ -121,6 +121,7 @@
     z-index: 20 !important;
     animation: i4OverlayFlashWave 4.35s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
   }
+  #site-global-footer { display: none !important; }
 </style>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b1221'/%3E%3Ctext x='32' y='41' font-family='sans-serif' font-size='26' font-weight='bold' fill='%2338bdf8' text-anchor='middle'%3E4i4%3C/text%3E%3C/svg%3E">
 </head>
@@ -140,8 +141,9 @@
     <section class="project-inspector" id="project-inspector"></section>
   </main>
   <button type="button" id="open-projects-admin" title="Адмін-студія">⚙</button>
-  <script src="chat-config.js"></script>
-  <script src="project-chat.js?v=11"></script>
+  <script src="chat-config.js?v=24"></script>
+  <script src="rtc-bridge.js?v=3"></script>
+  <script src="project-chat.js?v=30"></script>
   <script src="projects-data.js"></script>
   <script>
     try { var d = localStorage.getItem("4i4_projects_draft"); if (d) window.PROJECTS_DATA = JSON.parse(d); } catch (e) {}
@@ -209,7 +211,7 @@
         el.dataset.id = p.id;
         el.style.setProperty("--tile-accent", p.accentColor || "#38bdf8");
         el.innerHTML = '<div class="tile-logo-box"><img src="' + p.logo + '" alt=""></div><div class="tile-info"><h2>' + p.title + '</h2><span>' + (p.category || "") + '</span></div>';
-        el.addEventListener("mouseenter", () => { clearTimeout(timer); timer = setTimeout(() => { const l = document.querySelector(".showcase-layout"); if (!l || !l.classList.contains("is-fullscreen")) select(p.id); }, 170); });
+        const bootTs = performance.now(); el.addEventListener("mouseenter", () => { if (performance.now() - bootTs < 700) return; clearTimeout(timer); timer = setTimeout(() => { const l = document.querySelector(".showcase-layout"); if (!l || !l.classList.contains("is-fullscreen")) select(p.id); }, 170); });
         el.addEventListener("mouseleave", () => clearTimeout(timer));
         el.addEventListener("click", () => { clearTimeout(timer); select(p.id); const l = document.querySelector(".showcase-layout"); if (l) l.classList.add("is-fullscreen"); });
         list.appendChild(el);

@@ -8,7 +8,7 @@
     body { width: 420px; min-height: 520px; background: #080e1c; color: #e2e8f0; padding: 14px; }
     .top { display: flex; gap: 6px; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(56, 189, 248, 0.25); }
     .brand { font-weight: 700; color: #38bdf8; font-size: 14px; margin-right: auto; }
-    select, input { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.35); color: #f8fafc; border-radius: 999px; padding: 6px 12px; font-size: 12px; outline: none; }
+    select, input { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.35); color: #f8fafc; border-radius: 999px; padding: 5px 8px; font-size: 11px; outline: none; max-width: 118px; }
     .tabs { display: flex; gap: 6px; margin-bottom: 12px; align-items: stretch; }
     .tab-drop-wrap { position: relative; flex: 1; display: flex; }
     .tab-drop-wrap > .tab { width: 100%; }
@@ -58,6 +58,10 @@
     .msg.staff { color: #38bdf8; }
     .msg-author { color: #10b981; font-weight: 600; }
     label { display: block; font-size: 11px; color: #94a3b8; margin: 8px 0 4px; }
+      .top { flex-wrap: wrap !important; row-gap: 6px !important; }
+    #op-popout-btn { display: inline-flex !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 20 !important; }
+    body.is-popout { width: 100% !important; min-width: 380px !important; max-width: 100% !important; min-height: 100vh !important; box-sizing: border-box !important; }
+    body.is-popout .msgs { height: calc(100vh - 290px) !important; min-height: 220px !important; }
   </style>
   <script src="peerjs.min.js"></script>
 </head>
@@ -65,7 +69,7 @@
   <div class="top">
     <div class="brand" style="display:inline-flex;align-items:center;gap:5px;">4і4 INTERCOM <span id="ext-ver-badge" style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:999px;background:rgba(56,189,248,0.16);border:1px solid rgba(56,189,248,0.4);color:#7dd3fc;"></span></div><div id="quick-clients-wrap" style="position:relative;display:inline-flex;align-items:center;">
       <button type="button" id="quick-clients-btn" class="icon-btn" title="Швидкий зв'язок із клієнтами (дзвінок, відео, чат, файл)" style="width:auto;padding:0 9px;font-size:11px;border-color:rgba(16,185,129,0.55);color:#6ee7b7;white-space:nowrap;">📞 Клієнти ▾</button>
-    </div><button id="help-toggle-btn" class="icon-btn" title="Інструкція користування Інтеркомом">❓</button>
+    </div><button id="help-toggle-btn" class="icon-btn" title="Інструкція користування Інтеркомом">❓</button><button type="button" id="op-popout-btn" class="icon-btn" title="Відкрити Інтерком в окремому вікні (не закривається при кліку на сайт)" style="border-color:rgba(56,189,248,0.65);color:#38bdf8;flex-shrink:0;">&#x29C9;</button>
     <select id="staff-select">
       <option value="staff_01">staff_01</option>
       <option value="staff_02">staff_02</option>
@@ -163,6 +167,9 @@
       </details>
     </div>
   </div>
+  <script src="supabase.min.js"></script>
+  <script src="rtc-bridge.js"></script>
+  <script src="popout.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
