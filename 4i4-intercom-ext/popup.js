@@ -1045,25 +1045,65 @@ setInterval(function () {
   }
 }, 25000);
 
-function updateRestoreBtnState() {
-  var restoreBtn = document.getElementById("restore-dialogs-btn");
-  if (!restoreBtn) return;
-  var archivedChecked = document.querySelectorAll("#admin-dialogs-list input[type='checkbox'][data-archived='1']:checked").length;
-  if (archivedChecked > 0) {
-    restoreBtn.disabled = false;
-    restoreBtn.style.borderColor = "#10b981";
-    restoreBtn.style.color = "#6ee7b7";
-    restoreBtn.style.opacity = "1";
-    restoreBtn.style.cursor = "pointer";
-  } else {
-    restoreBtn.disabled = true;
-    restoreBtn.style.borderColor = "#475569";
-    restoreBtn.style.color = "#64748b";
-    restoreBtn.style.opacity = "0.5";
-    restoreBtn.style.cursor = "not-allowed";
-  }
+var delConfirmArmed = false;
+var delConfirmTimer = null;
+
+function resetDelConfirmState() {
+  delConfirmArmed = false;
+  if (delConfirmTimer) { clearTimeout(delConfirmTimer); delConfirmTimer = null; }
+  var cancelBtn = document.getElementById("del-dialogs-cancel-btn");
+  if (cancelBtn) cancelBtn.style.display = "none";
+  updateRestoreBtnState();
 }
 
+function updateRestoreBtnState() {
+  var restoreBtn = document.getElementById("restore-dialogs-btn");
+  var delBtn = document.getElementById("del-dialogs-btn");
+  var selAll = document.getElementById("admin-select-all-dialogs");
+  var allBoxes = document.querySelectorAll("#admin-dialogs-list input[type='checkbox']");
+  var totalChecked = document.querySelectorAll("#admin-dialogs-list input[type='checkbox']:checked").length;
+  var archivedChecked = document.querySelectorAll("#admin-dialogs-list input[type='checkbox'][data-archived='1']:checked").length;
+
+  if (selAll) {
+    selAll.checked = (allBoxes.length > 0 && totalChecked === allBoxes.length);
+    selAll.indeterminate = (totalChecked > 0 && totalChecked < allBoxes.length);
+  }
+
+  if (restoreBtn) {
+    if (archivedChecked > 0) {
+      restoreBtn.disabled = false;
+      restoreBtn.style.borderColor = "#10b981";
+      restoreBtn.style.color = "#6ee7b7";
+      restoreBtn.style.opacity = "1";
+      restoreBtn.style.cursor = "pointer";
+    } else {
+      restoreBtn.disabled = true;
+      restoreBtn.style.borderColor = "#475569";
+      restoreBtn.style.color = "#64748b";
+      restoreBtn.style.opacity = "0.5";
+      restoreBtn.style.cursor = "not-allowed";
+    }
+  }
+
+  if (delBtn && !delConfirmArmed) {
+    delBtn.textContent = "🗑 Видалити обрані (" + totalChecked + ")";
+    if (totalChecked > 0) {
+      delBtn.disabled = false;
+      delBtn.style.borderColor = "#ef4444";
+      delBtn.style.background = "rgba(239,68,68,0.14)";
+      delBtn.style.color = "#fca5a5";
+      delBtn.style.opacity = "1";
+      delBtn.style.cursor = "pointer";
+    } else {
+      delBtn.disabled = true;
+      delBtn.style.borderColor = "#475569";
+      delBtn.style.background = "transparent";
+      delBtn.style.color = "#64748b";
+      delBtn.style.opacity = "0.55";
+      delBtn.style.cursor = "not-allowed";
+    }
+  }
+}
 async function loadAdminDialogs() {
   var box = document.getElementById("admin-dialogs-list");
   var stEl = document.getElementById("dialogs-admin-status");
@@ -1093,7 +1133,7 @@ async function loadAdminDialogs() {
         cb.dataset.archived = isArchived ? "1" : "0";
         var lbl = document.createElement("span");
         lbl.style.cssText = "overflow:hidden;text-overflow:ellipsis;white-space:nowrap;";
-        lbl.textContent = (s.client_name || "Клієнт") + " • " + (s.project_id || "проєкт") + (isArchived ? " [приховано]" : "");
+        var slotTag = (!isArchived && s.staff_id) ? (" [" + s.staff_id + "]") : ""; lbl.textContent = (s.client_name || "Клієнт") + " • " + (s.project_id || "проєкт") + slotTag + (isArchived ? " [приховано]" : "");
         if (isArchived) lbl.style.color = "#94a3b8";
         lbl.title = s.id;
         row.appendChild(cb);
@@ -1210,18 +1250,50 @@ async function loadAdminDialogs() {
     });
   }
 
+  var selAllChk = document.getElementById("admin-select-all-dialogs");
+  var cancelDelBtn = document.getElementById("del-dialogs-cancel-btn");
+  if (selAllChk) {
+    selAllChk.addEventListener("change", function () {
+      var boxes = document.querySelectorAll("#admin-dialogs-list input[type='checkbox']");
+      boxes.forEach(function (b) { b.checked = selAllChk.checked; });
+      resetDelConfirmState();
+    });
+  }
+  if (cancelDelBtn) {
+    cancelDelBtn.addEventListener("click", function () {
+      resetDelConfirmState();
+      if (stEl) { stEl.style.color = "#94a3b8"; stEl.textContent = "Видалення скасовано."; }
+    });
+  }
+
   if (delBtn) {
     delBtn.addEventListener("click", function () {
-      if (!isAdminUnlocked) return;
+      if (!isAdminUnlocked || delBtn.disabled) return;
       var checked = Array.from(document.querySelectorAll("#admin-dialogs-list input[type='checkbox']:checked")).map(function (c) { return c.value; });
       if (checked.length === 0) {
         stEl.style.color = "#f87171";
-        stEl.textContent = "Позначте чекбоксами діалоги для видалення.";
+        stEl.textContent = "Позначте чекбоксами клієнтів для видалення.";
         return;
       }
+
+      if (!delConfirmArmed) {
+        delConfirmArmed = true;
+        delBtn.textContent = "⚠️ Підтвердити видалення (" + checked.length + ")?";
+        delBtn.style.background = "#dc2626";
+        delBtn.style.borderColor = "#f87171";
+        delBtn.style.color = "#ffffff";
+        if (cancelDelBtn) cancelDelBtn.style.display = "inline-flex";
+        stEl.style.color = "#fbbf24";
+        stEl.textContent = "Натисніть червону кнопку ще раз для остаточного видалення зі списку дзвінків та БД.";
+        if (delConfirmTimer) clearTimeout(delConfirmTimer);
+        delConfirmTimer = setTimeout(resetDelConfirmState, 6000);
+        return;
+      }
+
+      resetDelConfirmState();
       delBtn.disabled = true;
       stEl.style.color = "#38bdf8";
-      stEl.textContent = "Видалення з Supabase...";
+      stEl.textContent = "Видалення обраних клієнтів (" + checked.length + ")...";
 
       chrome.storage.local.get(["sbUrl", "sbKey"], async function (rawCfg) {
         var cfg = resolveSbCfg(rawCfg);
@@ -1236,24 +1308,23 @@ async function loadAdminDialogs() {
             headers: { apikey: cfg.sbKey, Prefer: "return=minimal" }
           });
           if (!delSessRes.ok) throw new Error("HTTP " + delSessRes.status);
-
-          if (checked.indexOf(selectedSessionId) !== -1) {
-            selectedSessionId = null;
-          }
           stEl.style.color = "#6ee7b7";
-          stEl.textContent = "✅ Видалено з бази: " + checked.length;
-          await loadAdminDialogs();
-          syncTeamDirectoryToSupabase(STAFF_SLOTS); loadClients(cfg);
-        } catch (err) {
+          stEl.textContent = "✓ Видалено клієнтів зі списку дзвінків та БД: " + checked.length;
+          if (checked.indexOf(selectedSessionId) !== -1) selectedSessionId = null;
+          var qMenu = document.getElementById("quick-clients-menu");
+          if (qMenu) qMenu.style.display = "none";
+          loadAdminDialogs();
+          loadClients(cfg);
+        } catch (e) {
           stEl.style.color = "#f87171";
-          stEl.textContent = "Помилка видалення: " + err.message;
+          stEl.textContent = "Помилка видалення: " + e.message;
         } finally {
           delBtn.disabled = false;
+          updateRestoreBtnState();
         }
       });
     });
-  }
-})();
+  }})();
 
 
 
