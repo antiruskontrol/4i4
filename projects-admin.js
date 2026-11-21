@@ -351,26 +351,44 @@ body.querySelectorAll("[data-b-del]").forEach(function (btn) {
 btn.onclick = function () { p.blocks.splice(Number(btn.dataset.bDel), 1); renderWorkspace(); };
 });
 }
+function getDefaultActionLabel(type) {
+  var map = {
+    link: "Відкрити проєкт",
+    coop: "Обговорити співпрацю",
+    chat: "Чат зі спеціалістом",
+    copilot: "Запитати AI-Копілота"
+  };
+  return map[type] || "Відкрити проєкт";
+}
+
+function isDefaultActionLabel(val) {
+  var v = String(val || "").trim();
+  if (!v || v === "Нова кнопка" || v === "Обговорити") return true;
+  return ["Відкрити проєкт", "Обговорити співпрацю", "Чат зі спеціалістом", "Запитати AI-Копілота"].indexOf(v) !== -1;
+}
+
 if (activeTab === "actions") {
   p.actions = p.actions || [];
   var selStyle = "padding:8px 10px;border-radius:10px;border:1px solid rgba(56,189,248,0.4);background:#060b19;color:#f1f5f9;font-size:12px;";
   body.innerHTML =
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;flex-wrap:wrap;">' +
-      '<span style="font-size:12px;color:#94a3b8;">Налаштуйте кнопки, які відображаються внизу картки проєкту:</span>' +
+      '<span style="font-size:12px;color:#94a3b8;">Назва кнопки підставляється автоматично за типом дії (можна змінити вручну):</span>' +
       '<button type="button" id="adm-add-act" style="padding:8px 14px;border-radius:999px;border:1px solid #10b981;background:rgba(16,185,129,0.16);color:#6ee7b7;font-size:12px;font-weight:700;cursor:pointer;">+ Додати кнопку</button>' +
     '</div>' +
     (p.actions.length === 0
       ? '<div style="padding:18px;text-align:center;border:1px dashed rgba(148,163,184,0.3);border-radius:14px;color:#94a3b8;font-size:12px;">Кнопок ще немає. Натисніть «+ Додати кнопку».</div>'
       : p.actions.map(function (a, idx) {
-          var isLink = (!a.type || a.type === "link");
-          var urlPlaceholder = isLink ? "https://... або сторінка.html" : "Автоматично для типу «" + a.type + "»";
+          var actType = a.type || "link";
+          if (!a.label) a.label = getDefaultActionLabel(actType);
+          var isLink = (actType === "link");
+          var urlPlaceholder = isLink ? "https://... або сторінка.html" : "Автоматично для типу «" + actType + "»";
           return '<div style="display:grid;grid-template-columns:1.2fr 1.1fr 1.4fr 0.8fr auto;gap:8px;align-items:center;padding:10px;margin-bottom:8px;border-radius:12px;background:rgba(6,11,25,0.75);border:1px solid rgba(56,189,248,0.28);">' +
-            '<input data-a-idx="' + idx + '" data-a-key="label" value="' + esc(a.label || "") + '" placeholder="Назва кнопки" style="' + inpStyle + ';margin:0;">' +
+            '<input data-a-idx="' + idx + '" data-a-key="label" value="' + esc(a.label || "") + '" placeholder="' + esc(getDefaultActionLabel(actType)) + '" style="' + inpStyle + ';margin:0;">' +
             '<select data-a-idx="' + idx + '" data-a-key="type" style="' + selStyle + '">' +
-              '<option value="link"' + (a.type === "link" ? " selected" : "") + '>🔗 Посилання (link)</option>' +
-              '<option value="coop"' + (a.type === "coop" ? " selected" : "") + '>🤝 Співпраця (coop)</option>' +
-              '<option value="chat"' + (a.type === "chat" ? " selected" : "") + '>💬 Живий чат (chat)</option>' +
-              '<option value="copilot"' + (a.type === "copilot" ? " selected" : "") + '>🤖 AI-Копілот</option>' +
+              '<option value="link"' + (actType === "link" ? " selected" : "") + '>🔗 Посилання (link)</option>' +
+              '<option value="coop"' + (actType === "coop" ? " selected" : "") + '>🤝 Співпраця (coop)</option>' +
+              '<option value="chat"' + (actType === "chat" ? " selected" : "") + '>💬 Живий чат (chat)</option>' +
+              '<option value="copilot"' + (actType === "copilot" ? " selected" : "") + '>🤖 AI-Копілот</option>' +
             '</select>' +
             '<input data-a-idx="' + idx + '" data-a-key="url" value="' + esc(a.url || "") + '" placeholder="' + urlPlaceholder + '"' + (isLink ? '' : ' disabled') + ' style="' + inpStyle + ';margin:0;' + (isLink ? '' : 'opacity:0.45;cursor:not-allowed;') + '">' +
             '<select data-a-idx="' + idx + '" data-a-key="color" style="' + selStyle + '">' +
@@ -390,9 +408,18 @@ if (activeTab === "actions") {
     var handler = function () {
       var idx = Number(el.dataset.aIdx);
       var key = el.dataset.aKey;
+      if (key === "type") {
+        var newType = el.value;
+        p.actions[idx].type = newType;
+        if (isDefaultActionLabel(p.actions[idx].label)) {
+          p.actions[idx].label = getDefaultActionLabel(newType);
+        }
+        saveDraft();
+        renderWorkspace();
+        return;
+      }
       p.actions[idx][key] = el.value;
       saveDraft();
-      if (key === "type") renderWorkspace();
     };
     el.oninput = handler;
     el.onchange = handler;
@@ -407,7 +434,16 @@ if (activeTab === "actions") {
   var addActBtn = document.getElementById("adm-add-act");
   if (addActBtn) {
     addActBtn.onclick = function () {
-      p.actions.push({ label: "Нова кнопка", type: "link", url: "https://", color: "cyan" });
+      var presetTypes = ["link", "coop", "chat", "copilot"];
+      var nextType = presetTypes[p.actions.length % presetTypes.length];
+      var presetColors = ["cyan", "gold", "green", "orange"];
+      var nextColor = presetColors[p.actions.length % presetColors.length];
+      p.actions.push({
+        label: getDefaultActionLabel(nextType),
+        type: nextType,
+        url: nextType === "link" ? "https://" : "",
+        color: nextColor
+      });
       saveDraft();
       renderWorkspace();
     };
