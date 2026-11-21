@@ -352,30 +352,66 @@ btn.onclick = function () { p.blocks.splice(Number(btn.dataset.bDel), 1); render
 });
 }
 if (activeTab === "actions") {
-p.actions = p.actions || [];
-body.innerHTML = '+ Додати кнопку' +
-p.actions.map(function (a, idx) {
-return '' +
-'<input data-a-idx="' + idx + '" data-a-key="label" value="' + esc(a.label || "") + '" placeholder="Текст кнопки" style="' + inpStyle + '">' +
-'' +
-'<option value="link"' + (a.type === "link" ? " selected" : "") + '>link' +
-'<option value="coop"' + (a.type === "coop" ? " selected" : "") + '>coop' +
-'<option value="copilot"' + (a.type === "copilot" ? " selected" : "") + '>copilot' +
-'<option value="chat"' + (a.type === "chat" ? " selected" : "") + '>chat' +
-'' +
-'<input data-a-idx="' + idx + '" data-a-key="url" value="' + esc(a.url || "") + '" placeholder="URL або prompt" style="' + inpStyle + '">' +
-'' +
-'<option value="cyan"' + (a.color === "cyan" ? " selected" : "") + '>Cyan' +
-'<option value="gold"' + (a.color === "gold" ? " selected" : "") + '>Gold' +
-'<option value="orange"' + (a.color === "orange" ? " selected" : "") + '>Orange' +
-'<option value="green"' + (a.color === "green" ? " selected" : "") + '>Green' +
-'' +
-'✕' +
-'';
-}).join("");
-body.querySelectorAll("[data-a-key]").forEach(function (el) { el.oninput = function () { p.actions[el.dataset.aIdx][el.dataset.aKey] = el.value; }; });
-body.querySelectorAll("[data-a-del]").forEach(function (btn) { btn.onclick = function () { p.actions.splice(Number(btn.dataset.aDel), 1); renderWorkspace(); }; });
-var addActBtn = document.getElementById("adm-add-act"); if (addActBtn) addActBtn.onclick = function () { p.actions.push({ label: "Нова кнопка", type: "link", url: "https://", color: "cyan" }); renderWorkspace(); };
+  p.actions = p.actions || [];
+  var selStyle = "padding:8px 10px;border-radius:10px;border:1px solid rgba(56,189,248,0.4);background:#060b19;color:#f1f5f9;font-size:12px;";
+  body.innerHTML =
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;flex-wrap:wrap;">' +
+      '<span style="font-size:12px;color:#94a3b8;">Налаштуйте кнопки, які відображаються внизу картки проєкту:</span>' +
+      '<button type="button" id="adm-add-act" style="padding:8px 14px;border-radius:999px;border:1px solid #10b981;background:rgba(16,185,129,0.16);color:#6ee7b7;font-size:12px;font-weight:700;cursor:pointer;">+ Додати кнопку</button>' +
+    '</div>' +
+    (p.actions.length === 0
+      ? '<div style="padding:18px;text-align:center;border:1px dashed rgba(148,163,184,0.3);border-radius:14px;color:#94a3b8;font-size:12px;">Кнопок ще немає. Натисніть «+ Додати кнопку».</div>'
+      : p.actions.map(function (a, idx) {
+          var isLink = (!a.type || a.type === "link");
+          var urlPlaceholder = isLink ? "https://... або сторінка.html" : "Автоматично для типу «" + a.type + "»";
+          return '<div style="display:grid;grid-template-columns:1.2fr 1.1fr 1.4fr 0.8fr auto;gap:8px;align-items:center;padding:10px;margin-bottom:8px;border-radius:12px;background:rgba(6,11,25,0.75);border:1px solid rgba(56,189,248,0.28);">' +
+            '<input data-a-idx="' + idx + '" data-a-key="label" value="' + esc(a.label || "") + '" placeholder="Назва кнопки" style="' + inpStyle + ';margin:0;">' +
+            '<select data-a-idx="' + idx + '" data-a-key="type" style="' + selStyle + '">' +
+              '<option value="link"' + (a.type === "link" ? " selected" : "") + '>🔗 Посилання (link)</option>' +
+              '<option value="coop"' + (a.type === "coop" ? " selected" : "") + '>🤝 Співпраця (coop)</option>' +
+              '<option value="chat"' + (a.type === "chat" ? " selected" : "") + '>💬 Живий чат (chat)</option>' +
+              '<option value="copilot"' + (a.type === "copilot" ? " selected" : "") + '>🤖 AI-Копілот</option>' +
+            '</select>' +
+            '<input data-a-idx="' + idx + '" data-a-key="url" value="' + esc(a.url || "") + '" placeholder="' + urlPlaceholder + '"' + (isLink ? '' : ' disabled') + ' style="' + inpStyle + ';margin:0;' + (isLink ? '' : 'opacity:0.45;cursor:not-allowed;') + '">' +
+            '<select data-a-idx="' + idx + '" data-a-key="color" style="' + selStyle + '">' +
+              '<option value="cyan"' + ((a.color || "cyan") === "cyan" ? " selected" : "") + '>🔵 Cyan</option>' +
+              '<option value="gold"' + (a.color === "gold" ? " selected" : "") + '>🟡 Gold</option>' +
+              '<option value="orange"' + (a.color === "orange" ? " selected" : "") + '>🟠 Orange</option>' +
+              '<option value="green"' + (a.color === "green" ? " selected" : "") + '>🟢 Green</option>' +
+            '</select>' +
+            '<button type="button" data-a-del="' + idx + '" title="Видалити кнопку" style="width:32px;height:32px;border-radius:8px;border:1px solid rgba(248,113,113,0.55);background:rgba(239,68,68,0.16);color:#fca5a5;font-weight:700;cursor:pointer;">✕</button>' +
+          '</div>';
+        }).join(""));
+
+  var saveDraft = function () {
+    try { localStorage.setItem("4i4_projects_draft", JSON.stringify(memProjects)); } catch (e) {}
+  };
+  body.querySelectorAll("[data-a-key]").forEach(function (el) {
+    var handler = function () {
+      var idx = Number(el.dataset.aIdx);
+      var key = el.dataset.aKey;
+      p.actions[idx][key] = el.value;
+      saveDraft();
+      if (key === "type") renderWorkspace();
+    };
+    el.oninput = handler;
+    el.onchange = handler;
+  });
+  body.querySelectorAll("[data-a-del]").forEach(function (btn) {
+    btn.onclick = function () {
+      p.actions.splice(Number(btn.dataset.aDel), 1);
+      saveDraft();
+      renderWorkspace();
+    };
+  });
+  var addActBtn = document.getElementById("adm-add-act");
+  if (addActBtn) {
+    addActBtn.onclick = function () {
+      p.actions.push({ label: "Нова кнопка", type: "link", url: "https://", color: "cyan" });
+      saveDraft();
+      renderWorkspace();
+    };
+  }
 }
 if (activeTab === "seo") {
 p.seo = p.seo || { metaTitle: "", metaDescription: "", keywords: "", schemaType: "SoftwareApplication" };
