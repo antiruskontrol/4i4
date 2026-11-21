@@ -120,9 +120,30 @@
       this.style.opacity = isMuted ? "0.5" : "1";
     };
     document.getElementById("pchat-cam-btn").onclick = function () {
-      isCamOff = !isCamOff;
-      myStream.getVideoTracks().forEach(function (t) { t.enabled = !isCamOff; });
-      this.style.opacity = isCamOff ? "0.5" : "1";
+      var btn = this;
+      var vTracks = myStream.getVideoTracks();
+      if (vTracks.length > 0) {
+        isCamOff = !isCamOff;
+        vTracks.forEach(function (t) { t.enabled = !isCamOff; });
+        if (locVid) locVid.srcObject = myStream;
+        btn.style.opacity = isCamOff ? "0.5" : "1";
+        return;
+      }
+      navigator.mediaDevices.getUserMedia({ video: true }).then(function (camStream) {
+        var camTrack = camStream.getVideoTracks()[0];
+        if (!camTrack) return;
+        myStream.addTrack(camTrack);
+        if (locVid) locVid.srcObject = myStream;
+        isCamOff = false;
+        btn.style.opacity = "1";
+        if (call.peerConnection) {
+          var sender = call.peerConnection.getSenders().find(function (s) { return s.track && s.track.kind === "video"; });
+          if (sender) { sender.replaceTrack(camTrack); }
+          else { call.peerConnection.addTrack(camTrack, myStream); }
+        }
+      }).catch(function (err) {
+        alert("Не вдалося увімкнути камеру: " + err.message);
+      });
     };
     document.getElementById("pchat-scr-btn").onclick = function () {
       if (!navigator.mediaDevices.getDisplayMedia) return;
