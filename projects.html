@@ -79,6 +79,93 @@
     .project-inspector { transition: opacity 0.34s var(--smooth), transform 0.48s var(--spring), border-color 0.35s ease, box-shadow 0.4s ease !important; }
     .project-inspector.is-switching { opacity: 0.18 !important; transform: translateY(10px) scale(0.985) !important; }
     .project-inspector.is-flash { border-color: rgba(56, 189, 248, 0.65) !important; box-shadow: 0 16px 44px rgba(0, 0, 0, 0.45), 0 0 28px rgba(56, 189, 248, 0.24) !important; }
+        /* Правка 1: Плавніше спливання опису (+200%), зовнішній ховер (+100%), м'яка пружина та виразний спалах при кліку */
+    :root {
+      --spring: cubic-bezier(0.22, 1.28, 0.36, 1);
+      --smooth: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .action-pill-btn,
+    .neon-btn,
+    button:not(.pchat-close):not(.icon-btn) {
+      overflow: visible !important;
+      transition:
+        transform 0.62s var(--spring),
+        box-shadow 0.52s var(--smooth),
+        background 0.42s ease,
+        border-color 0.38s ease,
+        color 0.32s ease !important;
+    }
+    .action-pill-btn::after,
+    .neon-btn::after,
+    button:not(.pchat-close):not(.icon-btn)::after {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+      box-shadow: 0 0 42px 10px var(--btn-glow);
+      transition: opacity 0.48s var(--smooth);
+    }
+    .action-pill-btn:hover,
+    .neon-btn:hover,
+    button:not(.pchat-close):not(.icon-btn):hover {
+      transform: translateY(-3px) scale(1.028) !important;
+      box-shadow:
+        0 18px 46px -4px var(--btn-glow),
+        0 0 36px 6px var(--btn-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    }
+    .action-pill-btn:hover::after,
+    .neon-btn:hover::after,
+    button:not(.pchat-close):not(.icon-btn):hover::after {
+      opacity: 1 !important;
+    }
+    .action-pill-btn:active,
+    .neon-btn:active,
+    button:not(.pchat-close):not(.icon-btn):active {
+      transform: translateY(1px) scale(0.972) !important;
+      transition-duration: 0.09s !important;
+      border-color: #ffffff !important;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.28) 0%, var(--btn-tint) 48%, rgba(15, 23, 42, 0.96) 95%) !important;
+      box-shadow:
+        0 0 0 7px var(--btn-tint),
+        0 0 48px 14px var(--btn-glow),
+        inset 0 0 22px rgba(255, 255, 255, 0.42) !important;
+    }
+    .project-tile {
+      transition:
+        transform 0.65s var(--spring),
+        border-color 0.42s ease,
+        background 0.42s ease,
+        box-shadow 0.52s var(--smooth) !important;
+    }
+    .project-tile:hover {
+      transform: translateY(-4px) scale(1.016) !important;
+      box-shadow:
+        0 18px 42px -6px rgba(0, 0, 0, 0.6),
+        0 0 34px 4px color-mix(in srgb, var(--tile-accent, #38bdf8) 52%, transparent) !important;
+    }
+    .project-tile:active {
+      transform: translateY(1px) scale(0.985) !important;
+      transition-duration: 0.1s !important;
+      border-color: #ffffff !important;
+      box-shadow:
+        0 0 0 6px color-mix(in srgb, var(--tile-accent, #38bdf8) 28%, transparent),
+        0 0 44px 10px color-mix(in srgb, var(--tile-accent, #38bdf8) 68%, transparent),
+        inset 0 0 18px rgba(255, 255, 255, 0.25) !important;
+    }
+    .project-inspector {
+      transition:
+        opacity 0.95s var(--smooth),
+        transform 1.05s var(--spring),
+        border-color 0.55s ease,
+        box-shadow 0.65s ease !important;
+    }
+    .project-inspector.is-switching {
+      opacity: 0.08 !important;
+      transform: translateY(16px) scale(0.982) !important;
+    }
     #open-projects-admin { position: fixed; bottom: 20px; right: 20px; z-index: 960; width: 48px; height: 48px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.35rem; color: #38bdf8; background: rgba(6,11,25,0.92); border: 1px solid rgba(56,189,248,0.55); cursor: pointer; }
   </style>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b1221'/%3E%3Ctext x='32' y='41' font-family='sans-serif' font-size='26' font-weight='bold' fill='%2338bdf8' text-anchor='middle'%3E4i4%3C/text%3E%3C/svg%3E">
@@ -140,7 +227,7 @@
               b.onclick = function (e) { e.preventDefault(); if (typeof window.mountProjectChat === "function") window.mountProjectChat(p, true); };
             }
           });
-        }, 80);
+        }, 220);
       }
 
       list.innerHTML = "";
@@ -150,7 +237,7 @@
         el.dataset.id = p.id;
         el.style.setProperty("--tile-accent", p.accentColor || "#38bdf8");
         el.innerHTML = '<div class="tile-logo-box"><img src="' + p.logo + '" alt=""></div><div class="tile-info"><h2>' + p.title + '</h2><span>' + (p.category || "") + '</span></div>';
-        el.addEventListener("mouseenter", () => { clearTimeout(timer); timer = setTimeout(() => select(p.id), 120); });
+        el.addEventListener("mouseenter", () => { clearTimeout(timer); timer = setTimeout(() => select(p.id), 180); });
         el.addEventListener("mouseleave", () => clearTimeout(timer));
         el.addEventListener("click", () => { clearTimeout(timer); select(p.id); });
         list.appendChild(el);
