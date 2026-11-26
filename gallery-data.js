@@ -15,8 +15,8 @@ const EXHIBITIONS_DATA = [
         "title": "Оригінали Марії Примаченко",
         "desc": "Золотий фонд українського народного декоративного живопису (експозиція готується).",
         "folder": "images/prymachenko/originals",
-        "coverImage": "images/prymachenko/priymachenkotitle.webp",
-        "artworksCount": 0,
+        "coverImage": "images/prymachenko/originals/1.webp",
+        "artworksCount": 169,
         "glowColor": "rgba(212, 175, 55, 0.55)"
       },
       {
