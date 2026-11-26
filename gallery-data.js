@@ -57,8 +57,8 @@ const EXHIBITIONS_DATA = [
         "title": "Оригінали Георгія Нарбута",
         "desc": "Золотий фонд української графіки, книжкового мистецтва та державних символів (експозиція готується).",
         "folder": "images/narbut/originals",
-        "coverImage": "images/prymachenko/priymachenkotitle.webp",
-        "artworksCount": 0,
+        "coverImage": "images/narbut/originals/1.webp",
+        "artworksCount": 18,
         "glowColor": "rgba(212, 175, 55, 0.55)"
       }
     ]
