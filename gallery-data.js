@@ -13,10 +13,10 @@ const EXHIBITIONS_DATA = [
         "id": "originals",
         "badge": "АВТЕНТИКА",
         "title": "Оригінали Марії Примаченко",
-        "desc": "Золотий фонд українського народного декоративного живопису.",
+        "desc": "Золотий фонд українського народного декоративного живопису (експозиція готується).",
         "folder": "images/prymachenko/originals",
-        "coverImage": "images/prymachenko/originals/1.webp",
-        "artworksCount": 7,
+        "coverImage": "images/prymachenko/priymachenkotitle.webp",
+        "artworksCount": 0,
         "glowColor": "rgba(212, 175, 55, 0.55)"
       },
       {
@@ -55,9 +55,9 @@ const EXHIBITIONS_DATA = [
         "id": "originals",
         "badge": "АВТЕНТИКА",
         "title": "Оригінали Георгія Нарбута",
-        "desc": "Золотий фонд української графіки, книжкового мистецтва та державних символів.",
+        "desc": "Золотий фонд української графіки, книжкового мистецтва та державних символів (експозиція готується).",
         "folder": "images/narbut/originals",
-        "coverImage": "images/narbut/narbuttitle.webp",
+        "coverImage": "images/prymachenko/priymachenkotitle.webp",
         "artworksCount": 0,
         "glowColor": "rgba(212, 175, 55, 0.55)"
       }
@@ -77,10 +77,10 @@ const EXHIBITIONS_DATA = [
         "id": "originals",
         "badge": "АВТЕНТИКА",
         "title": "Оригінали Івана Марчука",
-        "desc": "Золотий фонд живопису та авторської техніки пльонтанізму.",
+        "desc": "Золотий фонд живопису та авторської техніки пльонтанізму (експозиція готується).",
         "folder": "images/marchuk/originals",
-        "coverImage": "images/marchuk/marchuktitle.webp",
-        "artworksCount": 0,
+        "coverImage": "images/marchuk/originals/1.webp",
+        "artworksCount": 29,
         "glowColor": "rgba(56, 189, 248, 0.55)"
       }
     ]
