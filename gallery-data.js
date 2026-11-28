@@ -102,17 +102,7 @@ const EXHIBITIONS_DATA = [
         "desc": "Кураторська експозиція.",
         "folder": "images/antiruskontrolukrnet/pov1",
         "coverImage": "images/antiruskontrolukrnet/pov1/1.webp",
-        "artworksCount": 55,
-        "glowColor": "rgba(56, 189, 248, 0.55)"
-      },
-      {
-        "id": "exp-1795855963978",
-        "badge": "POV №2",
-        "title": "оригінали",
-        "desc": "Кураторська експозиція.",
-        "folder": "images/antiruskontrolukrnet/pov2",
-        "coverImage": "images/antiruskontrolukrnet/pov2/1.webp",
-        "artworksCount": 53,
+        "artworksCount": 52,
         "glowColor": "rgba(56, 189, 248, 0.55)"
       }
     ]
