@@ -84,5 +84,37 @@ const EXHIBITIONS_DATA = [
         "glowColor": "rgba(56, 189, 248, 0.55)"
       }
     ]
+  },
+  {
+    "id": "antiruskontrolukrnet",
+    "artist": "Катерина Білокур",
+    "category": "Нова зала",
+    "subtitle": "Персональна виставкова зала: Катерина Білокур.",
+    "folder": "images/antiruskontrolukrnet",
+    "tileImage": "antiruskontrolukrnettitle.webp",
+    "pageUrl": "antiruskontrolukrnet.html",
+    "glowColor": "rgba(212, 175, 55, 0.55)",
+    "sections": [
+      {
+        "id": "exp-1795855946610",
+        "badge": "POV",
+        "title": "оригінали",
+        "desc": "Кураторська експозиція.",
+        "folder": "images/antiruskontrolukrnet/pov1",
+        "coverImage": "images/antiruskontrolukrnet/pov1/1.webp",
+        "artworksCount": 0,
+        "glowColor": "rgba(56, 189, 248, 0.55)"
+      },
+      {
+        "id": "exp-1795855963978",
+        "badge": "POV №2",
+        "title": "оригінали",
+        "desc": "Кураторська експозиція.",
+        "folder": "images/antiruskontrolukrnet/pov2",
+        "coverImage": "images/antiruskontrolukrnet/pov2/1.webp",
+        "artworksCount": 53,
+        "glowColor": "rgba(56, 189, 248, 0.55)"
+      }
+    ]
   }
 ];
