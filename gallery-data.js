@@ -102,7 +102,7 @@ const EXHIBITIONS_DATA = [
         "desc": "Кураторська експозиція.",
         "folder": "images/antiruskontrolukrnet/pov1",
         "coverImage": "images/antiruskontrolukrnet/pov1/1.webp",
-        "artworksCount": 0,
+        "artworksCount": 55,
         "glowColor": "rgba(56, 189, 248, 0.55)"
       },
       {
